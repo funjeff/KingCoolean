@@ -2,11 +2,16 @@ package engine;
 
 import java.util.ArrayList;
 
+import gameObjects.Connect;
+import gameObjects.LarryConnect;
 import gameObjects.ConnectFourGame;
+import gameObjects.ConnectMap;
 import gameObjects.HorizontalHenry;
 import gameObjects.LeftLarry;
+import gameObjects.MerylConnect;
 import gameObjects.MirroredMeryl;
 import gameObjects.RandomRandy;
+import gameObjects.RandyConnect;
 import map.Room;
 import java.awt.event.KeyEvent;
 
@@ -20,7 +25,7 @@ public class GameCode {
 
 	static ArrayList <Asker> askers = new ArrayList <Asker> ();
 	
-
+	public static ConnectMap map;
 
 	public static void testBitch () {
 		
@@ -39,10 +44,47 @@ public class GameCode {
 		
 		//Test
 	
-		ConnectFourGame b = new ConnectFourGame ();
-		b.setEnemy(new MirroredMeryl ());
-		b.declare();
-
+//		ConnectFourGame b = new ConnectFourGame ();
+//		b.setEnemy(new MirroredMeryl ());
+//		b.declare();
+		
+		Connect king = new Connect ();
+		LarryConnect larry = new LarryConnect ();
+		RandyConnect randy = new RandyConnect ();
+		MerylConnect meryl = new MerylConnect ();
+		Connect charlie = new Connect ();
+		
+		king.setY(200);
+		king.setX(200);
+		
+		king.getResume().setSprite(new Sprite ("resources/sprites/resumes/king coolean resume.png"));
+		larry.getResume().setSprite(new Sprite ("resources/sprites/resumes/left larry resume.png"));
+		randy.getResume().setSprite(new Sprite ("resources/sprites/resumes/random randy resume.png"));
+		meryl.getResume().setSprite(new Sprite ("resources/sprites/resumes/mirrored meryl resume.png"));
+		charlie.getResume().setSprite(new Sprite ("resources/sprites/resumes/cheating charlie resume.png"));
+		
+		
+		king.setAbove(larry);
+		larry.setBelow(king);
+		
+		king.setBelow(randy);
+		randy.setAbove(king);
+		
+		king.setLeft(meryl);
+		meryl.setRight(king);
+		
+		king.setRight(charlie);
+		charlie.setLeft(king);
+		
+		ConnectMap.allConnects.add(king);
+		ConnectMap.allConnects.add(larry);
+		ConnectMap.allConnects.add(randy);
+		ConnectMap.allConnects.add(meryl);
+		ConnectMap.allConnects.add(charlie);
+		
+		
+		map = new ConnectMap (king);
+		map.declare();
 		//Room2 room2 = new Room2 ();
 		//room2.loadMap ("big_test.tmj");
 

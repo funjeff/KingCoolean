@@ -10,7 +10,7 @@ public class MirroredMeryl extends Enemy{
 		
 		int [] curHeights = new int [7];
 	
-		boolean firstMove = true;
+	//	boolean firstMove = true;
 		
 		public MirroredMeryl () {
 			this.setSprite(new Sprite ("resources/sprites/config/MirroredMeryl.txt"));
@@ -20,16 +20,16 @@ public class MirroredMeryl extends Enemy{
 		
 		@Override
 		public int getMove (int [][] boardState) {
-
-			if (firstMove) {
-				Random r = new Random ();
-				firstMove = false;
-				
-				
-				int choice = r.nextInt(7);
-				curHeights[choice] = curHeights[choice] - 1;
-				return choice;
-			}
+//
+//			if (firstMove) {
+//				Random r = new Random ();
+//				firstMove = false;
+//				
+//				
+//				int choice = r.nextInt(7);
+//				curHeights[choice] = curHeights[choice] - 1;
+//				return choice;
+//			}
 			
 			int playerMove = 0;
 			for (int i = 0; i < curHeights.length; i++) {
