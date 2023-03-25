@@ -13,7 +13,11 @@ public class SerbianConnectFour {
 //			System.out.println(input <= 6);
 			while (!(input >= 0) || !(input <= 6)) {
 				try {
-					input = (player == 1) ? s.nextInt() : scf.alphaBetaSearch(scf.board, 2);
+					input = 
+							(player == 1) ? 
+							s.nextInt() 
+							: scf.alphaBetaSearch(scf.board, 10)
+							;
 //					System.out.println(input >= 0);
 //					System.out.println(input <= 6);
 				}
@@ -43,7 +47,7 @@ public class SerbianConnectFour {
 	}
 	private int[][] board = new int[6][7];
 	private int[] xDir = {1, 0, 1, -1};
-	private int[] yDir = {1, 1, 0, 0};
+	private int[] yDir = {1, -1, 0, -1};
 	public SerbianConnectFour() {
 		for (int i = 0; i < 6; i++) {
 			for (int j = 0; j < 7; j++) {
@@ -72,7 +76,9 @@ public class SerbianConnectFour {
 						int xMove = wx + xDir[q];
 						int yMove = wy + yDir[q];
 						while (xMove > -1 && xMove < 6 && yMove > -1 && yMove < 7) {
-							if (board[xMove][yMove] == 0) break;
+							if (board[xMove][yMove] == 0 || 
+									board[xMove][yMove] == 
+									((check == 1) ? 2 : 1)) break;
 							if (board[xMove][yMove] == check) {
 								count++;
 							}
@@ -100,30 +106,23 @@ public class SerbianConnectFour {
 	}
 	
 	public int getHeuristic(int[][] board) {
-		int check, count = 0, heuristic = 0;
-		boolean isSingle = false;
+		int count = 1, heuristic = 88;
 		for (int wx = 0; wx < 6; wx++) {
 			for (int wy = 0; wy < 7; wy++) {
 				if (board[wx][wy] != 0) {
-					check = board[wx][wy];
 					for (int q = 0; q < 4; q++) {
 						int xMove = wx + xDir[q];
 						int yMove = wy + yDir[q];
 						while (xMove > -1 && xMove < 6 && yMove > -1 && yMove < 7) {
-							if (board[xMove][yMove] == 0) break;
-							if (board[xMove][yMove] == check) {
-								count++;
-							}
+							count++;
 							xMove += xDir[q];
 							yMove += yDir[q];
 						}
-						if (count >= 2) {
-							heuristic += (check == 1) ? -Math.pow(2, count) : Math.pow(2, count);
-							isSingle = true;
+						if (count >= 4) {
+							heuristic -= count - 3;
 						}
 						count = 1;
 					}
-					if (isSingle) heuristic++;
 				}
 			}
 		}
@@ -137,7 +136,7 @@ public class SerbianConnectFour {
 		return s.findChildPlay(val);
 	}
 	public int maxValue(State parent, int a, int b, int depth, int difficulty) {
-		if (checkForWin(board) == 2 || depth >= difficulty) {
+		if (checkForWin(board) == 2 || depth > difficulty) {
 			parent.setValue(getHeuristic(parent.board));
 			return parent.getValue();
 		}
@@ -150,8 +149,8 @@ public class SerbianConnectFour {
 						childBoard[wx][wy] = parent.board[wx][wy];
 					}
 				}
+				add(childBoard, i, ((parent.getPlayer() == 1) ? 2 : 1));
 				State s = new State(i, childBoard, ((parent.getPlayer() == 1) ? 2 : 1));
-				add(childBoard, i, 2);
 				parent.addChild(s);
 				v = Math.max(v, minValue(s, a, b, depth + 1, difficulty));
 				if (v >= b) {
@@ -166,7 +165,7 @@ public class SerbianConnectFour {
 	}
 	
 	public int minValue(State parent, int a, int b, int depth, int difficulty) {
-		if (checkForWin(board) == 2 || depth >= difficulty) {
+		if (checkForWin(board) == 2 || depth > difficulty) {
 			parent.setValue(getHeuristic(parent.board));
 			return parent.getValue();
 		}
@@ -179,6 +178,7 @@ public class SerbianConnectFour {
 						childBoard[wx][wy] = parent.board[wx][wy];
 					}
 				}
+				add(childBoard, i, ((parent.getPlayer() == 1) ? 2 : 1));
 				State s = new State(i, childBoard, ((parent.getPlayer() == 1) ? 2 : 1));
 				parent.addChild(s);
 				v = Math.min(v, maxValue(s, a, b, depth + 1, difficulty));
