@@ -1,11 +1,15 @@
 package gameObjects;
 
+import java.util.Random;
+
 import engine.GameObject;
 import engine.Sprite;
 
 public class Piece extends GameObject{
 	int dropTo = -1;
 	double vy = 0;
+
+	int bounceLeftTime = 0;
 	
 	public Piece (boolean color) {
 		if (color) {
@@ -31,9 +35,26 @@ public class Piece extends GameObject{
 				}
 			}
 		}
+		
+		if (bounceLeftTime != 0) {
+			Random r = new Random ();
+			if (this.direction == -1) {
+				this.throwObj(r.nextDouble() * (Math.PI - .314), 20);
+			}
+		
+			super.frameEvent();
+			bounceLeftTime = bounceLeftTime - 1;
+			if (bounceLeftTime == 0) {
+				this.forget();
+			}
+		}
 	}
 	
 	public void dropTo (int to) {
 		dropTo = to;
+	}
+	
+	public void bounceLeft () {
+		bounceLeftTime = 50;
 	}
 }

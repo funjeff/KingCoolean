@@ -1,0 +1,3 @@
+$src resources/sprites/Horizontal Henry.png
+
+ grid 150 150

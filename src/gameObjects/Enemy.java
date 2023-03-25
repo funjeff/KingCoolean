@@ -10,7 +10,7 @@ public class Enemy extends GameObject {
 	
 	}
 	
-	public int getMove (State boardState) {
+	public int getMove (int [] [] boardState) {
 		//TODO get move from ai (override)
 		return 0;
 	}

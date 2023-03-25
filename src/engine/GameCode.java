@@ -3,6 +3,10 @@ package engine;
 import java.util.ArrayList;
 
 import gameObjects.ConnectFourGame;
+import gameObjects.HorizontalHenry;
+import gameObjects.LeftLarry;
+import gameObjects.MirroredMeryl;
+import gameObjects.RandomRandy;
 import map.Room;
 import java.awt.event.KeyEvent;
 
@@ -36,6 +40,7 @@ public class GameCode {
 		//Test
 	
 		ConnectFourGame b = new ConnectFourGame ();
+		b.setEnemy(new MirroredMeryl ());
 		b.declare();
 
 		//Room2 room2 = new Room2 ();
