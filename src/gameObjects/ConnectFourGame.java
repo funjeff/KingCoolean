@@ -1,10 +1,12 @@
 package gameObjects;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
 import engine.GameObject;
+import engine.ObjectHandler;
 import engine.Sprite;
 
 public class ConnectFourGame extends GameObject {
@@ -100,6 +102,21 @@ public class ConnectFourGame extends GameObject {
 					return;
 					
 				}
+				else if (e instanceof DeliriousDerek) {
+					ArrayList<GameObject> peices = ObjectHandler.getObjectsByName("Piece");
+					if (peices != null && getNumMoves(boardState) % 3 == 0) {
+						Random r = new Random();
+						int pos = r.nextInt(0, peices.size());
+						Piece p = (Piece) peices.get(pos);
+						int x = (int) ((-180 + p.getX())/82);
+						int y = (int) ((-69 + p.getY())/78);
+						if ((x > 6 || y > 6 || x <= 0 || y <= 0) && (boardState[x][y] != 0)) {
+							peices.get(pos).setRenderPriority(1);
+							p.dropTo(700);
+							refreshBoard(x, y, peices);
+						}
+					}
+				}
 				
 				boardState[chosenMove][columToChange] = 2;
 				toDrop.declare(170 + 10 + (82 * chosenMove), 0);
@@ -119,7 +136,24 @@ public class ConnectFourGame extends GameObject {
 		}
 	}
 
-	
+	public int getNumMoves(int[][] boardState) {
+		int numMoves = 0;
+		for (int i = 0; i < 7; i++) {
+			for (int j = 0; j < 6; j++) {
+				if (boardState[i][j] != 0) numMoves++;
+			}
+		}
+		return numMoves;
+	}
+	public ArrayList<int[]> findNumEnemyMoves(int[][] boardState) {
+		ArrayList<int[]> moves = new ArrayList<int[]>();
+		for (int i = 0; i < 7; i++) {
+			for (int j = 0; j < 6; j++) {
+				if (boardState[i][j] == 1) moves.add(new int[]{i, j});
+			}
+		}
+		return moves;
+	}
 	public void setEnemy (Enemy enemy) {
 		e = enemy;
 		if (e instanceof LeftLarry) {
@@ -130,6 +164,51 @@ public class ConnectFourGame extends GameObject {
 		
 		e.setX(750);
 		e.setY(200);
+	}
+	private void refreshBoard(int x, int y, ArrayList<GameObject> peices) {
+		int[][] temp = new int[7][6];
+		for (int i = 0; i < 7; i++) {
+			for (int j = 0; j < 6; j++) {
+				temp[i][j] = boardState[i][j];
+			}
+		}
+		temp[x][y] = 0;
+		for (int i = 0; i < peices.size(); i++) {
+			Piece p = (Piece) peices.get(i);
+			int peiceX = (int) ((-180 + p.getX())/82);
+			int peiceY = (int) ((-69 + p.getY())/78);
+			if (peiceX == x && peiceY < y) {
+				p.dropTo((int) p.getY() + 82);
+			}
+		}
+		int foundEmpty = -1;
+		for (int i = 5; i >= 0; i--) {
+			if (temp[x][i] == 0) {
+				foundEmpty = i;
+				break;
+			}
+		}
+		if (foundEmpty != -1) {
+			for (int i = foundEmpty-1; i > 0; i--) {
+				if (temp[x][i] != 0) {
+					temp[x][i+1] = temp[x][i];
+					temp[x][i] = 0;
+				}
+			}
+//			for (int j = foundEmpty; j < 6; j++) {
+//				if (j >= 5) {
+//					temp[x][5] = tempInt;
+//					temp[x][i] = 0;
+//					break;
+//				}
+//				else if (temp[x][j] != 0 && j != 0) {
+//					temp[x][j-1] = tempInt;
+//					temp[x][i] = 0;
+//					break;
+//				}
+//			}
+		}
+		boardState = temp;
 	}
 	
 	private int getFirstOpen (int row) {
