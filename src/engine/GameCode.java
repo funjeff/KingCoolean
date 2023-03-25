@@ -2,7 +2,7 @@ package engine;
 
 import java.util.ArrayList;
 
-
+import gameObjects.ConnectFourGame;
 import map.Room;
 import java.awt.event.KeyEvent;
 
@@ -35,7 +35,8 @@ public class GameCode {
 		
 		//Test
 	
-
+		ConnectFourGame b = new ConnectFourGame ();
+		b.declare();
 
 		//Room2 room2 = new Room2 ();
 		//room2.loadMap ("big_test.tmj");
