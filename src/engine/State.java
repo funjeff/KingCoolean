@@ -14,7 +14,5 @@ public class State {
 	public int getPlay() {
 		return play;
 	}
-	public void addChild(State child) {
-		children
-	}
+	
 }
