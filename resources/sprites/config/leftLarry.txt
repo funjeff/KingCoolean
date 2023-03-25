@@ -1,0 +1,3 @@
+$src resources/sprites/Left Larry.png
+
+ grid 150 150
