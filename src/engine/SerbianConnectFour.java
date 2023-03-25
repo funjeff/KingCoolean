@@ -21,7 +21,7 @@ public class SerbianConnectFour {
 					continue;
 				}
 			}
-			scf.add(input, player);
+			scf.add(scf.board, input, player);
 			input = -1;
 			check = scf.checkForWin();
 			System.out.println();
@@ -49,7 +49,7 @@ public class SerbianConnectFour {
 		}
 	}
 	
-	public void add(int x, int player) {
+	public void add(int[][] board, int x, int player) {
 		for (int i = 5; i > -1; i--) {
 			if (board[i][x] == 0) {
 				board[i][x] = player;
@@ -58,7 +58,7 @@ public class SerbianConnectFour {
 		}
 	}
 	
-	public int checkForWin() {
+	public int checkForWin(int[][] board) {
 		int check, count = 0;
 		for (int wx = 0; wx < 6; wx++) {
 			for (int wy = 0; wy < 7; wy++) {
@@ -95,20 +95,27 @@ public class SerbianConnectFour {
 		}
 	}
 	
-//	public int alphaBetaSearch() {
-//		int a = 2147483647, b = -2147483648;
-//		return maxValue(a, b);
-//	}
-//	public int maxValue(int a, int b) {
-//		if (checkForWin() == 2) {
-//			return 
-//		}
-//		else {
-//			for (int i = 0; i < 5; i++) {
-//				int[][] childBoard = new int[6][7];
-//				for (int wx = 0; int wx )
-//				if ()
-//			}
-//		}
-//	}
+	public int alphaBetaSearch(int[][] board, int depth) {
+		int a = Integer.MAX_VALUE, b = Integer.MIN_VALUE;
+		State s = new State(-1, board);
+		return maxValue(s, a, b);
+	}
+	public int maxValue(State parent, int a, int b) {
+		if (checkForWin(board) == 2) {
+			return 
+		}
+		v = Integer.MIN_VALUE;
+		else {
+			for (int i = 0; i < 5; i++) {
+				int[][] childBoard = new int[6][7];
+				for (int wx = 0; wx < 6; wx++) {
+					for (int wy = 0; wy < 7; wy++) {
+						childBoard[wx][wy] = parent.board[wx][wy];
+					}
+				}
+				State s = new State(i, childBoard);
+				parent.addChild(s);
+			}
+		}
+	}
 }
