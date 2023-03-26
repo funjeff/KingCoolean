@@ -10,7 +10,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class InputManager {
+import org.lwjgl.glfw.GLFWKeyCallbackI;
+import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
+import org.lwjgl.glfw.*;
+
+public class InputManager implements GLFWKeyCallbackI {
 
 	/**
 	 * The component this object is attached to for keystroke detection
@@ -35,15 +39,15 @@ public class InputManager {
 	/**
 	 * The buffer used for storing the keys which are currently pressed down
 	 */
-	private boolean[] keysDown = new boolean[256];
+	private boolean[] keysDown = new boolean[GLFW.GLFW_KEY_LAST + 1];
 	/**
 	 * The buffer used for storing the keys which were recently pressed down
 	 */
-	private boolean[] keysPressed = new boolean[256];
+	private boolean[] keysPressed = new boolean[GLFW.GLFW_KEY_LAST + 1];
 	/**
 	 * The buffer used for storing they keys which were recently released
 	 */
-	private boolean[] keysReleased = new boolean[256];
+	private boolean[] keysReleased = new boolean[GLFW.GLFW_KEY_LAST + 1];
 	/**
 	 * An ordered list of recent keyEvents
 	 */
@@ -81,39 +85,17 @@ public class InputManager {
 	 * Default no-arg constructor
 	 */
 	protected InputManager () {
-		
-	}
-	
-	/**
-	 * Constructs a new InputManager for the given component.
-	 * @param component The component to attach this InputManager to
-	 */
-	public InputManager (Component component) {
-		this (component, component);
-	}
-	
-	/**
-	 * Constructs a new InputManager for the given components.
-	 * @param keyboardComponent The component to attch a KeyListener to
-	 * @param mouseComponent The component to attach a MouseListener and MouseMotionListener to
-	 */
-	public InputManager (Component keyboardComponent, Component mouseComponent) {
-		attach (keyboardComponent, mouseComponent);
-	}
-	
-	/**
-	 * Attaches this InputManager to a given AWT component.
-	 * @param keyboardComponent The component to attch a KeyListener to
-	 * @param mouseComponent The component to attach a MouseListener and MouseMotionListener to
-	 */
-	public void attach (Component keyboardComponent, Component mouseComponent) {
-		this.keyComponent = keyboardComponent;
-		this.mouseComponent = mouseComponent;
 		keyListener = new InputManagerKeyListener ();
 		mouseListener = new InputManagerMouseListener ();
-		keyboardComponent.addKeyListener (keyListener);
-		mouseComponent.addMouseListener (mouseListener);
-		mouseComponent.addMouseMotionListener (mouseListener);
+	}
+	
+	@Override
+	public void invoke (long window, int key, int scancode, int action, int mods) {
+		if (action == GLFW.GLFW_PRESS) {
+			keyListener.keyPressed (key);
+		} else if (action == GLFW.GLFW_RELEASE) {
+			keyListener.keyReleased (key);
+		}
 	}
 	
 	/**
@@ -143,26 +125,20 @@ public class InputManager {
 		return image;
 	}
 	
-	private class InputManagerKeyListener implements KeyListener {
+	private class InputManagerKeyListener {
 
-		@Override
-		public void keyPressed (KeyEvent e) {
-			keysPressed [e.getKeyCode ()] = true;
-			keysDown [e.getKeyCode ()] = true;
-			keyEvents.add (e);
+		public void keyPressed (int key) {
+			keysPressed [key] = true;
+			keysDown [key] = true;
 		}
 
-		@Override
-		public void keyReleased (KeyEvent e) {
-			keysReleased [e.getKeyCode ()] = true;
-			keysDown [e.getKeyCode ()] = false;
-			keyEvents.add (e);
+		public void keyReleased (int key) {
+			keysReleased [key] = true;
+			keysDown [key] = false;
 		}
 
-		@Override
-		public void keyTyped (KeyEvent e) {
-			chars += e.getKeyChar ();
-			keyEvents.add (e);
+		public void keyTyped (int key) {
+			chars += key;
 		}
 		
 	}
@@ -171,7 +147,6 @@ public class InputManager {
 		
 		private boolean wasDragged;
 		
-		@Override
 		public void mouseDragged (MouseEvent e) {
 			mouseEvents.add (e);
 			int index = getButtonIndex (e.getButton ());
@@ -183,13 +158,11 @@ public class InputManager {
 			updateMouseCoords (e);
 		}
 
-		@Override
 		public void mouseMoved (MouseEvent e) {
 			mouseEvents.add (e);
 			updateMouseCoords (e);
 		}
 
-		@Override
 		public void mouseClicked (MouseEvent e) {
 			mouseEvents.add (e);
 			int index = getButtonIndex (e.getButton ());
@@ -201,25 +174,21 @@ public class InputManager {
 			System.out.println (cursorX + ", " + cursorY);
 		}
 
-		@Override
 		public void mouseEntered (MouseEvent e) {
 			mouseEvents.add (e);
 			updateMouseCoords (e);
 		}
 
-		@Override
 		public void mouseExited (MouseEvent e) {
 			mouseEvents.add (e);
 			updateMouseCoords (e);
 		}
 
-		@Override
 		public void mousePressed (MouseEvent e) {
 			mouseEvents.add (e);
 			updateMouseCoords (e);
 		}
 
-		@Override
 		public void mouseReleased (MouseEvent e) {
 			mouseEvents.add (e);
 			int index = getButtonIndex (e.getButton ());
@@ -428,8 +397,8 @@ public class InputManager {
 	 * Resets all the buffers holding data for keystrokes, with the exception of the buffer holding the keys currently pressed down.
 	 */
 	public void resetKeyBuffers () {
-		keysPressed = new boolean[255];
-		keysReleased = new boolean[255];
+		keysPressed = new boolean[GLFW.GLFW_KEY_LAST + 1];
+		keysReleased = new boolean[GLFW.GLFW_KEY_LAST + 1];
 		keyEvents = new ArrayList<KeyEvent> ();
 		chars = "";
 	}
@@ -450,4 +419,5 @@ public class InputManager {
 	public boolean isImage () {
 		return isImage;
 	}
+
 }

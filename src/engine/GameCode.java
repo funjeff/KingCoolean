@@ -2,10 +2,12 @@ package engine;
 
 import java.util.ArrayList;
 
+import gameObjects.Test;
 import gameObjects.Connect;
 import gameObjects.LarryConnect;
 import gameObjects.ConnectFourGame;
 import gameObjects.ConnectMap;
+import gameObjects.DarkCoolean;
 import gameObjects.DeliriousDerek;
 import gameObjects.HorizontalHenry;
 import gameObjects.LeftLarry;
@@ -25,7 +27,6 @@ public class GameCode {
 	
 
 	static ArrayList <Asker> askers = new ArrayList <Asker> ();
-	
 	public static ConnectMap map;
 
 	public static void testBitch () {
@@ -46,7 +47,7 @@ public class GameCode {
 		//Test
 	
 		ConnectFourGame b = new ConnectFourGame ();
-		b.setEnemy(new DeliriousDerek (new Connect ()));
+		b.setEnemy(new DarkCoolean (new Connect ()));
 		b.declare();
 		
 //
@@ -118,14 +119,12 @@ public class GameCode {
 //		map.declare();
 //		//Room2 room2 = new Room2 ();
 //		//room2.loadMap ("big_test.tmj");
-
+		
 	}
 		
 	
 	
 	public static void gameLoopFunc () {
-		
-		ObjectHandler.callAll();
 		
 		 for (int i = 0; i < askers.size(); i++) {
 		    	for (int j = 0; j < askers.get(i).getKeys().size(); j++) {
@@ -200,8 +199,10 @@ public class GameCode {
 	
 	
 	public static void renderFunc () {
+		
 		Room.render();
 		ObjectHandler.renderAll();
+		
 	}
 	
 	public static void beforeRender() {
@@ -214,10 +215,10 @@ public class GameCode {
 	}
 		
 	public static int getResolutionX() {
-		return RenderLoop.wind.getResolution()[0];
+		return GameLoop.wind.getResolution()[0];
 	}
 	public static int getResolutionY() {
-		return RenderLoop.wind.getResolution()[1];
+		return GameLoop.wind.getResolution()[1];
 	}
 	
 	public static int getViewX() {

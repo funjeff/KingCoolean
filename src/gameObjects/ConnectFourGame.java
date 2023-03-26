@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+import org.lwjgl.glfw.GLFW;
+
 import engine.GameObject;
 import engine.ObjectHandler;
 import engine.Sprite;
@@ -13,6 +15,7 @@ public class ConnectFourGame extends GameObject {
 	Board b = new Board ();
 	KingCoolean k = new KingCoolean ();
 	Enemy e = new Enemy (new Connect());
+	Background back = new Background ();
 	
 	int turn = 0;
 	
@@ -24,34 +27,46 @@ public class ConnectFourGame extends GameObject {
 	
 	int [][] boardState = new int [7][6];
 	
+	boolean [] unlockedMoves = new boolean [4];
+	
+	SpecialMenu m = new SpecialMenu ();
+	
 	public ConnectFourGame () {
 		b.setX(170);
 		b.setY(69);
 		
 		k.setX(10);
-		k.setY(200);
+		k.setY(380);
 		
 		e.setX(750);
 		e.setY(200);
 		
 		toDrop.setX(170 + 10);
 		toDrop.declare();
+		
+		b.getAnimationHandler().setFrameTime(200);
+		back.declare();
+		
+		back.setRenderPriority(-4);
 		this.setRenderPriority(-1);
 	}
 	
 	@Override
 	public void draw () {
 		super.draw();
+		
+		
 		b.draw();
 		k.draw();
 		e.draw();
+		
 	}
 	
 	@Override
 	public void frameEvent () {
 		
 		if (turn == -1) {
-			if (keyPressed (KeyEvent.VK_ENTER)) {
+			if (keyPressed (GLFW.GLFW_KEY_ENTER)) {
 				e.onDefeat();
 				ObjectHandler.getObjectsByName("YouWin").get(0).forget();
 				
@@ -88,7 +103,7 @@ public class ConnectFourGame extends GameObject {
 					peicePos = peicePos -1;
 					toDrop.setX(toDrop.getX() - 82);
 				}
-				if (keyPressed (KeyEvent.VK_ENTER)) {
+				if (keyPressed (GLFW.GLFW_KEY_ENTER)) {
 					
 					int firstOpen = getFirstOpen(peicePos);
 					
@@ -134,7 +149,11 @@ public class ConnectFourGame extends GameObject {
 					toDrop.bounceLeft();
 					toDrop.declare(170 + 10,0);
 					
-					toDrop = new Piece (0);
+					if (!(e instanceof DarkCoolean)) {
+						toDrop = new Piece (0);
+					} else {
+						toDrop = new Piece (6);
+					}
 					return;
 					
 				}
@@ -142,12 +161,12 @@ public class ConnectFourGame extends GameObject {
 					ArrayList<GameObject> peices = ObjectHandler.getObjectsByName("Piece");
 					if (peices != null && getNumMoves(boardState) % 3 == 0) {
 						Random r = new Random();
-						int pos = r.nextInt(0, peices.size());
+						int pos = r.nextInt(peices.size());
 						Piece p = (Piece) peices.get(pos);
 						int x = (int) ((-180 + p.getX())/82);
 						int y = (int) ((-69 + p.getY())/78);
 						while (x < 7 && y < 6  && (boardState[x][y] == 0 || x == chosenMove)) {
-							pos = r.nextInt(0, peices.size());
+							pos = r.nextInt(peices.size());
 							p = (Piece) peices.get(pos);
 							x = (int) ((-180 + p.getX())/82);
 							y = (int) ((-69 + p.getY())/78);
@@ -163,7 +182,11 @@ public class ConnectFourGame extends GameObject {
 				toDrop.declare(170 + 10 + (82 * chosenMove), 0);
 				toDrop.dropTo(69 + (78 * columToChange));
 				
-				toDrop = new Piece (0);
+				if (!(e instanceof DarkCoolean)) {
+					toDrop = new Piece (0);
+				} else {
+					toDrop = new Piece (6);
+				}
 				
 				turn = 0;
 				
@@ -202,6 +225,11 @@ public class ConnectFourGame extends GameObject {
 			toDrop.forget();
 			toDrop = new Piece(e.pieceType);	
 		}
+		
+		if (e instanceof DarkCoolean) {
+			toDrop.setColor(6);
+		}
+		
 		
 		e.setX(750);
 		e.setY(200);
@@ -296,10 +324,99 @@ public class ConnectFourGame extends GameObject {
 		return 0;
 	}
 	
+	
+	public class SpecialMenu extends GameObject {
+		
+		SpecialButton button = new SpecialButton ();
+		
+		public SpecialMenu () {
+		
+		}
+		
+		@Override
+		public void draw () {
+			button.setX(this.getX());
+			button.setY(this.getY());
+			
+			button.draw();
+		}
+		
+	}
+	
+	public class SpecialButton extends GameObject {
+		public SpecialButton () {
+			this.setSprite(new Sprite ("resources/sprites/Special Sprite.png"));
+		}
+	}
+	
+	public class Icon extends GameObject {
+		
+		String name = "";
+		
+		public Icon () {
+			
+		}
+		
+		public void onSelect () {
+			
+		}
+	}
+	
+	public class CrownIcon extends Icon {
+		public CrownIcon () {
+			this.setSprite(new Sprite ("resources/sprites/King Special.png"));
+		}
+		
+		@Override
+		public void onSelect () {
+			
+		}
+	}
+	
+	public class MirrorIcon extends Icon {
+		public MirrorIcon () {
+			this.setSprite(new Sprite ("resources/sprites/Reflect special.png"));
+		}
+		
+		@Override
+		public void onSelect () {
+			
+		}
+	}
+	
+	public class LeftIcon extends Icon {
+		public LeftIcon () {
+			this.setSprite(new Sprite ("resources/sprites/Left Icon.png"));
+		}
+		
+		@Override
+		public void onSelect () {
+			
+		}
+	}
+	
+	public class RandomIcon extends Icon {
+		public RandomIcon () {
+			this.setSprite(new Sprite ("resources/sprites/Left Icon.png"));
+		}
+		
+		@Override
+		public void onSelect () {
+			
+		}
+	}
+	
+	public class Background extends GameObject {
+		
+		public Background () {
+			this.setSprite(new Sprite ("resources/sprites/Background1.png"));
+		}
+	}
+	
 	public class Board extends GameObject {
 		
 		public Board () {
-			this.setSprite(new Sprite ("resources/sprites/board.png"));
+			this.setSprite(new Sprite ("resources/sprites/config/RGB board.txt"));
 		}
 	}
 	
@@ -310,14 +427,14 @@ public class ConnectFourGame extends GameObject {
 		
 		double scaleSpeed = 2;
 		
-		static Sprite og;
+		Sprite og;
 		
 		public YouWin () {
 			this.setSprite(new Sprite ("resources/sprites/you win.png"));
 			if (og == null) {
 				og = new Sprite (this.getSprite());
 			}
-			Sprite.scale(getSprite(), 80, 45);
+			//Sprite.scale(getSprite(), 80, 45);
 			this.setX(480);
 			this.setY(270);
 		}
@@ -359,7 +476,7 @@ public class ConnectFourGame extends GameObject {
 					}
 				}
 				Sprite scale = new Sprite (og);
-				Sprite.scale(scale, curScaleX, curScaleY);
+				//Sprite.draw(scale, curScaleX, curScaleY);
 				this.setSprite (scale);
 			}
 			

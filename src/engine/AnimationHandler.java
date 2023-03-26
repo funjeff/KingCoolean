@@ -6,6 +6,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
+import com.hackoeur.jglm.Mat4;
+
 import map.Room;
 
 public class AnimationHandler {
@@ -91,7 +93,7 @@ public class AnimationHandler {
 	 */
 	public AnimationHandler (Sprite image, double frameTime) {
 		this.image = image;
-		startTime = RenderLoop.frameStartTime ();
+		startTime = GameLoop.frameStartTime ();
 		startFrame = 0;
 		this.frameTime = frameTime;
 		repeat = true;
@@ -109,17 +111,17 @@ public class AnimationHandler {
 	 * @param x The x coordinate to draw at
 	 * @param y The y coordinate to draw at
 	 */
-	public void draw (double x, double y) {
+	public void draw (Mat4 transform) {
 		if (visible) {
 		if (image != null) {
 			if (frameTime == 0) {
-				startTime = RenderLoop.frameStartTime ();
-				image.draw ((int)x, (int)y, flipHorizontal, flipVertical, startFrame);
+				startTime = GameLoop.frameStartTime ();
+				image.draw (transform, startFrame);
 			} else {
-				long elapsedTime = RenderLoop.frameStartTime () - startTime;
+				long elapsedTime = GameLoop.frameStartTime () - startTime;
 				int elapsedFrames = ((int)(((double)elapsedTime) / ((double)frameTime)) + startFrame);
 				if (!repeat && elapsedFrames >= image.getFrameCount ()) {
-					image.draw ((int)x, (int)y, flipHorizontal, flipVertical, image.getFrameCount () - 1,width,height);
+					image.draw (transform, image.getFrameCount () - 1);
 				} else {
 					int frame = elapsedFrames % image.getFrameCount ();
 //					if (alternate) {
@@ -148,100 +150,14 @@ public class AnimationHandler {
 						startFrame = frame - 1;
 					}
 					
-					image.draw ((int)x, (int)y, flipHorizontal, flipVertical, frame,width,height);
+					image.draw (transform, frame);
 				}
 			}
 		}
 		}
 	}
-	/**
-	 * Draws the sprite's current animation frame at the given x and y coordinates.
-	 * @param x The x coordinate to draw at
-	 * @param y The y coordinate to draw at
-	 */
-	public void draw (double x, double y, double rotation, double anchorX, double anchorY) {
-		if (visible) {
-			BufferedImage temp = new BufferedImage (this.getWidth(), this.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-		if (image != null) {
-			if (frameTime == 0) {
-				startTime = RenderLoop.frameStartTime ();
-				image.draw (0,0, flipHorizontal, flipVertical, startFrame,temp);
-			} else {
-				long elapsedTime = RenderLoop.frameStartTime () - startTime;
-				int elapsedFrames = ((int)(((double)elapsedTime) / ((double)frameTime)) + startFrame);
-				if (!repeat && elapsedFrames >= image.getFrameCount ()) {
-					image.draw (0,0, flipHorizontal, flipVertical, image.getFrameCount () - 1,width,height,temp);
-				} else {
-					int frame = elapsedFrames % image.getFrameCount ();
-					if (frame == 0 && alternate && image.getFrameCount() != 1 && elapsedFrames > 1) {
-						if (!hasReversed) {
-						reverse = !reverse;
-						hasReversed = true;
-						}
-					} else {
-						hasReversed = false;
-					}
-					if (reverse) {
-						frame = (image.getFrameCount() - 1) - frame;
-					}
-					if (this.getHeight() == 32) {
-						
-					}
-					if (frame == playToo) {
-						this.setFrameTime(0);
-						startFrame = frame - 1;
-					}
-					
-					image.draw (0,0, flipHorizontal, flipVertical, frame,width,height,temp);
-				}
-			}
-		}
-		Sprite temper = new Sprite (temp);
-		temper.drawRotated((int)x, (int)y, 0, anchorX, anchorY, rotation);
-	}
-}
-	/**
-	 * Draws the sprite's current animation frame at the given x and y coordinates.
-	 * @param x The x coordinate to draw at
-	 * @param y The y coordinate to draw at
-	 */
-	public void draw (double x, double y, BufferedImage toDraw) {
-		if (visible) {
-		if (image != null) {
-			if (frameTime == 0) {
-				startTime = RenderLoop.frameStartTime ();
-				image.draw ((int)x, (int)y, flipHorizontal, flipVertical, startFrame, toDraw);
-			} else {
-				long elapsedTime = RenderLoop.frameStartTime () - startTime;
-				int elapsedFrames = ((int)(((double)elapsedTime) / ((double)frameTime)) + startFrame);
-				if (!repeat && elapsedFrames >= image.getFrameCount ()) {
-					image.draw ((int)x, (int)y, flipHorizontal, flipVertical, image.getFrameCount () - 1,width,height, toDraw);
-				} else {
-					int frame = elapsedFrames % image.getFrameCount ();
-					if (frame == 0 && alternate && image.getFrameCount() != 1 && elapsedFrames > 1) {
-						if (!hasReversed) {
-						reverse = !reverse;
-						hasReversed = true;
-						}
-					} else {
-						hasReversed = false;
-					}
-					if (reverse) {
-						frame = (image.getFrameCount() - 1) - frame;
-					}
-					if (this.getHeight() == 32) {
-						
-					}
-					if (frame == playToo) {
-						this.setFrameTime(0);
-						startFrame = frame - 1;
-					}
-					image.draw ((int)x, (int)y, flipHorizontal, flipVertical, frame,width,height, toDraw);
-				}
-			}
-		}
-		}
-	}
+
+
 	/**
 	 * Sets the image used by this AnimationHandler to the given sprite.
 	 * @param image The image to use
@@ -290,7 +206,7 @@ public class AnimationHandler {
 	 */
 	public void resetImage (Sprite image) {
 		setImage (image);
-		startTime = RenderLoop.frameStartTime ();
+		startTime = GameLoop.frameStartTime ();
 		startFrame = 0;
 	}
 	public void playToo (int where) {
@@ -310,7 +226,7 @@ public class AnimationHandler {
 		}
 		this.setFrameTime(previosFrameTime);
 		this.startFrame = where;
-		this.startTime = RenderLoop.frameStartTime();
+		this.startTime = GameLoop.frameStartTime();
 	}
 	public void playInfintely () {
 		playToo = -1;
@@ -337,7 +253,7 @@ public class AnimationHandler {
 	 */
 	public void setAnimationFrame (int frame) {
 		startFrame = frame;
-		startTime = RenderLoop.frameStartTime ();
+		startTime = GameLoop.frameStartTime ();
 	}
 	
 	/**
@@ -415,7 +331,7 @@ public class AnimationHandler {
 	 */
 	public int getFrame () {
 		if (image != null) {
-			long elapsedTime = RenderLoop.frameStartTime () - startTime;
+			long elapsedTime = GameLoop.frameStartTime () - startTime;
 			int frame = ((int)(((double)elapsedTime) / ((double)frameTime)) + startFrame) % image.getFrameCount ();
 			if (reverse) {
 				if ((image.getFrameCount() -1) - frame == 0 && !alternate){

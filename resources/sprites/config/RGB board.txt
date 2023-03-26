@@ -1,0 +1,3 @@
+$src resources/sprites/RGB Board unstacked.png
+
+ grid 582 471
