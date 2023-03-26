@@ -162,6 +162,7 @@ public class Sprite {
 		
 			parsePath = imagepath;
 			images = new SpriteParser (imagepath).parse ();
+			genGLTextures ();
 			if (images.length > 1) {
 				isAnimated = true;
 			} else {
@@ -270,6 +271,16 @@ public class Sprite {
 	
 	public void draw (Mat4 transform, int frame) {
 		GameLoop.wind.drawSprite (transform, glTextures[frame]);
+	}
+	
+	public void drawScaled (int x, int y, double scaleX, double scaleY, int frame) {
+		Mat4 transform = new Mat4 (
+				(float)scaleX, 0, 0, 0,
+				0, (float)scaleY, 0, 0,
+				0, 0, 1, 0,
+				x, y, 0, 1
+				);
+		draw (transform, frame);
 	}
 	
 	/**

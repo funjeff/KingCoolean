@@ -43,10 +43,10 @@ public class GLTexture {
 		glBindTexture (textureType, textureName);
 		
 		//Set parameters
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		
 		setData (img, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 		
@@ -61,7 +61,10 @@ public class GLTexture {
 		
 	}
 	
-	public void setData (BufferedImage image, int sourceDataType, int texDataFormat, int texDataType) {
+	public void setData (BufferedImage srcImg, int sourceDataType, int texDataFormat, int texDataType) {
+		
+		BufferedImage image = new BufferedImage (srcImg.getWidth (), srcImg.getHeight (), BufferedImage.TYPE_INT_ARGB);
+		image.getGraphics ().drawImage (srcImg, 0, 0, null);
 		
 		this.sourceDataType = sourceDataType;
 		this.texDataFormat = texDataFormat;

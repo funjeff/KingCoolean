@@ -8,5 +8,8 @@ flat in uint texid_final;
 void main()
 {
     vec4 c = texture2D (texture, texcoord_final);
-    gl_FragColor = vec4 (c.x, c.y, c.z, 1.0);
+	if (c.w == 0) {
+		discard;
+	}
+    gl_FragColor = c;
 }

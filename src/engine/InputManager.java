@@ -39,15 +39,15 @@ public class InputManager implements GLFWKeyCallbackI {
 	/**
 	 * The buffer used for storing the keys which are currently pressed down
 	 */
-	private boolean[] keysDown = new boolean[256];
+	private boolean[] keysDown = new boolean[GLFW.GLFW_KEY_LAST + 1];
 	/**
 	 * The buffer used for storing the keys which were recently pressed down
 	 */
-	private boolean[] keysPressed = new boolean[256];
+	private boolean[] keysPressed = new boolean[GLFW.GLFW_KEY_LAST + 1];
 	/**
 	 * The buffer used for storing they keys which were recently released
 	 */
-	private boolean[] keysReleased = new boolean[256];
+	private boolean[] keysReleased = new boolean[GLFW.GLFW_KEY_LAST + 1];
 	/**
 	 * An ordered list of recent keyEvents
 	 */
@@ -397,8 +397,8 @@ public class InputManager implements GLFWKeyCallbackI {
 	 * Resets all the buffers holding data for keystrokes, with the exception of the buffer holding the keys currently pressed down.
 	 */
 	public void resetKeyBuffers () {
-		keysPressed = new boolean[255];
-		keysReleased = new boolean[255];
+		keysPressed = new boolean[GLFW.GLFW_KEY_LAST + 1];
+		keysReleased = new boolean[GLFW.GLFW_KEY_LAST + 1];
 		keyEvents = new ArrayList<KeyEvent> ();
 		chars = "";
 	}
