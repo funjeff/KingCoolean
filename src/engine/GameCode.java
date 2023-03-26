@@ -6,6 +6,7 @@ import gameObjects.Connect;
 import gameObjects.LarryConnect;
 import gameObjects.ConnectFourGame;
 import gameObjects.ConnectMap;
+import gameObjects.DarkCoolean;
 import gameObjects.DeliriousDerek;
 import gameObjects.HorizontalHenry;
 import gameObjects.LeftLarry;
@@ -46,7 +47,7 @@ public class GameCode {
 		//Test
 	
 		ConnectFourGame b = new ConnectFourGame ();
-		b.setEnemy(new DeliriousDerek (new Connect ()));
+		b.setEnemy(new DarkCoolean (new Connect ()));
 		b.declare();
 		
 //

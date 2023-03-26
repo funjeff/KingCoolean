@@ -15,26 +15,7 @@ public class Piece extends GameObject{
 	public Piece (int color) {
 		this.setRenderPriority(-3);
 		
-		switch (color) {
-		case 0:
-			this.setSprite(new Sprite ("resources/sprites/red piece.png"));
-			break;
-		case 1:
-			this.setSprite(new Sprite ("resources/sprites/Horizonjtal Henry Piece.png"));
-			break;
-		case 2:
-			this.setSprite(new Sprite ("resources/sprites/Left Larry Piece.png"));
-			break;
-		case 3:
-			this.setSprite(new Sprite ("resources/sprites/Mirror Merryl Piece.png"));
-			break;
-		case 4:
-			this.setSprite(new Sprite ("resources/sprites/Random Randy Piece.png"));
-			break;
-		case 5:
-			this.setSprite(new Sprite ("resources/sprites/Delerious Derryl.png"));
-			break;
-		}
+		setColor (color);
 		
 	}
 	
@@ -75,5 +56,31 @@ public class Piece extends GameObject{
 	
 	public void bounceLeft () {
 		bounceLeftTime = 50;
+	}
+	
+	public void setColor (int color) {
+		switch (color) {
+		case 0:
+			this.setSprite(new Sprite ("resources/sprites/red piece.png"));
+			break;
+		case 1:
+			this.setSprite(new Sprite ("resources/sprites/Horizonjtal Henry Piece.png"));
+			break;
+		case 2:
+			this.setSprite(new Sprite ("resources/sprites/Left Larry Piece.png"));
+			break;
+		case 3:
+			this.setSprite(new Sprite ("resources/sprites/Mirror Merryl Piece.png"));
+			break;
+		case 4:
+			this.setSprite(new Sprite ("resources/sprites/Random Randy Piece.png"));
+			break;
+		case 5:
+			this.setSprite(new Sprite ("resources/sprites/Delerious Derryl.png"));
+			break;
+		case 6:
+			this.setSprite(new Sprite ("resources/sprites/Dark Coolean Piece.png"));
+			break;
+		}
 	}
 }

@@ -10,12 +10,11 @@ public class Enemy extends GameObject {
 	Connect mapConnect = new Connect ();
 	
 	int pieceType;
-	int difficulty;
+	int difficulty = 7;
 	
 	public Enemy (Connect map) {
 		mapConnect = map;
 		
-		difficulty = 7;
 	}
 	
 	public int getMove (int [] [] boardState) {
