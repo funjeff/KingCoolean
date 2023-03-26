@@ -33,7 +33,7 @@ public class State {
 	public int findChildPlay(int val) {
 		int[] checkOrder;
 		Random r = new Random();
-		int order = r.nextInt(0, 6);
+		int order = r.nextInt(6);
 		if (order == 0) checkOrder = new int[]{0, 1, 2, 3, 4, 5};
 		else if (order == 1) checkOrder = new int[]{1, 2, 3, 4, 5, 0};
 		else if (order == 2) checkOrder = new int[]{2, 3, 4, 5, 0, 1};

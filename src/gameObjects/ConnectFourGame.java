@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+import org.lwjgl.glfw.GLFW;
+
 import engine.GameObject;
 import engine.ObjectHandler;
 import engine.Sprite;
@@ -64,7 +66,7 @@ public class ConnectFourGame extends GameObject {
 	public void frameEvent () {
 		
 		if (turn == -1) {
-			if (keyPressed (KeyEvent.VK_ENTER)) {
+			if (keyPressed (GLFW.GLFW_KEY_ENTER)) {
 				e.onDefeat();
 				ObjectHandler.getObjectsByName("YouWin").get(0).forget();
 				
@@ -101,7 +103,7 @@ public class ConnectFourGame extends GameObject {
 					peicePos = peicePos -1;
 					toDrop.setX(toDrop.getX() - 82);
 				}
-				if (keyPressed (KeyEvent.VK_ENTER)) {
+				if (keyPressed (GLFW.GLFW_KEY_ENTER)) {
 					
 					int firstOpen = getFirstOpen(peicePos);
 					
@@ -159,12 +161,12 @@ public class ConnectFourGame extends GameObject {
 					ArrayList<GameObject> peices = ObjectHandler.getObjectsByName("Piece");
 					if (peices != null && getNumMoves(boardState) % 3 == 0) {
 						Random r = new Random();
-						int pos = r.nextInt(0, peices.size());
+						int pos = r.nextInt(peices.size());
 						Piece p = (Piece) peices.get(pos);
 						int x = (int) ((-180 + p.getX())/82);
 						int y = (int) ((-69 + p.getY())/78);
 						while (x < 7 && y < 6  && (boardState[x][y] == 0 || x == chosenMove)) {
-							pos = r.nextInt(0, peices.size());
+							pos = r.nextInt(peices.size());
 							p = (Piece) peices.get(pos);
 							x = (int) ((-180 + p.getX())/82);
 							y = (int) ((-69 + p.getY())/78);
@@ -425,14 +427,14 @@ public class ConnectFourGame extends GameObject {
 		
 		double scaleSpeed = 2;
 		
-		static Sprite og;
+		Sprite og;
 		
 		public YouWin () {
 			this.setSprite(new Sprite ("resources/sprites/you win.png"));
 			if (og == null) {
 				og = new Sprite (this.getSprite());
 			}
-			Sprite.scale(getSprite(), 80, 45);
+			//Sprite.scale(getSprite(), 80, 45);
 			this.setX(480);
 			this.setY(270);
 		}
@@ -474,7 +476,7 @@ public class ConnectFourGame extends GameObject {
 					}
 				}
 				Sprite scale = new Sprite (og);
-				Sprite.scale(scale, curScaleX, curScaleY);
+				//Sprite.draw(scale, curScaleX, curScaleY);
 				this.setSprite (scale);
 			}
 			

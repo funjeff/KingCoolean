@@ -27,7 +27,7 @@ import json.JSONException;
 import json.JSONObject;
 import json.JSONUtil;
 import engine.ObjectHandler;
-import engine.RenderLoop;
+import engine.GameLoop;
 import engine.Sprite;
 import engine.SpriteParser;
 
@@ -117,7 +117,7 @@ public class Room {
 	}
 	
 	private static boolean checkTileCollision (int tileX, int tileY, boolean flip) {
-		Graphics2D g = (Graphics2D)RenderLoop.wind.getBufferGraphics ();
+		Graphics2D g = (Graphics2D)GameLoop.wind.getBufferGraphics ();
 		g.setColor(new Color(0x0000FF));
 		if (flip) {
 			//g.draw3DRect(tileY*16, tileX*16, 16, 16, true);
@@ -619,10 +619,10 @@ public class Room {
 		
 		if (updateX != -1) {
 			if (updateX > scrollX) {
-				if (updateX + RenderLoop.wind.getResolution()[0] < mapWidth * Room.tileWidth) {
+				if (updateX + GameLoop.wind.getResolution()[0] < mapWidth * Room.tileWidth) {
 					scrollX = updateX;	
 				} else {
-					scrollX = (mapWidth * tileWidth) - RenderLoop.wind.getResolution()[0];
+					scrollX = (mapWidth * tileWidth) - GameLoop.wind.getResolution()[0];
 					if (scrollX < 0) {
 						scrollX = 0;
 					}
@@ -638,10 +638,10 @@ public class Room {
 		}
 		if (updateY != -1) {
 			if (updateY > scrollY) {
-				if (updateY + RenderLoop.wind.getResolution()[1] < mapHeight * Room.tileHeight) {
+				if (updateY + GameLoop.wind.getResolution()[1] < mapHeight * Room.tileHeight) {
 					scrollY = updateY;	
 				} else {
-					scrollY = (mapHeight * tileHeight) - RenderLoop.wind.getResolution()[1];
+					scrollY = (mapHeight * tileHeight) - GameLoop.wind.getResolution()[1];
 					if (scrollY < 0) {
 						scrollY = 0;
 					}
@@ -657,7 +657,7 @@ public class Room {
 		
 			updateY = -1;
 		}
-		Rectangle viewport = new Rectangle (scrollX - 20,scrollY - 20,RenderLoop.wind.getResolution()[0] + 40,RenderLoop.wind.getResolution()[1] + 40);
+		Rectangle viewport = new Rectangle (scrollX - 20,scrollY - 20,GameLoop.wind.getResolution()[0] + 40,GameLoop.wind.getResolution()[1] + 40);
 		if (isLoaded()) {
 			//runs code on tileEntitiys
 			for (int i = 0; i < tileEntitiys.size();i++) {
@@ -1511,7 +1511,7 @@ public class Room {
 				}
 				
 				for (int l = renderedImages.size()-1; l >=0; l--) {
-					Graphics g = RenderLoop.wind.getBufferGraphics();
+					Graphics g = GameLoop.wind.getBufferGraphics();
 					g.drawImage(renderedImages.get(l),x*tileWidth - scrollX, y*tileHeight - scrollY,null);
 			}
 		}	
@@ -1641,7 +1641,7 @@ public class Room {
 		
 		@Override
 		public void draw () {
-			Graphics2D g = (Graphics2D)RenderLoop.wind.getBufferGraphics ();
+			Graphics2D g = (Graphics2D)GameLoop.wind.getBufferGraphics ();
 			g.setColor (Color.BLACK);
 			switch (type) {
 			case "polygon":
