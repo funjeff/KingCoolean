@@ -36,4 +36,7 @@ public class RandomRandy extends Enemy {
 	public void onVictory () {
 		GameCode.map.declare();
 	}
+	
+	
+	
 }

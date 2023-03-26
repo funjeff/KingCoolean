@@ -11,6 +11,7 @@ public class Jerry extends Enemy{
 		this.difficulty = 7;
 		this.setSprite(new Sprite ("resources/sprites/Jerry the Jragon.png"));
 		this.background = new Sprite ("resources/sprites/Office.png");
+		this.frameOrNah = false;
 	}
 	
 	@Override

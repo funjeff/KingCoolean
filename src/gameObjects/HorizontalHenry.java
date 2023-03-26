@@ -61,4 +61,6 @@ public class HorizontalHenry extends Enemy {
 	public void onVictory () {
 		GameCode.map.declare();
 	}
+	
+	
 }

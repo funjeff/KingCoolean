@@ -12,6 +12,7 @@ public class Imagamer extends Enemy{
 
 		this.playSound("ImagamerIntro.wav");
 
+
 		this.difficulty = 7;
 		this.setSprite(new Sprite ("resources/sprites/config/imagamer.txt"));
 	}
