@@ -21,6 +21,7 @@ public class LeftLarry extends Enemy {
 		this.mapConnect.setRight(mapConnect.getRightConnectByPosition());
 		this.mapConnect.getRight().setLeft(this.mapConnect);
 		GameCode.map.declare();
+		ConnectFourGame.unlockedMoves[2] = true;
 	}
 	
 }

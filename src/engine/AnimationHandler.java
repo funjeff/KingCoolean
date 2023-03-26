@@ -118,6 +118,9 @@ public class AnimationHandler {
 				startTime = GameLoop.frameStartTime ();
 				image.draw (transform, startFrame);
 			} else {
+				if (startTime == 0) {
+					startTime = GameLoop.frameStartTime();
+				}
 				long elapsedTime = GameLoop.frameStartTime () - startTime;
 				int elapsedFrames = ((int)(((double)elapsedTime) / ((double)frameTime)) + startFrame);
 				if (!repeat && elapsedFrames >= image.getFrameCount ()) {

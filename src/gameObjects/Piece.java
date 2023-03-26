@@ -10,6 +10,9 @@ public class Piece extends GameObject{
 	double vy = 0;
 
 	int bounceLeftTime = 0;
+	
+	int curPosX;
+	int curPosY;
 
 	
 	public Piece (int color) {
@@ -31,6 +34,7 @@ public class Piece extends GameObject{
 					vy = -vy * .8;
 				} else {
 					vy = 0;
+					this.setY(dropTo);
 					dropTo = -1;
 				}
 			}
@@ -58,6 +62,23 @@ public class Piece extends GameObject{
 		bounceLeftTime = 50;
 	}
 	
+	public void setCurPosX(int curPosX) {
+		this.curPosX = curPosX;
+	}
+	
+	public void setCurPosY(int curPosY) {
+		this.curPosY = curPosY;
+	}
+	
+	public int getCurPosX () {
+		return this.curPosX;
+	}
+	
+	public int getCurPosY () {
+		return this.curPosY;
+	}
+	
+	
 	public void setColor (int color) {
 		switch (color) {
 		case 0:
@@ -80,6 +101,9 @@ public class Piece extends GameObject{
 			break;
 		case 6:
 			this.setSprite(new Sprite ("resources/sprites/Dark Coolean Piece.png"));
+			break;
+		case 7:
+			this.setSprite(new Sprite ("resources/sprites/Cheating Charlie coin.png"));
 			break;
 		}
 	}
