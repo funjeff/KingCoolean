@@ -59,11 +59,11 @@ public class GameCode {
 		
 		//Test
 	
-		//TitleScreen titleScreen = new TitleScreen ();
+		TitleScreen titleScreen = new TitleScreen ();
 
-		ConnectFourGame b = new ConnectFourGame ();
-		b.setEnemy(new CheatingCharlie (new Connect ()));
-		b.declare();
+//		ConnectFourGame b = new ConnectFourGame ();
+//		b.setEnemy(new CheatingCharlie (new Connect ()));
+//		b.declare();
 		
 //
 //		Connect king = new Connect ();
