@@ -47,7 +47,7 @@ public class GameCode {
 		//Test
 	
 		ConnectFourGame b = new ConnectFourGame ();
-		b.setEnemy(new DarkCoolean (new Connect ()));
+		b.setEnemy(new DeliriousDerek (new Connect ()));
 		b.declare();
 		
 //

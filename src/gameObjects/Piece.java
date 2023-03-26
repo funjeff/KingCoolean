@@ -31,6 +31,7 @@ public class Piece extends GameObject{
 					vy = -vy * .8;
 				} else {
 					vy = 0;
+					this.setY(dropTo);
 					dropTo = -1;
 				}
 			}

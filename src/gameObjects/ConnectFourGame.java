@@ -29,9 +29,15 @@ public class ConnectFourGame extends GameObject {
 	
 	boolean [] unlockedMoves = new boolean [4];
 	
-	SpecialMenu m = new SpecialMenu ();
+	SpecialMenu menu;
+	
+	boolean inSpecialMenu = false;
+	
+	boolean mirrorMove = false;
 	
 	public ConnectFourGame () {
+		
+		Arrays.fill(unlockedMoves, true);
 		b.setX(170);
 		b.setY(69);
 		
@@ -49,6 +55,17 @@ public class ConnectFourGame extends GameObject {
 		
 		back.setRenderPriority(-4);
 		this.setRenderPriority(-1);
+	
+		
+		for (int i = 0; i < unlockedMoves.length; i++) {
+			if (unlockedMoves[i]) {
+				menu = new SpecialMenu ();
+				menu.setX(menu.getX() + 10);
+				menu.setY(menu.getY() + 100);
+				break;
+			}
+		}
+	
 	}
 	
 	@Override
@@ -60,143 +77,170 @@ public class ConnectFourGame extends GameObject {
 		k.draw();
 		e.draw();
 		
+		if (menu != null) {
+			menu.draw();
+		}
 	}
 	
 	@Override
 	public void frameEvent () {
 		
-		if (turn == -1) {
-			if (keyPressed (GLFW.GLFW_KEY_ENTER)) {
-				e.onDefeat();
-				ObjectHandler.getObjectsByName("YouWin").get(0).forget();
-				
-				ArrayList <GameObject> peices = ObjectHandler.getObjectsByName("Piece");
-				
-				while (peices != null && !peices.isEmpty()) {
-					peices.remove(0);
-				}
-				
-				ArrayList <GameObject> rockets = ObjectHandler.getObjectsByName("FireworksRocket");
-				
-				while (rockets != null && !rockets.isEmpty()) {
-					rockets.remove(0);
-				}
-				
-				ArrayList <GameObject> blasts = ObjectHandler.getObjectsByName("FireworksBlast");
-				
-				while (blasts != null && !blasts.isEmpty()) {
-					blasts.remove(0);
-				}
-				
-				this.forget();
-			}
-		}
-		
-		
-		if (turn == 0) {
-			if (timer == 0) {
-				if (keyPressed('D') && peicePos != 6) {
-					peicePos = peicePos + 1;
-					toDrop.setX(toDrop.getX() + 82);
-				}
-				if (keyPressed('A') && peicePos != 0) {
-					peicePos = peicePos -1;
-					toDrop.setX(toDrop.getX() - 82);
-				}
+		if (!inSpecialMenu) {
+			if (turn == -1) {
 				if (keyPressed (GLFW.GLFW_KEY_ENTER)) {
+					e.onDefeat();
+					ObjectHandler.getObjectsByName("YouWin").get(0).forget();
 					
-					int firstOpen = getFirstOpen(peicePos);
+					ArrayList <GameObject> peices = ObjectHandler.getObjectsByName("Piece");
 					
-					if (firstOpen == -1) {
-						return;
+					while (peices != null && !peices.isEmpty()) {
+						peices.remove(0);
 					}
 					
+					ArrayList <GameObject> rockets = ObjectHandler.getObjectsByName("FireworksRocket");
 					
-					toDrop.dropTo(69 + (78 * firstOpen));
-					turn = 1;
-					toDrop = new Piece (e.pieceType);
-					boardState[peicePos][firstOpen] = 1;
-					peicePos = 0;
-					
-					if (checkForWin (boardState) == 1) {
-						turn = -1;
-						YouWin you = new YouWin ();
-						you.declare();
+					while (rockets != null && !rockets.isEmpty()) {
+						rockets.remove(0);
 					}
 					
-					Random rand = new Random ();
+					ArrayList <GameObject> blasts = ObjectHandler.getObjectsByName("FireworksBlast");
 					
-					timer = rand.nextInt(20) + 50;
-				}
-			} else {
-				timer = timer - 1;
-				if (timer == 0) {
-					toDrop.declare(170 + 10, 0);
+					while (blasts != null && !blasts.isEmpty()) {
+						blasts.remove(0);
+					}
+					
+					this.forget();
 				}
 			}
-		} else if (turn == 1) {
-			if (timer == 0) {
-				int chosenMove = e.getMove(boardState);
-				int columToChange = getFirstOpen(chosenMove);
-				
-				if (columToChange == -1 && (e instanceof LeftLarry)) {
-					turn = 0;
+			
+			
+			if (turn == 0) {
+				if (timer == 0) {
+					if (keyPressed('D') && peicePos != 6) {
+						peicePos = peicePos + 1;
+						toDrop.setX(toDrop.getX() + 82);
+					}
+					if (keyPressed('A') && peicePos != 0) {
+						peicePos = peicePos -1;
+						toDrop.setX(toDrop.getX() - 82);
+					}
 					
-					Random rand = new Random ();
+					if (keyPressed('A') && peicePos == 0 && menu != null && !menu.isUsedUp()) {
+						inSpecialMenu = true;
+					}
 					
-					timer = rand.nextInt(10) + 20;
+					if (keyPressed (GLFW.GLFW_KEY_ENTER)) {
+						
+						int firstOpen = getFirstOpen(peicePos);
+						
+						if (firstOpen == -1) {
+							return;
+						}
+						
+						
+						toDrop.dropTo(69 + (78 * firstOpen));
+						
+						if (mirrorMove) {
+							int secondOpen = getFirstOpen(6 - peicePos);
+							if (secondOpen != -1) {
+								toDrop = new Piece (0);
+								toDrop.declare(180 + (82 * (6-peicePos)),0);
+								toDrop.dropTo(69 + (78 * secondOpen));
+								boardState[6-peicePos][secondOpen] = 1;
+							} else {
+								toDrop.setX(180);
+								toDrop.bounceLeft();
+							}
+							mirrorMove = false;
+						}
+						
+						turn = 1;
+						toDrop = new Piece (e.pieceType);
+						boardState[peicePos][firstOpen] = 1;
+						peicePos = 0;
+						
+						if (checkForWin (boardState) == 1) {
+							turn = -1;
+							YouWin you = new YouWin ();
+							you.declare();
+						}
+						
+						Random rand = new Random ();
+						
+						timer = rand.nextInt(20) + 50;
+					}
+				} else {
+					timer = timer - 1;
+					if (timer == 0) {
+						toDrop.declare(170 + 10, 0);
+					}
+				}
+			} else if (turn == 1) {
+				if (timer == 0) {
+					int chosenMove = e.getMove(boardState);
+					int columToChange = getFirstOpen(chosenMove);
 					
-					toDrop.bounceLeft();
-					toDrop.declare(170 + 10,0);
+					if (columToChange == -1 && (e instanceof LeftLarry)) {
+						turn = 0;
+						
+						Random rand = new Random ();
+						
+						timer = rand.nextInt(10) + 20;
+						
+						toDrop.bounceLeft();
+						toDrop.declare(170 + 10,0);
+						
+						if (!(e instanceof DarkCoolean)) {
+							toDrop = new Piece (0);
+						} else {
+							toDrop = new Piece (6);
+						}
+						return;
+						
+					}
+					else if (e instanceof DeliriousDerek) {
+						ArrayList<GameObject> peices = ObjectHandler.getObjectsByName("Piece");
+						if (peices != null && getNumMoves(boardState) % 3 == 0) {
+							Random r = new Random();
+							int pos = r.nextInt(peices.size());
+							Piece p = (Piece) peices.get(pos);
+							int x = (int) ((-180 + p.getX())/82);
+							int y = (int) ((-69 + p.getY())/78);
+							while (x > 7 || y > 6  || (boardState[x][y] == 0 || x == chosenMove)) {
+								pos = r.nextInt(peices.size());
+								p = (Piece) peices.get(pos);
+								x = (int) ((-180 + p.getX())/82);
+								y = (int) ((-69 + p.getY())/78);
+							
+							}
+							peices.get(pos).setRenderPriority(1);
+							p.dropTo(700);
+							refreshBoard(x, y, peices);
+						}
+					}
+					
+					boardState[chosenMove][columToChange] = 2;
+					toDrop.declare(170 + 10 + (82 * chosenMove), 0);
+					toDrop.dropTo(69 + (78 * columToChange));
 					
 					if (!(e instanceof DarkCoolean)) {
 						toDrop = new Piece (0);
 					} else {
 						toDrop = new Piece (6);
 					}
-					return;
 					
-				}
-				else if (e instanceof DeliriousDerek) {
-					ArrayList<GameObject> peices = ObjectHandler.getObjectsByName("Piece");
-					if (peices != null && getNumMoves(boardState) % 3 == 0) {
-						Random r = new Random();
-						int pos = r.nextInt(peices.size());
-						Piece p = (Piece) peices.get(pos);
-						int x = (int) ((-180 + p.getX())/82);
-						int y = (int) ((-69 + p.getY())/78);
-						while (x < 7 && y < 6  && (boardState[x][y] == 0 || x == chosenMove)) {
-							pos = r.nextInt(peices.size());
-							p = (Piece) peices.get(pos);
-							x = (int) ((-180 + p.getX())/82);
-							y = (int) ((-69 + p.getY())/78);
-						
-						}
-						peices.get(pos).setRenderPriority(1);
-						p.dropTo(700);
-						refreshBoard(x, y, peices);
-					}
-				}
-				
-				boardState[chosenMove][columToChange] = 2;
-				toDrop.declare(170 + 10 + (82 * chosenMove), 0);
-				toDrop.dropTo(69 + (78 * columToChange));
-				
-				if (!(e instanceof DarkCoolean)) {
-					toDrop = new Piece (0);
+					turn = 0;
+					
+					Random rand = new Random ();
+					
+					timer = rand.nextInt(10) + 20;
+					
 				} else {
-					toDrop = new Piece (6);
+					timer = timer - 1;
 				}
-				
-				turn = 0;
-				
-				Random rand = new Random ();
-				
-				timer = rand.nextInt(10) + 20;
-				
-			} else {
-				timer = timer - 1;
 			}
+		} else {
+			menu.frameEvent();
 		}
 	}
 
@@ -220,10 +264,14 @@ public class ConnectFourGame extends GameObject {
 	}
 	public void setEnemy (Enemy enemy) {
 		e = enemy;
-		if (e instanceof LeftLarry) {
+		if (e instanceof LeftLarry /*|| e instanceof HorizontalHenry*/) {
 			turn = 1;
 			toDrop.forget();
 			toDrop = new Piece(e.pieceType);	
+		}
+		
+		if (e instanceof MirroredMeryl) {
+			menu = null;	
 		}
 		
 		if (e instanceof DarkCoolean) {
@@ -329,8 +377,138 @@ public class ConnectFourGame extends GameObject {
 		
 		SpecialButton button = new SpecialButton ();
 		
+		CrownIcon crown = null;
+		MirrorIcon mirror = null;
+		LeftIcon left = null;
+		RandomIcon rand = null;
+		
+		int hovering = 3;
+		
+		SpecialSelector select = new SpecialSelector ();
+		
+		boolean isUsed = false;
+		
 		public SpecialMenu () {
 		
+			if (unlockedMoves[0]) {
+				crown = new CrownIcon();
+			}
+			
+			if (unlockedMoves[1]) {
+				mirror = new MirrorIcon();
+			}
+			
+			if (unlockedMoves[2]) {
+				left = new LeftIcon();
+			}
+			
+			if (unlockedMoves[3]) {
+				rand = new RandomIcon();
+			}
+			
+		}
+		
+		@Override
+		public void frameEvent () {
+			if (keyPressed ('D')) {
+				switch (hovering) {
+				case 0: 
+					leaveSpecialMenu();
+					break;
+				case 1:
+					if (!unlockedMoves[0]) {
+						leaveSpecialMenu();
+					} else {
+						hovering = 0;
+					}
+					break;
+				case 2:
+					if (!unlockedMoves[3]) {
+						leaveSpecialMenu();
+					} else {
+						hovering = 3;
+					}
+					break;
+				case 3:
+					leaveSpecialMenu();
+					break;
+				}
+			}
+			
+			if (keyPressed ('A')) {
+				switch (hovering) {
+				case 0:
+					if (unlockedMoves[1]) {
+						hovering = 1;
+					}
+					break;
+				case 1:
+					break;
+				case 2:
+					break;
+				case 3:
+					if (unlockedMoves[2]) {
+						hovering = 2;
+					}
+					break;
+				}
+			}
+			
+			if (keyPressed ('W')) {
+				switch (hovering) {
+				case 0:
+					if (unlockedMoves[3]) {
+						hovering = 3;
+					}
+					break;
+				case 1:
+					if (unlockedMoves[2]) {
+						hovering = 2;
+					}
+					break;
+				case 2:
+					break;
+				case 3:
+					break;
+				}
+			}
+			
+			if (keyPressed ('S')) {
+				switch (hovering) {
+				case 0:
+					break;
+				case 1:
+					break;
+				case 2:
+					if (unlockedMoves[1]) {
+						hovering = 1;
+					}
+					break;
+				case 3:
+					if (unlockedMoves[0]) {
+						hovering = 0;
+					}
+					break;
+				}
+			}
+			
+			if (keyPressed (GLFW.GLFW_KEY_ENTER)) {
+				switch (hovering) {
+				case 0:
+					crown.onSelect();
+					break;
+				case 1:
+					mirror.onSelect();
+					break;
+				case 2:
+					left.onSelect();
+					break;
+				case 3:
+					rand.onSelect();
+					break;
+				}
+			}
+			
 		}
 		
 		@Override
@@ -339,8 +517,91 @@ public class ConnectFourGame extends GameObject {
 			button.setY(this.getY());
 			
 			button.draw();
+			
+			if (unlockedMoves[0]) {
+				crown.setX(this.getX() + 75);
+				crown.setY(this.getY() + 160);
+				crown.draw();
+			}
+			
+			if (unlockedMoves[1]) {
+				mirror.setX(this.getX());
+				mirror.setY(this.getY() + 160);
+				mirror.draw();
+			}
+			
+			if (unlockedMoves[2]) {
+				left.setX(this.getX());
+				left.setY(this.getY() + 80);
+				left.draw();
+			}
+			
+			if (unlockedMoves[3]) {
+				rand.setX(this.getX() + 75);
+				rand.setY(this.getY() + 80);
+				rand.draw();
+			}
+			
+			if (inSpecialMenu) {
+				switch (hovering) {
+				case 0:
+					select.setX(this.getX() + 75);
+					select.setY(this.getY() + 160);
+					select.draw();
+					break;
+				case 1:
+					select.setX(this.getX());
+					select.setY(this.getY() + 160);
+					select.draw();
+					break;
+				case 2:
+					select.setX(this.getX());
+					select.setY(this.getY() + 80);
+					select.draw();
+					break;
+				case 3:
+					select.setX(this.getX() + 75);
+					select.setY(this.getY() + 80);
+					select.draw();
+					break;
+					
+				}
+			}
+			
 		}
 		
+		public void useUpMove () {
+			isUsed = true;
+			if (crown != null) {
+				crown.setSprite(new Sprite ("resources/sprites/King Special used.png"));
+			}
+			if (left != null) {
+				left.setSprite(new Sprite ("resources/sprites/Left Icon used.png"));
+			}
+			if (mirror != null) {
+				mirror.setSprite(new Sprite ("resources/sprites/Reflect special used.png"));
+			}
+			if (rand != null) {
+				rand.setSprite(new Sprite ("resources/sprites/Random Special used.png"));
+			}
+			
+			button.setSprite(new Sprite ("resources/sprites/Special Sprite used.png"));
+		}
+		
+		public boolean isUsedUp () {
+			return isUsed;
+		}
+		
+		private void leaveSpecialMenu() {
+			inSpecialMenu = false;
+		}
+		
+	}
+	
+	public class SpecialSelector extends GameObject {
+		public SpecialSelector ( ) {
+			this.setSprite(new Sprite ("resources/sprites/selecter.png"));
+		}
 	}
 	
 	public class SpecialButton extends GameObject {
@@ -363,12 +624,23 @@ public class ConnectFourGame extends GameObject {
 	}
 	
 	public class CrownIcon extends Icon {
+		int uses = 3;
+		
 		public CrownIcon () {
 			this.setSprite(new Sprite ("resources/sprites/King Special.png"));
 		}
 		
 		@Override
 		public void onSelect () {
+			if (uses > 0) {
+				e.difficulty = e.difficulty + 1;
+			} 
+			uses = uses - 1;
+			
+			if (uses == 0) {
+				this.setSprite(new Sprite ("resources/sprites/King Special used.png"));
+				
+			}
 			
 		}
 	}
@@ -380,7 +652,9 @@ public class ConnectFourGame extends GameObject {
 		
 		@Override
 		public void onSelect () {
-			
+			mirrorMove = true;
+			menu.useUpMove();
+			inSpecialMenu = false;
 		}
 	}
 	
@@ -391,18 +665,130 @@ public class ConnectFourGame extends GameObject {
 		
 		@Override
 		public void onSelect () {
+			int firstOpen = getFirstOpen(0);
 			
+			if (firstOpen == -1) {
+				return;
+			}
+			
+			toDrop.setX(180);
+			toDrop.dropTo(69 + (78 * firstOpen));
+			boardState[0][firstOpen] = 1;
+			
+			int secondOpen = getFirstOpen(0);
+			
+			if (secondOpen != -1) {
+				toDrop = new Piece (0);
+				toDrop.declare(180,0);
+				toDrop.dropTo(69 + (78 * secondOpen));
+				boardState[0][secondOpen] = 1;
+			} else {
+				toDrop.setX(180);
+				toDrop.bounceLeft();
+			}
+			
+			
+			toDrop = new Piece (e.pieceType);
+			turn = 1;
+			
+			peicePos = 0;
+			
+			if (checkForWin (boardState) == 1) {
+				turn = -1;
+				YouWin you = new YouWin ();
+				you.declare();
+			}
+			
+			Random rand = new Random ();
+			
+			timer = rand.nextInt(20) + 50;
+			menu.useUpMove();
+			inSpecialMenu = false;
 		}
 	}
 	
 	public class RandomIcon extends Icon {
 		public RandomIcon () {
-			this.setSprite(new Sprite ("resources/sprites/Left Icon.png"));
+			this.setSprite(new Sprite ("resources/sprites/Random Special.png"));
 		}
 		
 		@Override
 		public void onSelect () {
+			Random rand = new Random ();
 			
+			int dropPos = rand.nextInt(7);
+			
+			int firstOpen = getFirstOpen(dropPos);
+			
+			
+			if (firstOpen != -1) {
+				toDrop.setX(180 + (82 * dropPos));
+				toDrop.dropTo(69 + (78 * firstOpen));
+				boardState[dropPos][firstOpen] = 1;
+			} else {
+				toDrop.setX(180 + (82 * dropPos));
+				toDrop.bounceLeft();
+			}
+			
+			int dropPos2 = rand.nextInt(7);
+			int secondOpen = getFirstOpen(dropPos2);
+			
+			if (secondOpen != -1) {
+				toDrop = new Piece (0);
+				toDrop.declare(180 + (82 * dropPos2),0);
+				toDrop.dropTo(69 + (78 * secondOpen));
+				boardState[dropPos2][secondOpen] = 1;
+			} else {
+				toDrop = new Piece (0);
+				toDrop.declare(180 + (82 * dropPos2),0);
+				toDrop.bounceLeft();
+			}
+			
+			int dropPos3 = rand.nextInt(7);
+			int thirdOpen = getFirstOpen(dropPos3);
+			
+			if (thirdOpen != -1) {
+				toDrop = new Piece (0);
+				toDrop.declare(180 + (82 * dropPos3),0);
+				toDrop.dropTo(69 + (78 * thirdOpen));
+				boardState[dropPos3][thirdOpen] = 1;
+			} else {
+				toDrop = new Piece (0);
+				toDrop.declare(180 + (82 * dropPos3),0);
+				toDrop.bounceLeft();
+			}
+			
+			
+			int dropPos4 = rand.nextInt(7);
+			int fourOpen = getFirstOpen(dropPos4);
+			
+			if (fourOpen != -1) {
+				toDrop = new Piece (e.pieceType);
+				toDrop.declare(180 + (82 * dropPos4),0);
+				toDrop.dropTo(69 + (78 * fourOpen));
+				boardState[dropPos4][fourOpen] = 2;
+			} else {
+				toDrop = new Piece (e.pieceType);
+				toDrop.declare(180 + (82 * dropPos4),0);
+				toDrop.bounceLeft();
+			}
+			
+			toDrop = new Piece (e.pieceType);
+			turn = 1;
+			
+			peicePos = 0;
+			
+			if (checkForWin (boardState) == 1) {
+				turn = -1;
+				YouWin you = new YouWin ();
+				you.declare();
+			}
+			
+			
+			timer = rand.nextInt(20) + 50;
+			menu.useUpMove();
+			inSpecialMenu = false;
+		
 		}
 	}
 	
