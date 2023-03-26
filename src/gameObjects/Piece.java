@@ -10,13 +10,29 @@ public class Piece extends GameObject{
 	double vy = 0;
 
 	int bounceLeftTime = 0;
+
 	
-	public Piece (boolean color) {
-		if (color) {
+	public Piece (int color) {
+		this.setRenderPriority(-3);
+		
+		switch (color) {
+		case 0:
 			this.setSprite(new Sprite ("resources/sprites/red piece.png"));
-		} else {
-			this.setSprite(new Sprite ("resources/sprites/yellow piece.png"));
+			break;
+		case 1:
+			this.setSprite(new Sprite ("resources/sprites/Horizonjtal Henry Piece.png"));
+			break;
+		case 2:
+			this.setSprite(new Sprite ("resources/sprites/Left Larry Piece.png"));
+			break;
+		case 3:
+			this.setSprite(new Sprite ("resources/sprites/Mirror Merryl Piece.png"));
+			break;
+		case 4:
+			this.setSprite(new Sprite ("resources/sprites/Random Randy Piece.png"));
+			break;
 		}
+		
 	}
 	
 	@Override

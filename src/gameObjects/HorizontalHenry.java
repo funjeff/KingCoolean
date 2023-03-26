@@ -2,6 +2,7 @@ package gameObjects;
 
 import java.util.Random;
 
+import engine.GameCode;
 import engine.Sprite;
 
 public class HorizontalHenry extends Enemy {
@@ -10,9 +11,11 @@ public class HorizontalHenry extends Enemy {
 	
 	boolean dir = true;
 	
-	public HorizontalHenry () {
+	public HorizontalHenry (Connect connect) {
+		super(connect);
 		this.setSprite(new Sprite ("resources/sprites/config/horizontalHenry.txt"));
 		this.getAnimationHandler().setFlipHorizontal(true);
+		pieceType = 1;
 	}
 	
 	public int getMove (int [] [] boardState) {
@@ -46,5 +49,12 @@ public class HorizontalHenry extends Enemy {
 		}
 		
 		return oldMove;
+	}
+	
+	@Override
+	public void onDefeat() {
+		this.mapConnect.setBelow(mapConnect.getUpConnectByPosition());
+		this.mapConnect.getBelow().setAbove(this.mapConnect);
+		GameCode.map.declare();
 	}
 }

@@ -50,7 +50,7 @@ public class ConnectMap extends GameObject {
 	}
 	
 	private void moveLeft () {
-		if (hovering.getLeft() != null) {
+		if (hovering.getLeft() != null && hovering.isAsseable()) {
 			hovering.getLeft().onHover();
 			hovering.onNotHover();
 			hovering = hovering.getLeft();
@@ -58,7 +58,7 @@ public class ConnectMap extends GameObject {
 	}
 	
 	private void moveRight () {
-		if (hovering.getRight() != null) {
+		if (hovering.getRight() != null && hovering.isAsseable()) {
 			hovering.getRight().onHover();
 			hovering.onNotHover();
 			hovering = hovering.getRight();
@@ -66,7 +66,7 @@ public class ConnectMap extends GameObject {
 	}
 	
 	private void moveDown () {
-		if (hovering.getBelow() != null) {
+		if (hovering.getBelow() != null && hovering.isAsseable()) {
 			hovering.getBelow().onHover();
 			hovering.onNotHover();
 			hovering = hovering.getBelow();
@@ -74,12 +74,15 @@ public class ConnectMap extends GameObject {
 	}
 	
 	private void moveUp () {
-		if (hovering.getAbove() != null) {
+		if (hovering.getAbove() != null && hovering.isAsseable()) {
 			hovering.getAbove().onHover();
 			hovering.onNotHover();
 			hovering = hovering.getAbove();
 		}
 	}
 	
+	public void addConnect (Connect c) {
+		
+	}
 	
 }

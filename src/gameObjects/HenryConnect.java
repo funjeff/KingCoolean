@@ -2,8 +2,9 @@ package gameObjects;
 
 import engine.GameCode;
 
-public class MerylConnect extends Connect {
-	public MerylConnect () {
+public class HenryConnect extends Connect {
+	
+public HenryConnect () {
 		
 	}
 	
@@ -11,7 +12,8 @@ public class MerylConnect extends Connect {
 	public void onSelect () {
 		GameCode.map.forget();
 		ConnectFourGame g = new ConnectFourGame();
-		g.setEnemy(new MirroredMeryl (this));
+		g.setEnemy(new HorizontalHenry (this));
 		g.declare();
 	}
+
 }

@@ -53,9 +53,20 @@ public class GameCode {
 		RandyConnect randy = new RandyConnect ();
 		MerylConnect meryl = new MerylConnect ();
 		Connect charlie = new Connect ();
+		Connect sam = new Connect ();
+		Connect henry = new Connect ();
+		Connect derek = new Connect ();
 		
-		king.setY(200);
-		king.setX(200);
+		Connect boss2 = new Connect ();
+		Connect boss3 = new Connect ();
+		Connect jerry = new Connect ();
+		
+		jerry.makeForBoss();
+		boss2.makeForBoss();
+		boss3.makeForBoss();
+		
+		king.setY(230);
+		king.setX(260);
 		
 		king.getResume().setSprite(new Sprite ("resources/sprites/resumes/king coolean resume.png"));
 		larry.getResume().setSprite(new Sprite ("resources/sprites/resumes/left larry resume.png"));
@@ -70,17 +81,35 @@ public class GameCode {
 		king.setBelow(randy);
 		randy.setAbove(king);
 		
-		king.setLeft(meryl);
-		meryl.setRight(king);
+		king.setLeft(henry);
+		henry.setRight(king);
 		
 		king.setRight(charlie);
 		charlie.setLeft(king);
+		
+		derek.positionAbove(henry);
+		
+		meryl.positionRight(larry);
+		
+		sam.positionBelow(randy);
+		
+		jerry.positionAbove(meryl);
+		
+		boss2.positionLeft(sam);
+		
+		boss3.positionLeft(derek);
 		
 		ConnectMap.allConnects.add(king);
 		ConnectMap.allConnects.add(larry);
 		ConnectMap.allConnects.add(randy);
 		ConnectMap.allConnects.add(meryl);
 		ConnectMap.allConnects.add(charlie);
+		ConnectMap.allConnects.add(henry);
+		ConnectMap.allConnects.add(derek);
+		ConnectMap.allConnects.add(sam);
+		ConnectMap.allConnects.add(jerry);
+		ConnectMap.allConnects.add(boss2);
+		ConnectMap.allConnects.add(boss3);
 		
 		
 		map = new ConnectMap (king);

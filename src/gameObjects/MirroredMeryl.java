@@ -3,6 +3,7 @@ package gameObjects;
 import java.util.Arrays;
 import java.util.Random;
 
+import engine.GameCode;
 import engine.GameObject;
 import engine.Sprite;
 
@@ -12,10 +13,12 @@ public class MirroredMeryl extends Enemy{
 	
 	//	boolean firstMove = true;
 		
-		public MirroredMeryl () {
+		public MirroredMeryl (Connect connect) {
+			super(connect);
 			this.setSprite(new Sprite ("resources/sprites/config/MirroredMeryl.txt"));
 			this.getAnimationHandler().setFlipHorizontal(false);
 			Arrays.fill(curHeights, 5);
+			pieceType = 3;
 		}
 		
 		@Override
@@ -46,5 +49,12 @@ public class MirroredMeryl extends Enemy{
 			
 			
 			return 6-playerMove;
+		}
+		
+		@Override
+		public void onDefeat () {
+			this.mapConnect.setAbove(mapConnect.getUpConnectByPosition());
+			this.mapConnect.getAbove().setBelow(this.mapConnect);
+			GameCode.map.declare();
 		}
 }

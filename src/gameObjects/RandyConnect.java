@@ -11,7 +11,7 @@ public class RandyConnect extends Connect {
 	public void onSelect () {
 		GameCode.map.forget();
 		ConnectFourGame g = new ConnectFourGame();
-		g.setEnemy(new RandomRandy ());
+		g.setEnemy(new RandomRandy (this));
 		g.declare();
 	}
 }

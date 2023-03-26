@@ -11,7 +11,7 @@ public class LarryConnect extends Connect {
 	public void onSelect () {
 		GameCode.map.forget();
 		ConnectFourGame g = new ConnectFourGame();
-		g.setEnemy(new LeftLarry ());
+		g.setEnemy(new LeftLarry (this));
 		g.declare();
 	}
 }

@@ -1,20 +1,22 @@
 package gameObjects;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
 import engine.GameObject;
+import engine.ObjectHandler;
 import engine.Sprite;
 
 public class ConnectFourGame extends GameObject {
 	Board b = new Board ();
 	KingCoolean k = new KingCoolean ();
-	Enemy e = new Enemy ();
+	Enemy e = new Enemy (new Connect());
 	
 	int turn = 0;
 	
-	Piece toDrop = new Piece(true);
+	Piece toDrop = new Piece(0);
 	
 	int peicePos = 0;
 	
@@ -34,7 +36,7 @@ public class ConnectFourGame extends GameObject {
 		
 		toDrop.setX(170 + 10);
 		toDrop.declare();
-		
+		this.setRenderPriority(-1);
 	}
 	
 	@Override
@@ -47,6 +49,35 @@ public class ConnectFourGame extends GameObject {
 	
 	@Override
 	public void frameEvent () {
+		
+		if (turn == -1) {
+			if (keyPressed (KeyEvent.VK_ENTER)) {
+				e.onDefeat();
+				ObjectHandler.getObjectsByName("YouWin").get(0).forget();
+				
+				ArrayList <GameObject> peices = ObjectHandler.getObjectsByName("Piece");
+				
+				while (peices != null && !peices.isEmpty()) {
+					peices.remove(0);
+				}
+				
+				ArrayList <GameObject> rockets = ObjectHandler.getObjectsByName("FireworksRocket");
+				
+				while (rockets != null && !rockets.isEmpty()) {
+					rockets.remove(0);
+				}
+				
+				ArrayList <GameObject> blasts = ObjectHandler.getObjectsByName("FireworksBlast");
+				
+				while (blasts != null && !blasts.isEmpty()) {
+					blasts.remove(0);
+				}
+				
+				this.forget();
+			}
+		}
+		
+		
 		if (turn == 0) {
 			if (timer == 0) {
 				if (keyPressed('D') && peicePos != 6) {
@@ -65,11 +96,18 @@ public class ConnectFourGame extends GameObject {
 						return;
 					}
 					
+					
 					toDrop.dropTo(69 + (78 * firstOpen));
 					turn = 1;
-					toDrop = new Piece (false);
+					toDrop = new Piece (e.pieceType);
 					boardState[peicePos][firstOpen] = 1;
 					peicePos = 0;
+					
+					if (checkForWin (boardState) == 1) {
+						turn = -1;
+						YouWin you = new YouWin ();
+						you.declare();
+					}
 					
 					Random rand = new Random ();
 					
@@ -96,7 +134,7 @@ public class ConnectFourGame extends GameObject {
 					toDrop.bounceLeft();
 					toDrop.declare(170 + 10,0);
 					
-					toDrop = new Piece (true);
+					toDrop = new Piece (0);
 					return;
 					
 				}
@@ -105,7 +143,7 @@ public class ConnectFourGame extends GameObject {
 				toDrop.declare(170 + 10 + (82 * chosenMove), 0);
 				toDrop.dropTo(69 + (78 * columToChange));
 				
-				toDrop = new Piece (true);
+				toDrop = new Piece (0);
 				
 				turn = 0;
 				
@@ -125,7 +163,7 @@ public class ConnectFourGame extends GameObject {
 		if (e instanceof LeftLarry) {
 			turn = 1;
 			toDrop.forget();
-			toDrop = new Piece(false);	
+			toDrop = new Piece(e.pieceType);	
 		}
 		
 		e.setX(750);
@@ -144,10 +182,296 @@ public class ConnectFourGame extends GameObject {
 		return firstOpen;
 	}
 	
+	private int[] xDir = {1, 0, 1, -1};
+	private int[] yDir = {1, -1, 0, -1};
+	public int checkForWin(int[][] board) {
+		int check, count = 1;
+		for (int wx = 0; wx < 7; wx++) {
+			for (int wy = 0; wy < 6; wy++) {
+				if (board[wx][wy] != 0) {
+					check = board[wx][wy];
+					for (int q = 0; q < 4; q++) {
+						int xMove = wx + xDir[q];
+						int yMove = wy + yDir[q];
+						while (xMove > -1 && xMove < 7 && yMove > -1 && yMove < 6) {
+							if (board[xMove][yMove] == 0 || 
+									board[xMove][yMove] == 
+									((check == 1) ? 2 : 1)) break;
+							if (board[xMove][yMove] == check) {
+								count++;
+							}
+							xMove += xDir[q];
+							yMove += yDir[q];
+						}
+						if (count >= 4) {
+							return check;
+						}
+						count = 1;
+					}
+				}
+			}
+		}
+		return 0;
+	}
+	
 	public class Board extends GameObject {
 		
 		public Board () {
 			this.setSprite(new Sprite ("resources/sprites/board.png"));
+		}
+	}
+	
+	public class YouWin extends GameObject {
+		
+		int curScaleX = 80;
+		int curScaleY = 45;
+		
+		double scaleSpeed = 2;
+		
+		static Sprite og;
+		
+		public YouWin () {
+			this.setSprite(new Sprite ("resources/sprites/you win.png"));
+			if (og == null) {
+				og = new Sprite (this.getSprite());
+			}
+			Sprite.scale(getSprite(), 80, 45);
+			this.setX(480);
+			this.setY(270);
+		}
+		
+		@Override
+		public void frameEvent () {
+			if (curScaleX != 960 || curScaleY != 540) {
+				if (scaleSpeed < 10.1) {
+					scaleSpeed = scaleSpeed + .3;
+				}
+				
+				double scaleVelX = 960/(11-scaleSpeed);
+				double scaleVelY = 540/(11-scaleSpeed);
+				
+				if (curScaleX != 960) {
+					curScaleX = (int) Math.ceil(curScaleX + scaleVelX);
+					if (curScaleX > 960) {
+						curScaleX = 960;
+					}
+					
+					if (this.getX() > 0) {
+						this.setX(this.getX() - (scaleVelX/2));
+						if (this.getX() < 0) {
+							this.setX(0);
+						}
+					}
+				}
+				
+				if (curScaleY != 540) {
+					curScaleY = (int) Math.ceil(curScaleY + scaleVelY);
+					if (curScaleY > 540) {
+						curScaleY = 540;
+					}
+					if (this.getY() > 0) {
+						this.setY(this.getY() - (scaleVelY/2));
+						if (this.getY() < 0) {
+							this.setY(0);
+						}
+					}
+				}
+				Sprite scale = new Sprite (og);
+				Sprite.scale(scale, curScaleX, curScaleY);
+				this.setSprite (scale);
+			}
+			
+			Random rand = new Random ();
+			
+			if (rand.nextInt(20) == 10) {
+				FireworksRocket r = new FireworksRocket (rand.nextInt(5));
+				r.declare(rand.nextInt(540), 1000);
+			}
+		}
+		
+	}
+	
+	public class FireworksRocket extends GameObject{
+		
+		double vy = 30;
+		
+		int color = 0;
+		
+		public FireworksRocket (int color) {
+			this.setSprite(new Sprite ("resources/sprites/fireworks rocket.png"));
+		
+			Random rand = new Random ();
+			
+			vy = (rand.nextDouble() * 5)+25;
+			
+			this.color = color;
+			
+			this.setRenderPriority(-1);
+		}
+		
+		@Override
+		public void frameEvent () {
+			vy = vy - .4;		
+			if (vy < 0) {
+				detonate();
+				return;
+			}
+			this.setY(this.getY() - vy);
+			
+			Random rand = new Random ();
+			
+			FireworksParticle p = new FireworksParticle ();
+			p.declare(this.getX() + rand.nextInt(20) - 10, this.getY() + 40);
+		}
+		
+		private void detonate () {
+			this.forget();
+			
+			FireworksBlast b1 = new FireworksBlast(color);
+			FireworksBlast b2 = new FireworksBlast(color);
+			FireworksBlast b3 = new FireworksBlast(color);
+			FireworksBlast b4 = new FireworksBlast(color);
+			FireworksBlast b5 = new FireworksBlast(color);
+			FireworksBlast b6 = new FireworksBlast(color);
+			FireworksBlast b7 = new FireworksBlast(color);
+			FireworksBlast b8 = new FireworksBlast(color);
+			FireworksBlast b9 = new FireworksBlast(color);
+			
+			
+			FireworksBlast b1s = new FireworksBlast(color);
+			FireworksBlast b2s = new FireworksBlast(color);
+			FireworksBlast b3s = new FireworksBlast(color);
+			FireworksBlast b4s = new FireworksBlast(color);
+			FireworksBlast b5s = new FireworksBlast(color);
+			FireworksBlast b6s= new FireworksBlast(color);
+			FireworksBlast b7s = new FireworksBlast(color);
+			FireworksBlast b8s = new FireworksBlast(color);
+			FireworksBlast b9s = new FireworksBlast(color);
+			
+			
+			
+			double bx = this.getX() + 10/2;
+			double by = this.getY() + 40/2;
+			
+			
+			b1.declare(bx,by);
+			b2.declare(bx,by);
+			b3.declare(bx,by);
+			b4.declare(bx,by);
+			b5.declare(bx,by);
+			b6.declare(bx,by);
+			b7.declare(bx,by);
+			b8.declare(bx,by);
+			b9.declare(bx,by);
+			
+			b1s.declare(bx,by);
+			b2s.declare(bx,by);
+			b3s.declare(bx,by);
+			b4s.declare(bx,by);
+			b5s.declare(bx,by);
+			b6s.declare(bx,by);
+			b7s.declare(bx,by);
+			b8s.declare(bx,by);
+			b9s.declare(bx,by);
+			
+			int bombSpeed = 4; //im probably gonna wanna tweek this without having to change every throw
+			
+			b1.throwObj(Math.PI/18,bombSpeed);
+		
+			b2.throwObj(5*Math.PI/18,bombSpeed);
+			
+			b3.throwObj(9*Math.PI/18,bombSpeed);
+			
+			b4.throwObj(13*Math.PI/18,bombSpeed);
+			
+			b5.throwObj(17*Math.PI/18,bombSpeed);
+			
+			b6.throwObj(21*Math.PI/18,bombSpeed);
+			
+			b7.throwObj(25*Math.PI/18,bombSpeed);
+			
+			b8.throwObj(29*Math.PI/18,bombSpeed);
+			
+			b9.throwObj(33*Math.PI/18,bombSpeed);
+			
+			
+			b1s.throwObj(Math.PI/18,bombSpeed - 2);
+			
+			b2s.throwObj(5*Math.PI/18,bombSpeed - 2);
+			
+			b3s.throwObj(9*Math.PI/18,bombSpeed - 2);
+			
+			b4s.throwObj(13*Math.PI/18,bombSpeed - 2);
+			
+			b5s.throwObj(17*Math.PI/18,bombSpeed - 2);
+			
+			b6s.throwObj(21*Math.PI/18,bombSpeed - 2);
+			
+			b7s.throwObj(25*Math.PI/18,bombSpeed - 2);
+			
+			b8s.throwObj(29*Math.PI/18,bombSpeed - 2);
+			
+			b9s.throwObj(33*Math.PI/18,bombSpeed - 2);
+			
+			
+		}
+		
+	}
+	
+	public class FireworksBlast extends GameObject {
+		
+		int timer = 30;
+		
+		public FireworksBlast (int color) {
+			
+			this.setRenderPriority(-1);
+			switch (color) {
+			case 0:
+				this.setSprite(new Sprite ("resources/sprites/firework blue.png"));
+				break;
+			case 1:
+				this.setSprite(new Sprite ("resources/sprites/firework yellow.png"));
+				break;
+			case 2:
+				this.setSprite(new Sprite ("resources/sprites/firework red.png"));
+				break;
+			case 3:
+				this.setSprite(new Sprite ("resources/sprites/firework purple.png"));
+				break;
+			case 4:
+				this.setSprite(new Sprite ("resources/sprites/firework green.png"));
+				break;
+				
+			}
+		}
+		
+		@Override
+		public void frameEvent () {
+			super.frameEvent();
+			timer = timer - 1;
+			if (timer == 0) {
+				this.forget();
+			}
+		}
+	}
+	
+	public class FireworksParticle extends GameObject {
+		
+		int timer = 6;
+		
+		public FireworksParticle () {
+			this.setSprite(new Sprite ("resources/sprites/fireworks partical.png"));
+			
+			
+			this.setRenderPriority(-1);
+		}
+		
+		@Override
+		public void frameEvent () {
+			if (timer == 0) {
+				this.forget();
+			}
+			timer = timer - 1;
 		}
 	}
 }
