@@ -3,6 +3,7 @@ package engine;
 import java.util.ArrayList;
 
 import gameObjects.Test;
+import javafx.scene.media.AudioClip;
 import gameObjects.CheatingCharlie;
 import gameObjects.Connect;
 import gameObjects.LarryConnect;
@@ -15,6 +16,7 @@ import gameObjects.DerekConnect;
 import gameObjects.HenryConnect;
 import gameObjects.HorizontalHenry;
 import gameObjects.Imagamer;
+import gameObjects.JeffWeiner;
 import gameObjects.Jerry;
 import gameObjects.LeftLarry;
 import gameObjects.MerylConnect;
@@ -37,10 +39,11 @@ public class GameCode {
 	static ArrayList <Asker> askers = new ArrayList <Asker> ();
 	public static ConnectMap map;
 	
+
 	public static boolean defeatedDarkCoolean = false;
 	public static boolean defeatedJerry = false;
 	public static boolean defeatedImagamer = false;
-	
+
 
 	public static void testBitch () {
 		
@@ -62,10 +65,11 @@ public class GameCode {
 		TitleScreen titleScreen = new TitleScreen ();
 
 //		ConnectFourGame b = new ConnectFourGame ();
-//		b.setEnemy(new CheatingCharlie (new Connect ()));
+//		b.setEnemy(new LeftLarry (new Connect ()));
 //		b.declare();
 		
-//
+//		AudioClip music = new AudioClip("resources/music/idk.wav");
+//		music.play();
 //		Connect king = new Connect ();
 //		LarryConnect larry = new LarryConnect ();
 //		RandyConnect randy = new RandyConnect ();

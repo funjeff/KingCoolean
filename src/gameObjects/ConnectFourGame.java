@@ -7,6 +7,7 @@ import java.util.Random;
 
 import org.lwjgl.glfw.GLFW;
 
+import engine.GameCode;
 import engine.GameObject;
 import engine.ObjectHandler;
 import engine.Sprite;
@@ -16,7 +17,7 @@ public class ConnectFourGame extends GameObject {
 	KingCoolean k = new KingCoolean ();
 	Enemy e = new Enemy (new Connect());
 	Background back = new Background ();
-	
+	boolean blocked = false;
 	int turn = 0;
 	
 	Piece toDrop = new Piece(0);
@@ -46,8 +47,8 @@ public class ConnectFourGame extends GameObject {
 		k.setX(10);
 		k.setY(380);
 		
-		e.setX(750);
-		e.setY(200);
+		e.setX(765);
+		e.setY(380);
 		
 		indecator.setX(170 + 10);
 		
@@ -82,9 +83,9 @@ public class ConnectFourGame extends GameObject {
 		b.draw();
 		k.draw();
 		e.draw();
-		if (turn == 0) {
-			indecator.draw();
-		}
+//		if (turn == 0) {
+//			indecator.draw();
+//		}
 		
 		if (menu != null) {
 			menu.draw();
@@ -93,13 +94,9 @@ public class ConnectFourGame extends GameObject {
 	
 	@Override
 	public void frameEvent () {
-		
 		if (!inSpecialMenu) {
 			if (turn == -1) {
 				if (keyPressed (GLFW.GLFW_KEY_ENTER)) {
-					e.onDefeat();
-					ObjectHandler.getObjectsByName("YouWin").get(0).forget();
-					
 					ArrayList <GameObject> peices = ObjectHandler.getObjectsByName("Piece");
 					
 					while (peices != null && !peices.isEmpty()) {
@@ -120,6 +117,17 @@ public class ConnectFourGame extends GameObject {
 					back.forget();
 					
 					this.forget();
+					
+
+					if (ObjectHandler.getObjectsByName("YouWin") != null) {
+						ObjectHandler.getObjectsByName("YouWin").get(0).forget();
+						e.onDefeat();
+					}
+					
+					if (ObjectHandler.getObjectsByName("YouLose") != null) {
+						ObjectHandler.getObjectsByName("YouLose").get(0).forget();
+						e.onVictory();
+					}
 				}
 			}
 			
@@ -179,10 +187,20 @@ public class ConnectFourGame extends GameObject {
 						boardState[peicePos][firstOpen] = 1;
 						peicePos = 0;
 						
-						if (checkForWin (boardState) == 1) {
-							turn = -1;
-							YouWin you = new YouWin ();
-							you.declare();
+					
+						
+						if (e instanceof WeffJiener) {
+							if (checkForFive (boardState) == 1) {
+								turn = -1;
+								YouWin you = new YouWin ();
+								you.declare();
+							}
+						} else {
+							if (checkForWin (boardState) == 1) {
+								turn = -1;
+								YouWin you = new YouWin ();
+								you.declare();
+							}
 						}
 						
 						Random rand = new Random ();
@@ -202,7 +220,7 @@ public class ConnectFourGame extends GameObject {
 						if (checkForThree(boardState) == 0) {
 							turn = 0;
 							Random rand = new Random ();
-							
+							e.playSound("LLPlayerBlocks.wav");
 							timer = rand.nextInt(10) + 20;
 							toDrop.hide();
 							toDrop.setColor(0);
@@ -210,7 +228,7 @@ public class ConnectFourGame extends GameObject {
 						}
 					}
 					
-					if (e instanceof DeliriousDerek) {
+					else if (e instanceof DeliriousDerek) {
 						ArrayList<GameObject> peices = ObjectHandler.getObjectsByName("Piece");
 						if (peices != null && getNumMoves(boardState) % 3 == 0) {
 							Random r = new Random();
@@ -268,7 +286,26 @@ public class ConnectFourGame extends GameObject {
 						turn = 0;
 						
 						Random rand = new Random ();
-						
+						int choice = rand.nextInt(4);
+						if (peicePos == 0 && !blocked) {
+							if (choice == 2) {
+								e.playSound("LLOverflow1.wav");
+							}
+							if (choice == 3) {
+								e.playSound("LLOverflow2.wav");
+							}
+						}
+						else if (!blocked) {
+							if (choice == 2) {
+								e.playSound("LLDialog1.wav");
+							}
+							if (choice == 3) {
+								e.playSound("LLDialog2.wav");
+							}
+						}
+						else if (blocked) { 
+							blocked = false;
+						}
 						timer = rand.nextInt(10) + 20;
 						
 						toDrop.bounceLeft();
@@ -283,12 +320,75 @@ public class ConnectFourGame extends GameObject {
 						
 					}
 					
+					else if (e instanceof DeliriousDerek) {
+						boolean removePiece = false;
+						ArrayList<GameObject> peices = ObjectHandler.getObjectsByName("Piece");
+						if (peices != null && getNumMoves(boardState) % 3 == 0) {
+							Random r = new Random();
+							int pos = r.nextInt(peices.size());
+							Piece p = (Piece) peices.get(pos);
+							int x = (int) ((-180 + p.getX())/82);
+							int y = (int) ((-69 + p.getY())/78);
+							while (x > 7 || y > 6  || (boardState[x][y] == 0 || x == chosenMove)) {
+								pos = r.nextInt(peices.size());
+								p = (Piece) peices.get(pos);
+								x = (int) ((-180 + p.getX())/82);
+								y = (int) ((-69 + p.getY())/78);
+							
+							}
+							peices.get(pos).setRenderPriority(1);
+							p.dropTo(700);
+							refreshBoard(x, y, peices);
+							removePiece = true;
+						}
+						Random dr = new Random();
+						if (removePiece) {
+							int lol = dr.nextInt(2);
+							if (lol == 0) e.playSound("DeliriousDerekSpecialMove1.wav");
+							else e.playSound("DeliriousDerekSpecialMove2.wav");
+						}
+						else {
+							int lol = dr.nextInt(4);
+							if (lol == 0) e.playSound("DeliriousDerekDialog1.wav");
+						}
+					}
+					else if (e instanceof MirroredMeryl) {
+						Random r = new Random();
+						int pos = r.nextInt(8);
+						if (pos >= 6) {
+							if (pos == 6) e.playSound("MMDialog1.wav");
+							else e.playSound("MMDialog2.wav");
+						}
+					}
+					else if (e instanceof RandomRandy) {
+						Random r = new Random();
+						int pos = r.nextInt(4);
+						if (pos == 0) e.playSound("RRDialog1.wav");
+						else if (pos == 1) e.playSound("RRDialog2.wav");
+						else if (pos == 2) e.playSound("RRDialog3.wav");
+					}
+					else if (e instanceof Imagamer) {
+						Random r = new Random();
+						int pos = r.nextInt(8);
+						if (pos == 0)  e.playSound("ImagamerDialog1.wav");
+						if (pos == 1)  e.playSound("ImagamerDialog2.wav");
+						if (pos == 2)  e.playSound("ImagamerDialog3.wav");
+						if (pos == 3)  e.playSound("ImagamerDialog4.wav");
+						if (pos == 4)  e.playSound("ImagamerDialog5.wav");
+						if (pos == 5)  e.playSound("ImagamerDialog6.wav");
+						if (pos == 6)  e.playSound("ImagamerDialog7.wav");
+					}
+					else if (e instanceof JeffWeiner || e instanceof WeffJiener) {
+						Random r = new Random();
+						int pos = r.nextInt(4);
+						if (pos == 0)	e.playSound("JeffWeinerDialog1.wav");
+						if (pos == 1)	e.playSound("JeffWeinerDialog2.wav");
+					}
 					while (columToChange == -1) {
 						chosenMove = e.getMove(boardState);
 						columToChange = getFirstOpen(chosenMove);
-						
 					}
-					
+
 					boardState[chosenMove][columToChange] = 2;
 					toDrop.declare(170 + 10 + (82 * chosenMove), 0);
 					toDrop.setCurPosX(chosenMove);
@@ -305,6 +405,12 @@ public class ConnectFourGame extends GameObject {
 					
 					
 					turn = 0;
+					
+					if (checkForWin (boardState) == 2) {
+						turn = -1;
+						YouLose you = new YouLose();
+						you.declare();
+					}
 					
 					if (e instanceof CheatingCharlie && checkForThree(boardState) == 1) {
 						turn = 1;
@@ -360,6 +466,8 @@ public class ConnectFourGame extends GameObject {
 			toDrop.forget();
 			toDrop = new Piece(e.pieceType);	
 		}
+		
+		back.setSprite(e.background);
 		
 		if (e instanceof MirroredMeryl) {
 			menu = null;	
@@ -463,13 +571,43 @@ public class ConnectFourGame extends GameObject {
 	}
 	
 	
+	public int checkForFive(int[][] board) {
+		int check, count = 1;
+		for (int wx = 0; wx < 7; wx++) {
+			for (int wy = 0; wy < 6; wy++) {
+				if (board[wx][wy] != 0) {
+					check = board[wx][wy];
+					for (int q = 0; q < 4; q++) {
+						int xMove = wx + xDir[q];
+						int yMove = wy + yDir[q];
+						while (xMove > -1 && xMove < 7 && yMove > -1 && yMove < 6) {
+							if (board[xMove][yMove] == 0 || 
+									board[xMove][yMove] == 
+									((check == 1) ? 2 : 1)) break;
+							if (board[xMove][yMove] == check) {
+								count++;
+							}
+							xMove += xDir[q];
+							yMove += yDir[q];
+						}
+						if (count >= 5) {
+							return check;
+						}
+						count = 1;
+					}
+				}
+			}
+		}
+		return 0;
+	}
+	
 	public int checkForThree(int[][] board) {
 		int check, count = 1;
 		for (int wx = 0; wx < 7; wx++) {
 			for (int wy = 0; wy < 6; wy++) {
 				if (board[wx][wy] != 0) {
 					check = board[wx][wy];
-					for (int q = 0; q < 3; q++) {
+					for (int q = 0; q <4; q++) {
 						int xMove = wx + xDir[q];
 						int yMove = wy + yDir[q];
 						while (xMove > -1 && xMove < 7 && yMove > -1 && yMove < 6) {
@@ -854,11 +992,20 @@ public class ConnectFourGame extends GameObject {
 			
 			peicePos = 0;
 			
-			if (checkForWin (boardState) == 1) {
-				turn = -1;
-				YouWin you = new YouWin ();
-				you.declare();
+			if (e instanceof WeffJiener) {
+				if (checkForFive (boardState) == 1) {
+					turn = -1;
+					YouWin you = new YouWin ();
+					you.declare();
+				}
+			} else {
+				if (checkForWin (boardState) == 1) {
+					turn = -1;
+					YouWin you = new YouWin ();
+					you.declare();
+				}
 			}
+			
 			
 			Random rand = new Random ();
 			
@@ -947,9 +1094,22 @@ public class ConnectFourGame extends GameObject {
 			
 			peicePos = 0;
 			
-			if (checkForWin (boardState) == 1) {
+			if (e instanceof WeffJiener) {
+				if (checkForFive (boardState) == 1) {
+					turn = -1;
+					YouWin you = new YouWin ();
+					you.declare();
+				}
+			} else {
+				if (checkForWin (boardState) == 1) {
+					turn = -1;
+					YouWin you = new YouWin ();
+					you.declare();
+				}
+			}
+			if (checkForWin (boardState) == 2) {
 				turn = -1;
-				YouWin you = new YouWin ();
+				YouLose you = new YouLose ();
 				you.declare();
 			}
 			
@@ -975,7 +1135,7 @@ public class ConnectFourGame extends GameObject {
 		}
 	}
 	
-	public class YouWin extends GameObject {
+	public class YouWin extends YouSomething {
 		
 		int curScaleX = 80;
 		int curScaleY = 45;
@@ -1043,6 +1203,80 @@ public class ConnectFourGame extends GameObject {
 			}
 		}
 		
+	}
+	public class YouLose extends YouSomething{
+		
+		int curScaleX = 80;
+		int curScaleY = 45;
+		
+		double scaleSpeed = 2;
+		
+		Sprite og;
+		
+		public YouLose () {
+			this.setSprite(new Sprite ("resources/sprites/you_lose.png"));
+			if (og == null) {
+				og = new Sprite (this.getSprite());
+			}
+			//Sprite.scale(getSprite(), 80, 45);
+			this.setX(480);
+			this.setY(270);
+		}
+		
+		@Override
+		public void frameEvent () {
+			if (curScaleX != 960 || curScaleY != 540) {
+				if (scaleSpeed < 10.1) {
+					scaleSpeed = scaleSpeed + .3;
+				}
+				
+				double scaleVelX = 960/(11-scaleSpeed);
+				double scaleVelY = 540/(11-scaleSpeed);
+				
+				if (curScaleX != 960) {
+					curScaleX = (int) Math.ceil(curScaleX + scaleVelX);
+					if (curScaleX > 960) {
+						curScaleX = 960;
+					}
+					
+					if (this.getX() > 0) {
+						this.setX(this.getX() - (scaleVelX/2));
+						if (this.getX() < 0) {
+							this.setX(0);
+						}
+					}
+				}
+				
+				if (curScaleY != 540) {
+					curScaleY = (int) Math.ceil(curScaleY + scaleVelY);
+					if (curScaleY > 540) {
+						curScaleY = 540;
+					}
+					if (this.getY() > 0) {
+						this.setY(this.getY() - (scaleVelY/2));
+						if (this.getY() < 0) {
+							this.setY(0);
+						}
+					}
+				}
+				Sprite scale = new Sprite (og);
+				//Sprite.draw(scale, curScaleX, curScaleY);
+				this.setSprite (scale);
+			}
+			
+			Random rand = new Random ();
+			
+			if (rand.nextInt(20) == 10) {
+				FireworksRocket r = new FireworksRocket (rand.nextInt(5));
+				r.declare(rand.nextInt(540), 1000);
+			}
+		}
+		
+	}
+	public class YouSomething extends GameObject{
+		public void frameEvent() {
+			
+		}
 	}
 	
 	public class FireworksRocket extends GameObject{
