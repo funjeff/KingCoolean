@@ -9,8 +9,11 @@ import javax.sound.sampled.Clip;
 import engine.GameCode;
 import engine.GameObject;
 import engine.Sprite;
+import javafx.scene.media.AudioClip;
 
 public class LeftLarry extends Enemy {
+	
+	AudioClip clip = new AudioClip ("file:resources/music/idk2.wav");
 	public LeftLarry (Connect connect) {
 		super(connect);
 		this.setSprite(new Sprite ("resources/sprites/config/leftLarry.txt"));
@@ -20,6 +23,8 @@ public class LeftLarry extends Enemy {
 		Random rand = new Random();
 		if (rand.nextInt(2) == 1) this.playSound("LLStartDialog.wav");
 		else this.playSound("LLStartDialog2.wav");
+		clip.setCycleCount (100);
+		clip.play ();
 	}
 	
 	public int getMove (int [] [] boardState) {
@@ -34,6 +39,7 @@ public class LeftLarry extends Enemy {
 		this.mapConnect.getRight().setLeft(this.mapConnect);
 		GameCode.map.declare();
 		ConnectFourGame.unlockedMoves[2] = true;
+		clip.stop ();
 	}
 	
 	public void onVictory() {

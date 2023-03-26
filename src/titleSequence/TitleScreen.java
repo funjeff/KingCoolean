@@ -72,6 +72,7 @@ public class TitleScreen extends GameObject {
 		}
 		GLProgram titleProgram = GLProgram.programFromDirectory ("resources/shaders/default/");
 		forget ();
+
 	}
 	
 	@Override

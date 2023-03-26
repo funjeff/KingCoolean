@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.lwjgl.glfw.GLFW;
 
 import engine.GameObject;
+import javafx.scene.media.AudioClip;
 
 public class ConnectMap extends GameObject {
 	
@@ -13,6 +14,7 @@ public class ConnectMap extends GameObject {
 	
 	public static ArrayList <Connect> allConnects = new ArrayList <Connect>();
 	
+	AudioClip clip = new AudioClip ("file:resources/music/idk.wav");
 	
 	public ConnectMap (Connect startHover) {
 		hovering = startHover;
@@ -28,6 +30,16 @@ public class ConnectMap extends GameObject {
 			allConnects.get(i).draw();
 		}
 		hovering.getResume().draw();
+	}
+	
+	@Override
+	public void onDeclare () {
+		clip.play ();
+	}
+	
+	@Override
+	public void onForget () {
+		clip.stop ();
 	}
 	
 	@Override

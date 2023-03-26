@@ -4,14 +4,19 @@ import java.util.Random;
 
 import engine.GameCode;
 import engine.Sprite;
+import javafx.scene.media.AudioClip;
 
 public class RandomRandy extends Enemy {
+	
+	AudioClip clip = new AudioClip ("file:resources/music/idk2.wav");
 	
 	public RandomRandy (Connect connect) {
 		super(connect);
 		this.setSprite(new Sprite ("resources/sprites/config/randomRandy.txt"));
 		this.getAnimationHandler().setFlipHorizontal(true);
 		this.pieceType = 4;
+		clip.setCycleCount (100);
+		clip.play ();
 	}
 	
 	public int getMove (int [] [] boardState) {
@@ -30,5 +35,6 @@ public class RandomRandy extends Enemy {
 		this.mapConnect.getBelow().setAbove(this.mapConnect);
 		ConnectFourGame.unlockedMoves[3] = true;
 		GameCode.map.declare();
+		clip.stop ();
 	}
 }
