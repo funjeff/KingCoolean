@@ -378,6 +378,12 @@ public class ConnectFourGame extends GameObject {
 						if (pos == 5)  e.playSound("ImagamerDialog6.wav");
 						if (pos == 6)  e.playSound("ImagamerDialog7.wav");
 					}
+					else if (e instanceof JeffWeiner || e instanceof WeffJiener) {
+						Random r = new Random();
+						int pos = r.nextInt(4);
+						if (pos == 0)	e.playSound("JeffWeinerDialog1.wav");
+						if (pos == 1)	e.playSound("JeffWeinerDialog2.wav");
+					}
 					while (columToChange == -1) {
 						chosenMove = e.getMove(boardState);
 						columToChange = getFirstOpen(chosenMove);

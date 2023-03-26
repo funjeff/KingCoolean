@@ -9,6 +9,7 @@ public class JeffWeiner extends Enemy{
 		super (c);
 		this.pieceType = 6;
 		this.difficulty = 9;
+		this.playSound("JeffWeinerIntro.wav");
 		this.setSprite(new Sprite ("resources/sprites/jeff weiner.png"));
 		this.background = new Sprite ("resources/sprites/SPACE.png");
 		this.playSound("JeffWeinerIntro.wav");
@@ -19,7 +20,7 @@ public class JeffWeiner extends Enemy{
 		ConnectFourGame g = new ConnectFourGame();
 		g.setEnemy(new WeffJiener(new Connect ()));
 		g.declare();
-		this.playSound("JeffWeinerPlayerWins.wav");
+		this.playSound("JeffWeinerPlayerWins1.wav");
 	}
 	
 	@Override
