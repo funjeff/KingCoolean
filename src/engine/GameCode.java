@@ -3,13 +3,19 @@ package engine;
 import java.util.ArrayList;
 
 import gameObjects.Test;
+import gameObjects.CheatingCharlie;
 import gameObjects.Connect;
 import gameObjects.LarryConnect;
 import gameObjects.ConnectFourGame;
 import gameObjects.ConnectMap;
 import gameObjects.DarkCoolean;
+import gameObjects.DarkCooleanConnect;
 import gameObjects.DeliriousDerek;
+import gameObjects.DerekConnect;
+import gameObjects.HenryConnect;
 import gameObjects.HorizontalHenry;
+import gameObjects.Imagamer;
+import gameObjects.Jerry;
 import gameObjects.LeftLarry;
 import gameObjects.MerylConnect;
 import gameObjects.MirroredMeryl;
@@ -28,6 +34,11 @@ public class GameCode {
 
 	static ArrayList <Asker> askers = new ArrayList <Asker> ();
 	public static ConnectMap map;
+	
+	public static boolean defeatedDarkCoolean = false;
+	public static boolean defeatedJerry = false;
+	public static boolean defeatedImagamer = false;
+	
 
 	public static void testBitch () {
 		
@@ -47,7 +58,7 @@ public class GameCode {
 		//Test
 	
 		ConnectFourGame b = new ConnectFourGame ();
-		b.setEnemy(new DeliriousDerek (new Connect ()));
+		b.setEnemy(new CheatingCharlie (new Connect ()));
 		b.declare();
 		
 //
@@ -56,17 +67,16 @@ public class GameCode {
 //		RandyConnect randy = new RandyConnect ();
 //		MerylConnect meryl = new MerylConnect ();
 //		Connect charlie = new Connect ();
-//		Connect sam = new Connect ();
-//		Connect henry = new Connect ();
-//		Connect derek = new Connect ();
+//		HenryConnect henry = new HenryConnect ();
+//		DerekConnect derek = new DerekConnect ();
 //		
-//		Connect boss2 = new Connect ();
-//		Connect boss3 = new Connect ();
-//		Connect jerry = new Connect ();
+//		ImagamerConnect imagamer = new ImagamerConnect ();
+//		DarkCooleanConnect darkCoolean = new DarkCooleanConnect ();
+//		JerryConnect jerry = new JerryConnect ();
 //		
 //		jerry.makeForBoss();
-//		boss2.makeForBoss();
-//		boss3.makeForBoss();
+//		darkCoolean.makeForBoss();
+//		imagamer.makeForBoss();
 //		
 //		king.setY(230);
 //		king.setX(260);
@@ -90,17 +100,16 @@ public class GameCode {
 //		king.setRight(charlie);
 //		charlie.setLeft(king);
 //		
-//		derek.positionAbove(henry);
+//		meryl.positionAbove(henry);
 //		
-//		meryl.positionRight(larry);
+//		derek.positionRight(larry);
 //		
-//		sam.positionBelow(randy);
 //		
-//		jerry.positionAbove(meryl);
+//		jerry.positionAbove(derek);
 //		
-//		boss2.positionLeft(sam);
+//		imagamer.positionBelow(randy);
 //		
-//		boss3.positionLeft(derek);
+//		darkCoolean.positionLeft(meryl);
 //		
 //		ConnectMap.allConnects.add(king);
 //		ConnectMap.allConnects.add(larry);
@@ -109,12 +118,11 @@ public class GameCode {
 //		ConnectMap.allConnects.add(charlie);
 //		ConnectMap.allConnects.add(henry);
 //		ConnectMap.allConnects.add(derek);
-//		ConnectMap.allConnects.add(sam);
 //		ConnectMap.allConnects.add(jerry);
-//		ConnectMap.allConnects.add(boss2);
-//		ConnectMap.allConnects.add(boss3);
-//		
-//		
+//		ConnectMap.allConnects.add(darkCoolean);
+//		ConnectMap.allConnects.add(imagamer);
+////		
+////		
 //		map = new ConnectMap (king);
 //		map.declare();
 //		//Room2 room2 = new Room2 ();

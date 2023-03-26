@@ -399,7 +399,7 @@ public abstract class GameObject extends GameAPI {
 			Mat4 a, b;
 			a = getTransform ().multiply (realign);
 			b = a.multiply (pxScale);
-			if (getAnimationHandler () != null) {
+			if (getAnimationHandler () == null) {
 				getSprite ().draw (b, 0);
 			} else {
 				getAnimationHandler ().draw (b);

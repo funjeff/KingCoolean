@@ -1,0 +1,3 @@
+$src resources/sprites/CoffeeSpit.png
+
+ grid 582 78

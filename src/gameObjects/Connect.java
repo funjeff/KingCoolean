@@ -193,7 +193,7 @@ public class Connect extends GameObject {
 		ArrayList <Connect> connects = ConnectMap.allConnects;
 		
 		for (int i = 0; i < connects.size(); i++) {
-			if (connects.get(i).getX() == this.getX() && connects.get(i).getY() - 114 == this.getY()) {
+			if (connects.get(i).getX() == this.getX() && connects.get(i).getY() + 114 == this.getY()) {
 				return connects.get(i);
 			}
 		}
@@ -205,7 +205,7 @@ public class Connect extends GameObject {
 		ArrayList <Connect> connects = ConnectMap.allConnects;
 		
 		for (int i = 0; i < connects.size(); i++) {
-			if (connects.get(i).getX() == this.getX() && connects.get(i).getY() + 114 == this.getY()) {
+			if (connects.get(i).getX() == this.getX() && connects.get(i).getY() - 114 == this.getY()) {
 				return connects.get(i);
 			}
 		}
