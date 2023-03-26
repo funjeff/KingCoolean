@@ -47,8 +47,8 @@ public class ConnectFourGame extends GameObject {
 		k.setX(10);
 		k.setY(380);
 		
-		e.setX(750);
-		e.setY(200);
+		e.setX(765);
+		e.setY(380);
 		
 		indecator.setX(170 + 10);
 		
@@ -223,7 +223,7 @@ public class ConnectFourGame extends GameObject {
 						}
 					}
 					
-					if (e instanceof DeliriousDerek) {
+					else if (e instanceof DeliriousDerek) {
 						ArrayList<GameObject> peices = ObjectHandler.getObjectsByName("Piece");
 						if (peices != null && getNumMoves(boardState) % 3 == 0) {
 							Random r = new Random();
@@ -352,6 +352,13 @@ public class ConnectFourGame extends GameObject {
 							if (pos == 6) e.playSound("MMDialog1.wav");
 							else e.playSound("MMDialog2.wav");
 						}
+					}
+					else if (e instanceof RandomRandy) {
+						Random r = new Random();
+						int pos = r.nextInt(4);
+						if (pos == 0) e.playSound("RRDialog1.wav");
+						else if (pos == 1) e.playSound("RRDialog2.wav");
+						else if (pos == 2) e.playSound("RRDialog3.wav");
 					}
 					while (columToChange == -1) {
 						chosenMove = e.getMove(boardState);

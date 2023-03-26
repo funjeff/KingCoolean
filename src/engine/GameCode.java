@@ -63,7 +63,7 @@ public class GameCode {
 		//TitleScreen titleScreen = new TitleScreen ();
 
 		ConnectFourGame b = new ConnectFourGame ();
-		b.setEnemy(new MirroredMeryl (new Connect ()));
+		b.setEnemy(new RandomRandy (new Connect ()));
 		b.declare();
 		
 //
