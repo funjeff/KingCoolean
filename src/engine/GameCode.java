@@ -3,6 +3,7 @@ package engine;
 import java.util.ArrayList;
 
 import gameObjects.Test;
+import javafx.scene.media.AudioClip;
 import gameObjects.CheatingCharlie;
 import gameObjects.Connect;
 import gameObjects.LarryConnect;
@@ -64,10 +65,11 @@ public class GameCode {
 		//TitleScreen titleScreen = new TitleScreen ();
 
 		ConnectFourGame b = new ConnectFourGame ();
-		b.setEnemy(new JeffWeiner (new Connect ()));
+		b.setEnemy(new LeftLarry (new Connect ()));
 		b.declare();
 		
-//
+//		AudioClip music = new AudioClip("resources/music/idk.wav");
+//		music.play();
 //		Connect king = new Connect ();
 //		LarryConnect larry = new LarryConnect ();
 //		RandyConnect randy = new RandyConnect ();

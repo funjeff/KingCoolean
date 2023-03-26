@@ -17,7 +17,7 @@ public class ConnectFourGame extends GameObject {
 	KingCoolean k = new KingCoolean ();
 	Enemy e = new Enemy (new Connect());
 	Background back = new Background ();
-	
+	boolean blocked = false;
 	int turn = 0;
 	
 	Piece toDrop = new Piece(0);
@@ -94,12 +94,9 @@ public class ConnectFourGame extends GameObject {
 	
 	@Override
 	public void frameEvent () {
-		
 		if (!inSpecialMenu) {
 			if (turn == -1) {
 				if (keyPressed (GLFW.GLFW_KEY_ENTER)) {
-
-					
 					ArrayList <GameObject> peices = ObjectHandler.getObjectsByName("Piece");
 					
 					while (peices != null && !peices.isEmpty()) {
@@ -223,7 +220,7 @@ public class ConnectFourGame extends GameObject {
 						if (checkForThree(boardState) == 0) {
 							turn = 0;
 							Random rand = new Random ();
-							
+							e.playSound("LLPlayerBlocks.wav");
 							timer = rand.nextInt(10) + 20;
 							toDrop.hide();
 							toDrop.setColor(0);
@@ -289,23 +286,25 @@ public class ConnectFourGame extends GameObject {
 						turn = 0;
 						
 						Random rand = new Random ();
-						int choice = rand.nextInt(8);
-						if (peicePos == 0) {
-							if (choice >= 4) {
-								e.playSound("LLDialog1.wav");
+						int choice = rand.nextInt(4);
+						if (peicePos == 0 && !blocked) {
+							if (choice == 2) {
+								e.playSound("LLOverflow1.wav");
 							}
-							if (choice == 7) {
-								e.playSound("LLDialog2.wav");
+							if (choice == 3) {
+								e.playSound("LLOverflow2.wav");
 							}
-							e.playSound("LLPlayerBlocks.wav");
 						}
-						else if (choice >= 6) {
-							if (choice == 6) {
+						else if (!blocked) {
+							if (choice == 2) {
 								e.playSound("LLDialog1.wav");
 							}
-							if (choice == 7) {
+							if (choice == 3) {
 								e.playSound("LLDialog2.wav");
 							}
+						}
+						else if (blocked) { 
+							blocked = false;
 						}
 						timer = rand.nextInt(10) + 20;
 						
@@ -367,6 +366,17 @@ public class ConnectFourGame extends GameObject {
 						if (pos == 0) e.playSound("RRDialog1.wav");
 						else if (pos == 1) e.playSound("RRDialog2.wav");
 						else if (pos == 2) e.playSound("RRDialog3.wav");
+					}
+					else if (e instanceof Imagamer) {
+						Random r = new Random();
+						int pos = r.nextInt(8);
+						if (pos == 0)  e.playSound("ImagamerDialog1.wav");
+						if (pos == 1)  e.playSound("ImagamerDialog2.wav");
+						if (pos == 2)  e.playSound("ImagamerDialog3.wav");
+						if (pos == 3)  e.playSound("ImagamerDialog4.wav");
+						if (pos == 4)  e.playSound("ImagamerDialog5.wav");
+						if (pos == 5)  e.playSound("ImagamerDialog6.wav");
+						if (pos == 6)  e.playSound("ImagamerDialog7.wav");
 					}
 					while (columToChange == -1) {
 						chosenMove = e.getMove(boardState);
@@ -1198,7 +1208,7 @@ public class ConnectFourGame extends GameObject {
 		Sprite og;
 		
 		public YouLose () {
-			this.setSprite(new Sprite ("resources/sprites/you lose.png"));
+			this.setSprite(new Sprite ("resources/sprites/you_lose.png"));
 			if (og == null) {
 				og = new Sprite (this.getSprite());
 			}
