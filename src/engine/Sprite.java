@@ -14,6 +14,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
+
+import com.hackoeur.jglm.Mat4;
+
+import gl.GLTexture;
+
+import static org.lwjgl.opengl.GL42.*;
+
 import java.awt.Color;
 
 
@@ -32,6 +39,10 @@ public class Sprite {
 	 * The image data this sprite contains
 	 */
 	private BufferedImage[] images;
+	/**
+	 * Something like that
+	 */
+	private GLTexture[] glTextures;
 	/**
 	 * The filepath to this sprite, if applicable
 	 */
@@ -73,9 +84,11 @@ public class Sprite {
 				e.printStackTrace();
 			}
 			images = parser.parse (img);
-			cache.put (key, new CacheNode (key, images));
+			genGLTextures ();
+			cache.put (key, new CacheNode (key, images, glTextures));
 		} else {
 			images = data.getData ();
+			glTextures = data.getTextures ();
 		}
 		if (images.length > 1) {
 			isAnimated = true;
@@ -98,6 +111,7 @@ public class Sprite {
 		} else {
 			isAnimated = false;
 		}
+		genGLTextures ();
 	}
 	
 	/**
@@ -112,6 +126,7 @@ public class Sprite {
 		} else {
 			isAnimated = false;
 		}
+		genGLTextures ();
 	}
 	/**
 	 * Constructs a sprite with the given image path and parser. Does not support caching.
@@ -134,6 +149,7 @@ public class Sprite {
 		} else {
 			isAnimated = false;
 		}
+		genGLTextures ();
 	}
 	
 	/**
@@ -164,9 +180,11 @@ public class Sprite {
 					e.printStackTrace();
 				}
 				images = new BufferedImage[] {img};
-				cache.put (imagepath, new CacheNode (imagepath, images));
+				genGLTextures ();
+				cache.put (imagepath, new CacheNode (imagepath, images, glTextures));
 			} else {
 				images = data.getData ();
+				glTextures = data.getTextures ();
 			}
 			isAnimated = false;
 		}
@@ -182,7 +200,6 @@ public class Sprite {
 		
 		for (int i = 0; i < sprite.images.length; i++) {
 			BufferedImage bimage = new BufferedImage(sprite.images[i].getWidth(null), sprite.images[i].getHeight(null), BufferedImage.TYPE_INT_ARGB);
-			
 			Graphics2D bGr = bimage.createGraphics();
 		    bGr.drawImage(sprite.images[i], 0, 0, null);
 		    bGr.dispose();
@@ -193,6 +210,14 @@ public class Sprite {
 		this.isAnimated = sprite.isAnimated;
 		this.imagePath = sprite.imagePath;
 		this.parsePath = sprite.parsePath;
+		genGLTextures ();
+	}
+	
+	public void genGLTextures () {
+		glTextures = new GLTexture[images.length];
+		for (int i = 0; i < images.length; i++) {
+			glTextures [i] = new GLTexture (GL_TEXTURE_2D, images[i]);
+		}
 	}
 	
 	/**
@@ -222,6 +247,7 @@ public class Sprite {
 	 */
 	public Sprite (BufferedImage image) {
 		images = new BufferedImage[] {image};
+		genGLTextures ();
 	}
 	/**
 	 * Constructs a sprite with the given images. Does not support caching.
@@ -230,6 +256,7 @@ public class Sprite {
 	 */
 	public Sprite (BufferedImage [] frames) {
 		images = frames;
+		genGLTextures ();
 	}
 	
 	/**
@@ -240,106 +267,11 @@ public class Sprite {
 	public void draw (int usedX, int usedY) {
 		draw (usedX, usedY, 0);
 	}
-	public void drawRotated (int x, int y, int frame, double anchorX, double anchorY, double rotation) {
-			AffineTransform transform = new AffineTransform ();
-			transform.translate (x, y);
-			transform.rotate (rotation, anchorX, anchorY);
-			
-			draw (x, y, frame, transform);
+	
+	public void draw (Mat4 transform, int frame) {
+		GameLoop.wind.drawSprite (transform, glTextures[frame]);
 	}
-	public void draw (double usedX, double usedY, int frame, AffineTransform transform) {
-		Graphics2D windowGraphics;
-			if (doesScale) {
-				windowGraphics = (Graphics2D)RenderLoop.wind.getBufferGraphics ();
-			} else {
-				windowGraphics = (Graphics2D)RenderLoop.wind.getNonscalableGraphics ();
-			}
-			windowGraphics.drawImage (getFrame (frame), transform, null);
-	}
-	/**
-	 * Draws the given frame of this sprite at the given x and y coordinates.
-	 * @param usedX The x coordinate to draw this sprite at
-	 * @param usedY The y coordinate to draw this sprite at
-	 * @param frame The frame of this sprite to draw
-	 */
-	public void draw (int usedX, int usedY, int frame, BufferedImage toDraw) {
-		if (frame < images.length) {
-			toDraw.getGraphics().drawImage (images [frame], usedX, usedY, null);
-		}
-	}
-	/**
-	 * Draws the given frame of this sprite at the given x and y coordinates. with the given dimentions
-	 * @param usedX The x coordinate to draw this sprite at
-	 * @param usedY The y coordinate to draw this sprite at
-	 * @param frame The frame of this sprite to draw
-	 * @param width the width to cut the sprite off at
-	 * @param height the height to cut the sprite off at
-	 */
-	public void draw (int usedX, int usedY, int frame, int width,int height, BufferedImage toDraw) {
-		if (frame < images.length) {
-			toDraw.getGraphics().drawImage (images[frame].getSubimage(0, 0, width, height), usedX, usedY, null);
-		}
-	}
-	/**
-	 * Draws the given frame of this sprite at the given x and y coordinates.
-	 * @param usedX The x coordinate to draw this sprite at
-	 * @param usedY The y coordinate to draw this sprite at
-	 * @param flipHorizontal whether to apply horizontal flip
-	 * @param flipVertical whether to apply vertical flip
-	 * @param frame The frame of this sprite to draw
-	 */
-	public void draw (int usedX, int usedY, boolean flipHorizontal, boolean flipVertical, int frame, BufferedImage toDraw) {
-		//Yeaaaaaaah this doesn't actually do anything special right now. TODO
-		int x1, x2, y1, y2;
-		if (flipHorizontal) {
-			x1 = getFrame (frame).getWidth ();
-			x2 = 0;
-		} else {
-			x1 = 0;
-			x2 = getFrame (frame).getWidth ();
-		}
-		if (flipVertical) {
-			y1 = getFrame (frame).getHeight ();
-			y2 = 0;
-		} else {
-			y1 = 0;
-			y2 = getFrame (frame).getHeight ();
-		}
-		if (frame < images.length) {
-			toDraw.getGraphics().drawImage (getFrame (frame), usedX, usedY, usedX + getFrame (frame).getWidth (), usedY + getFrame (frame).getHeight (), x1, y1, x2, y2, null);
-		}
-	}
-	/**
-	 * Draws the given frame of this sprite at the given x and y coordinates.
-	 * @param usedX The x coordinate to draw this sprite at
-	 * @param usedY The y coordinate to draw this sprite at
-	 * @param flipHorizontal whether to apply horizontal flip
-	 * @param flipVertical whether to apply vertical flip
-	 * @param frame The frame of this sprite to draw
-	 * @param width The widht to draw too
-	 * @param height the height to draw too
-	 */
-	public void draw (int usedX, int usedY, boolean flipHorizontal, boolean flipVertical, int frame, int width, int height, BufferedImage toDraw) {
-		
-		int x1, x2, y1, y2;
-		if (flipHorizontal) {
-			x1 = getFrame (frame).getWidth ();
-			x2 = 0;
-		} else {
-			x1 = 0;
-			x2 = getFrame (frame).getWidth ();
-		}
-		if (flipVertical) {
-			y1 = getFrame (frame).getHeight ();
-			y2 = 0;
-		} else {
-			y1 = 0;
-			y2 = getFrame (frame).getHeight ();
-		}
-		if (frame < images.length) {
-			toDraw.getGraphics().drawImage (getFrame (frame).getSubimage(0, 0, width, height), usedX, usedY, usedX + getFrame(frame).getWidth(), usedY + + getFrame(frame).getHeight(), x1, y1, x2, y2, null);
-		}
-	}
+	
 	/**
 	 * Draws the given frame of this sprite at the given x and y coordinates.
 	 * @param usedX The x coordinate to draw this sprite at
@@ -347,99 +279,15 @@ public class Sprite {
 	 * @param frame The frame of this sprite to draw
 	 */
 	public void draw (int usedX, int usedY, int frame) {
-		if (frame < images.length) {
-			if (doesScale) {
-				RenderLoop.wind.getBufferGraphics ().drawImage (images [frame], usedX, usedY, null);
-			} else {
-				RenderLoop.wind.getNonscalableGraphics ().drawImage (images [frame], usedX, usedY, null);
-			}
-		}
+		Mat4 mat = new Mat4 (
+				1, 0, 0, (float)usedX,
+				0, 1, 0, (float)usedY,
+				0, 0, 1, 0,
+				0, 0, 0, 1
+				);
+		GameLoop.wind.drawSprite (mat, glTextures[frame]);
 	}
-	/**
-	 * Draws the given frame of this sprite at the given x and y coordinates. with the given dimentions
-	 * @param usedX The x coordinate to draw this sprite at
-	 * @param usedY The y coordinate to draw this sprite at
-	 * @param frame The frame of this sprite to draw
-	 * @param width the width to cut the sprite off at
-	 * @param height the height to cut the sprite off at
-	 */
-	public void draw (int usedX, int usedY, int frame, int width,int height) {
-		if (frame < images.length) {
-			if (doesScale) {
-				RenderLoop.wind.getBufferGraphics ().drawImage (	images[frame].getSubimage(0, 0, width, height), usedX, usedY, null);
-			} else {
-				RenderLoop.wind.getNonscalableGraphics ().drawImage (	images[frame].getSubimage(0, 0, width, height), usedX, usedY, null);
-			}
-		}
-	}
-	/**
-	 * Draws the given frame of this sprite at the given x and y coordinates.
-	 * @param usedX The x coordinate to draw this sprite at
-	 * @param usedY The y coordinate to draw this sprite at
-	 * @param flipHorizontal whether to apply horizontal flip
-	 * @param flipVertical whether to apply vertical flip
-	 * @param frame The frame of this sprite to draw
-	 */
-	public void draw (int usedX, int usedY, boolean flipHorizontal, boolean flipVertical, int frame) {
-		//Yeaaaaaaah this doesn't actually do anything special right now. TODO
-		int x1, x2, y1, y2;
-		if (flipHorizontal) {
-			x1 = getFrame (frame).getWidth ();
-			x2 = 0;
-		} else {
-			x1 = 0;
-			x2 = getFrame (frame).getWidth ();
-		}
-		if (flipVertical) {
-			y1 = getFrame (frame).getHeight ();
-			y2 = 0;
-		} else {
-			y1 = 0;
-			y2 = getFrame (frame).getHeight ();
-		}
-		if (frame < images.length) {
-			if (doesScale) {
-				RenderLoop.wind.getBufferGraphics ().drawImage (getFrame (frame), usedX, usedY, usedX + getFrame (frame).getWidth (), usedY + getFrame (frame).getHeight (), x1, y1, x2, y2, null);
-			} else {
-				RenderLoop.wind.getNonscalableGraphics ().drawImage (getFrame (frame), usedX, usedY, usedX + getFrame (frame).getWidth (), usedY + getFrame (frame).getHeight (), x1, y1, x2, y2, null);
-			}
-		}
-	}
-	/**
-	 * Draws the given frame of this sprite at the given x and y coordinates.
-	 * @param usedX The x coordinate to draw this sprite at
-	 * @param usedY The y coordinate to draw this sprite at
-	 * @param flipHorizontal whether to apply horizontal flip
-	 * @param flipVertical whether to apply vertical flip
-	 * @param frame The frame of this sprite to draw
-	 * @param width The widht to draw too
-	 * @param height the height to draw too
-	 */
-	public void draw (int usedX, int usedY, boolean flipHorizontal, boolean flipVertical, int frame, int width, int height) {
-		
-		int x1, x2, y1, y2;
-		if (flipHorizontal) {
-			x1 = getFrame (frame).getWidth ();
-			x2 = 0;
-		} else {
-			x1 = 0;
-			x2 = getFrame (frame).getWidth ();
-		}
-		if (flipVertical) {
-			y1 = getFrame (frame).getHeight ();
-			y2 = 0;
-		} else {
-			y1 = 0;
-			y2 = getFrame (frame).getHeight ();
-		}
-		if (frame < images.length) {
-			if (doesScale) {
-				RenderLoop.wind.getBufferGraphics ().drawImage (getFrame (frame).getSubimage(0, 0, width, height), usedX, usedY, usedX + getFrame(frame).getWidth(), usedY + + getFrame(frame).getHeight(), x1, y1, x2, y2, null);
-			} else {
-				RenderLoop.wind.getNonscalableGraphics ().drawImage (getFrame (frame).getSubimage(0, 0, width, height), usedX, usedY, usedX + getFrame(frame).getWidth(), usedY + + getFrame(frame).getHeight(), x1, y1, x2, y2, null);
-			}
-		}
-	}
+	
 	/**
 	 * Gets the BufferedImage representing the given frame of the sprite.
 	 * @param frame The frame to get
@@ -471,97 +319,6 @@ public class Sprite {
 	public String getParsePath () {
 		return parsePath;
 	}
-
-	public static void scale (Sprite toScale, int width, int height) {
-		for (int i = 0; i < toScale.getFrameCount(); i++) {
-			Image img = toScale.getFrame(i).getScaledInstance(width, height, Image.SCALE_FAST);
-			BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-			Graphics2D bGr = bimage.createGraphics();
-		    bGr.drawImage(img, 0, 0, null);
-		    bGr.dispose();
-			toScale.setFrame(i,bimage);
-		}
-	}
-	
-	public static void tweekHue (Sprite toTweek, double tweekBy) {
-		for (int i = 0; i < toTweek.getFrameCount(); i++) {
-			BufferedImage bimage = new BufferedImage(toTweek.getFrame(i).getWidth(null), toTweek.getFrame(i).getHeight(null), BufferedImage.TYPE_INT_ARGB);
-			
-			Graphics2D bGr = bimage.createGraphics();
-		    bGr.drawImage(toTweek.getFrame(i), 0, 0, null);
-		    bGr.dispose();
-			
-			for (int j = 0; j < bimage.getWidth(); j++) {
-				for (int h = 0; h < bimage.getHeight(); h++) {
-					float originalCol [] = new float [3];
-					
-					int originalRGB = bimage.getRGB(j,h);
-					
-					Color.RGBtoHSB((bimage.getRGB(j,h) & 0x00FF0000) >> 16,(bimage.getRGB(j,h) & 0x0000FF00) >> 8,bimage.getRGB(j,h) & 0x000000FF,originalCol);
-					
-					bimage.setRGB(j,h,Color.HSBtoRGB((float) (originalCol[0] + tweekBy),originalCol[1],originalCol[2]) & ((originalRGB & 0xFF000000) + 0x00FFFFFF));
-					
-				}
-			}
-			toTweek.setFrame(i,bimage);
-		}
-	}
-	
-	//returns new version of color
-	public static int tweekHueifColorMatch (Sprite toTweek, double tweekBy, int colorToMatch) {
-		int newVersion = 0;
-		
-		for (int i = 0; i < toTweek.getFrameCount(); i++) {
-			BufferedImage bimage = new BufferedImage(toTweek.getFrame(i).getWidth(null), toTweek.getFrame(i).getHeight(null), BufferedImage.TYPE_INT_ARGB);
-			
-			Graphics2D bGr = bimage.createGraphics();
-		    bGr.drawImage(toTweek.getFrame(i), 0, 0, null);
-		    bGr.dispose();
-			for (int j = 0; j < bimage.getWidth(); j++) {
-				for (int h = 0; h < bimage.getHeight(); h++) {
-					float originalCol [] = new float [3];
-					
-					int originalRGB = bimage.getRGB(j,h);
-					
-					if (originalRGB == colorToMatch) {
-						Color.RGBtoHSB((bimage.getRGB(j,h) & 0x00FF0000) >> 16,(bimage.getRGB(j,h) & 0x0000FF00) >> 8,bimage.getRGB(j,h) & 0x000000FF,originalCol);
-					
-						bimage.setRGB(j,h,Color.HSBtoRGB((float) (originalCol[0] + tweekBy),originalCol[1],originalCol[2]) & ((originalRGB & 0xFF000000) + 0x00FFFFFF));
-						
-						
-						
-						newVersion = bimage.getRGB(j,h);
-					}
-				}
-			}
-			toTweek.setFrame(i,bimage);
-		}
-		return newVersion;
-	}
-	
-	public static void replaceColor (Sprite toTweek, int newColor, int oldColor) {
-		
-		for (int i = 0; i < toTweek.getFrameCount(); i++) {
-			BufferedImage bimage = new BufferedImage(toTweek.getFrame(i).getWidth(null), toTweek.getFrame(i).getHeight(null), BufferedImage.TYPE_INT_ARGB);
-			
-			Graphics2D bGr = bimage.createGraphics();
-		    bGr.drawImage(toTweek.getFrame(i), 0, 0, null);
-		    bGr.dispose();
-			
-			for (int j = 0; j < bimage.getWidth(); j++) {
-				for (int h = 0; h < bimage.getHeight(); h++) {
-					
-					int originalRGB = bimage.getRGB(j,h);
-					
-					if (originalRGB == oldColor) {
-						
-						bimage.setRGB(j,h,newColor);
-					}
-				}
-			}
-			toTweek.setFrame(i,bimage);
-		}
-	}
 	
 	/**
 	 * Gets the BufferedImage associated with the given filepath.
@@ -569,7 +326,7 @@ public class Sprite {
 	 * @return the resulting image; null if no image is found
 	 */
 	public static BufferedImage getImage (String path) {
-		CacheNode data = cache.get (path);
+		CacheNode data = null; //Don't cache standalone BufferedImages
 		if (data == null) {
 			File imageFile = new File (path);
 			BufferedImage img = null;
@@ -580,68 +337,12 @@ public class Sprite {
 				e.printStackTrace();
 			}
 			BufferedImage[] currentImg = new BufferedImage[] {img};
-			cache.put (path, new CacheNode (path, currentImg));
+			//cache.put (path, new CacheNode (path, currentImg));
 			return currentImg [0];
 		} else {
 			return data.getData () [0];
 		}
 	}
-	
-	public boolean doesScale() {
-		return doesScale;
-	}
-
-	public void setScale(boolean doesScale) {
-		this.doesScale = doesScale;
-	}
-	
-	public static BufferedImage [] getScaledArr (Sprite toScale, int width, int height) {
-		
-		BufferedImage [] buff = new BufferedImage [toScale.getFrameCount()];
-		
-		for (int i = 0; i < toScale.getFrameCount(); i++) {
-			Image img = toScale.getFrame(i).getScaledInstance(width, height, Image.SCALE_FAST);
-			BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-			Graphics2D bGr = bimage.createGraphics();
-		    bGr.drawImage(img, 0, 0, null);
-		    
-		    buff[i] = bimage;
-		}
-		return buff;
-	}
-	
-	//lol got this from stack overflow
-		public void setOpacity (float opacity, int frame) {
-			
-			BufferedImage newImg = new BufferedImage (this.getFrame(frame).getWidth(), this.getFrame(frame).getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-			Graphics2D g = (Graphics2D) newImg.getGraphics();
-			AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,(float) opacity);
-			g.setComposite(ac);
-			g.drawImage(this.getFrame(frame), 0, 0, newImg.getWidth(), newImg.getHeight(), null);
-			this.setFrame(frame, newImg);
-			this.opacity = opacity;
-			
-			
-		}
-		
-		public void setOpacity (float opacity) {
-			
-			
-			for (int i = 0; i < this.getFrameCount(); i++) {
-				BufferedImage newImg = new BufferedImage (this.getFrame(i).getWidth(), this.getFrame(i).getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-				Graphics2D g = (Graphics2D) newImg.getGraphics();
-				AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,opacity);
-				g.setComposite(ac);
-				g.drawImage(this.getFrame(i), 0, 0, newImg.getWidth(), newImg.getHeight(), null);
-				this.setFrame(i, newImg);
-				this.opacity = opacity;
-			}
-			
-		}
-		
-		public float getOpacity () {
-			return opacity;
-		}
 	
 	private static class CacheNode {
 		
@@ -654,6 +355,10 @@ public class Sprite {
 		 */
 		private BufferedImage[] data;
 		/**
+		 * The textures stored in this node
+		 */
+		private GLTexture[] textures;
+		/**
 		 * The key associated with this node
 		 */
 		private String key;
@@ -663,10 +368,11 @@ public class Sprite {
 		 * @param key The key to index this node
 		 * @param data The data to store in this node
 		 */
-		public CacheNode (String key, BufferedImage[] data) {
+		public CacheNode (String key, BufferedImage[] data, GLTexture[] textures) {
 			accessCount = 0;
 			this.key = key;
 			this.data = data;
+			this.textures = textures;
 			cache.put (key, this);
 		}
 		
@@ -685,6 +391,15 @@ public class Sprite {
 		public BufferedImage[] getData () {
 			accessCount ++;
 			return data;
+		}
+		
+		/**
+		 * Gets the textures stored by this node.
+		 * @return This node's data
+		 */
+		public GLTexture[] getTextures () {
+			accessCount ++;
+			return textures;
 		}
 		
 		/**

@@ -2,7 +2,7 @@ package engine;
 
 import java.util.ArrayList;
 
-
+import gameObjects.Test;
 import map.Room;
 import java.awt.event.KeyEvent;
 
@@ -16,6 +16,7 @@ public class GameCode {
 
 	static ArrayList <Asker> askers = new ArrayList <Asker> ();
 	
+	static Test test;
 
 
 	public static void testBitch () {
@@ -33,12 +34,12 @@ public class GameCode {
 
 	public static void init () {
 		
-		//Test
-	
-
-
-		//Room2 room2 = new Room2 ();
-		//room2.loadMap ("big_test.tmj");
+		for (int wx = 0; wx < 3; wx++) {
+			for (int wy = 0; wy < 3; wy++) {
+				test = new Test ();
+				test.declare (100 + wx * 60, 100 + wy * 60);
+			}
+		}
 
 	}
 		
@@ -121,8 +122,10 @@ public class GameCode {
 	
 	
 	public static void renderFunc () {
+		
 		Room.render();
 		ObjectHandler.renderAll();
+		
 	}
 	
 	public static void beforeRender() {
@@ -135,10 +138,10 @@ public class GameCode {
 	}
 		
 	public static int getResolutionX() {
-		return RenderLoop.wind.getResolution()[0];
+		return GameLoop.wind.getResolution()[0];
 	}
 	public static int getResolutionY() {
-		return RenderLoop.wind.getResolution()[1];
+		return GameLoop.wind.getResolution()[1];
 	}
 	
 	public static int getViewX() {

@@ -1,19 +1,14 @@
 package engine;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
+
+import com.hackoeur.jglm.Mat4;
 
 import gameObjects.Fragment;
 import map.Room;
@@ -47,6 +42,9 @@ public abstract class GameObject extends GameAPI {
 	/**
 	 * The width of this GameObject's hitbox
 	 */
+	protected double rotation;
+	protected double scaleX = 1.0;
+	protected double scaleY = 1.0;
 	public boolean visible = true;
 	private double [] hitboxWidth = new double [1];
 	/**
@@ -132,25 +130,9 @@ public abstract class GameObject extends GameAPI {
 	 * true when the object just uses its sprite size for its hitbox
 	 */
 	private boolean spriteHitbox = false;
-	/**
-	 * does this get scalled by the changes of resolution
-	 */
-	private boolean doesScale = true;
-	
-	private double drawRotation;
-	private double anchorX;
-	private double anchorY;
-	
-	double prevAngle;
-	
+
 	public double direction = -1;
 	public double speed = 0;
-	
-	protected Point iris;
-	
-	private Point focusPoint = null;
-	
-	private int lookingMode = 1;
 	
 	boolean collsionsEnabled = true;
 	
@@ -370,55 +352,48 @@ public abstract class GameObject extends GameAPI {
 			return null;
 		}
 	}
+	
+	public Mat4 getTransform () {
+		Mat4 trans = new Mat4 (
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				(float)x, (float)y, 0, 1
+				);
+		Mat4 scale = new Mat4 (
+				(float)scaleX, 0, 0, 0,
+				0, (float)scaleY, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1
+				);
+		Mat4 rot = new Mat4 (
+				(float)Math.cos (rotation), (float)Math.sin (rotation), 0, 0,
+				(float)-Math.sin (rotation), (float)Math.cos (rotation), 0, 0,
+				0, 0, 1, 0, 
+				0, 0, 0, 1
+				);
+		Mat4 a, b;
+		a = trans.multiply (scale);
+		b = a.multiply (rot);
+		return b;
+	}
+	
 	/**
 	 * Draws this GameObject at its x and y coordinates relative to the room view.
 	 */
 	public void draw () {
-		//TODO wait what's todo about this?
-		Point drawCoords = getDrawCoords ();
-		if (focusPoint == null) {
-			if (drawCoords != null) {
-				if (drawRotation == 0) {
-					animationHandler.draw (drawCoords.x, drawCoords.y);
-				} else {
-					animationHandler.draw(drawCoords.x, drawCoords.y, drawRotation, anchorX, anchorY);
-				}
-			}
+		Mat4 pxScale = new Mat4 (
+				getSprite ().getWidth (), 0, 0, 0,
+				0, getSprite ().getHeight (), 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1
+				);
+		Mat4 transform = getTransform ().multiply (pxScale);
+		if (getAnimationHandler () != null) {
+			getSprite ().draw (transform, 0);
 		} else {
-			double angle;
-			
-			if (iris == null) {
-				iris = new Point (0, this.getSprite().getHeight()/2);
-			}
-		
-			angle = Math.atan2(focusPoint.getY() - (iris.y + this.getY()), focusPoint.getX() - (iris.x + this.getX()));
-			
-			//if ((angle != prevAngle && angle != -prevAngle)) {
-				
-				if (lookingMode == 1) {
-					this.getSprite().drawRotated((int)this.getX() - Room.getViewX(), (int)this.getY() - Room.getViewY(), this.getAnimationHandler().getFrame(), this.getSprite().getWidth()/2, this.getSprite().getHeight()/2, angle - Math.PI);
-				} else {
-					this.getSprite().drawRotated((int)this.getX() - Room.getViewX(), (int)this.getY() - Room.getViewY(), this.getAnimationHandler().getFrame(), this.getSprite().getWidth()/2, this.getSprite().getHeight()/2, angle);
-				}
-				//prevAngle = angle;
-				//double circleRadius = Math.sqrt(Math.pow(this.getSprite().getWidth(), 2) + Math.pow(this.getSprite().getHeight(), 2));
-				//iris = new Point ((int)(Math.cos(angle) * circleRadius),(int)(Math.sin(angle) *circleRadius)); 
-				//iris = new Point ((int) (this.getSprite().getWidth()/2 + (iris.x - this.getSprite().getWidth()/2)*Math.cos(angle) - (iris.y - this.getSprite().getHeight()/2) * Math.sin(angle)), (int) (this.getSprite().getHeight()/2 + (iris.x - this.getSprite().getWidth()/2)*Math.sin(angle) + (iris.y - this.getSprite().getHeight()/2)*Math.cos(angle))); 
-				//System.out.println((int)(Math.cos(angle) * circleRadius));
-			//}
+			getAnimationHandler ().draw (transform);
 		}
-			if (hiboxBorders) {
-				if (this.hitbox() != null) {
-					Graphics g = RenderLoop.wind.getBufferGraphics();
-					g.setColor(new Color(0x000000));
-					for (int i = 0; i < hitboxXOffset.length; i++) {
-						g.drawRect((int)(this.getX() + this.getHitboxXOffset(i) - Room.getViewX()),(int) (this.getY() + this.getHitboxYOffset(i) - Room.getViewY()), (int)hitboxWidth[i], (int)hitboxHeight[i]);
-					}
-				}
-			}
-		}
-	public void lookTowards (Point point) {
-		focusPoint = point;
 	}
 	
 	/**
@@ -440,13 +415,6 @@ public abstract class GameObject extends GameAPI {
 	
 	public void enableCollisions () {
 		collsionsEnabled = true;
-	}
-	
-	/**
-	 * Draws this GameObject at its x and y coordinates relative to the screen.
-	 */
-	public void drawAbsolute () {
-		animationHandler.draw (spriteX, spriteY);
 	}
 	
 	/**
@@ -1169,21 +1137,10 @@ public abstract class GameObject extends GameAPI {
 			if (this.getSpriteX() - this.getX() != 0) {
 				this.desyncSpriteX(0);
 			}
-			sprite.setScale(doesScale);
 			animationHandler.resetImage (sprite);
 			if (spriteHitbox) {
 				this.setHitboxAttributes(0, 0, this.getSprite().getWidth(), this.getSprite().getHeight());
 			}
-		}
-	}
-	public boolean doesScale() {
-		return doesScale;
-	}
-
-	public void setScaleing(boolean doesScale) {
-		this.doesScale = doesScale;
-		if (this.getSprite() != null) {
-			this.getSprite().setScale(doesScale);
 		}
 	}
 
@@ -1443,19 +1400,7 @@ public abstract class GameObject extends GameAPI {
 	public void setExcludeList(ArrayList<String> excludeList) {
 		this.excludeList = excludeList;
 	}
-	public void setDrawRotation(double drawRotation) {
-		this.drawRotation = drawRotation;
-	}
-	public void setAnchorX(double anchorX) {
-		this.anchorX = anchorX;
-	}
-	public void setAnchorY(double anchorY) {
-		this.anchorY = anchorY;
-	}
-	//if looking mode 1 doesen't work try looking mode 2
-	public void useLookingMode2() {
-		this.lookingMode = 2;
-	}
+
 	public class HitboxInfo {
 		double xOffset;
 		double yOffset;

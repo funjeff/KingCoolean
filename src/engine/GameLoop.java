@@ -8,12 +8,12 @@ import java.util.LinkedList;
  * @author nathan
  *
  */
-public class RenderLoop {
+public class GameLoop {
 	
 	/**
 	 * The maximum framerate the game can run at
 	 */
-	public static final double maxFramerate = GameLoop.stepsPerSecond;
+	public static final double maxFramerate = 60;
 	/**
 	 * The time of the last update to the GameWindow, in nanoseconds.
 	 */
@@ -24,15 +24,17 @@ public class RenderLoop {
 	 */
 	static private long frameTime;
 	
+	/**
+	 * The image of the input from the past GameLogic frame
+	 */
+	static private InputManager inputImage;
+	
 	public static final GameWindow wind = new GameWindow (960, 540);
 	
 	public static void main (String[] args) {
+		GameCode.init ();
 		//Sets the initial frame time
 		frameTime = System.currentTimeMillis ();
-		//Start the game logic loop on a separate thread
-		GameLoop gameLoop = new GameLoop ();
-		new Thread (gameLoop).start ();
-		while (!GameLoop.hasRun ()) {/*wait*/}
 		//Initializes lastUpdate to the current time
 		lastUpdate = System.nanoTime ();
 		while (true) {
@@ -42,19 +44,21 @@ public class RenderLoop {
 			long startTime = System.nanoTime ();
 			frameTime = System.currentTimeMillis ();
 			//Render the window
+			inputImage = GameLoop.wind.getInputImage ();
+			GameCode.beforeGameLogic ();
+			GameCode.gameLoopFunc();
+			ObjectHandler.callAll ();
+			GameLoop.wind.resetInputBuffers ();
+			GameCode.afterGameLogic ();
 			GameCode.beforeRender ();
 			GameCode.renderFunc();
+			ObjectHandler.renderAll ();
 			GameCode.afterRender ();
 			wind.refresh ();
 			//Calculate elapsed time and time to sleep for
 			lastUpdate = System.nanoTime ();
 			long elapsedTime = lastUpdate - startTime;
 			int sleepTime = (int)((targetNanoseconds - elapsedTime) / 1000000) - 1;
-			//System.out.println("target " + targetNanoseconds);
-			//System.out.println("elapsed " + elapsedTime);
-			//System.out.println("last " + lastUpdate);
-			//System.out.println("sleep " + sleepTime);
-			//System.out.println("start " + startTime);
 			
 			if (sleepTime < 0) {
 				sleepTime = 0;
@@ -79,4 +83,20 @@ public class RenderLoop {
 	public static long frameStartTime () {
 		return frameTime;
 	}
+	
+	/**
+	 * Gets the input image from the start of this game logic iteration.
+	 * @return The input image from the start of this iteration
+	 */
+	public static InputManager getInputImage () {
+		return inputImage;
+	}
+	
+	/**
+	 * Event callback for closing the game
+	 */
+	public static void end () {
+		System.exit (0);
+	}
+	
 }

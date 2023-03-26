@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import engine.AnimationHandler;
 import engine.GameCode;
-import engine.RenderLoop;
+import engine.GameLoop;
 import engine.Sprite;
 import json.JSONArray;
 import json.JSONException;
@@ -88,8 +88,8 @@ public class Background {
 	}
 	
 	public void draw (double viewX, double viewY) {
-		int width = RenderLoop.wind.getResolution () [0];
-		int height = RenderLoop.wind.getResolution () [1];
+		int width = GameLoop.wind.getResolution () [0];
+		int height = GameLoop.wind.getResolution () [1];
 		int imgWidth = animationHandler.getImage ().getFrame (animationHandler.getFrame ()).getWidth ();
 		int imgHeight = animationHandler.getImage ().getFrame (animationHandler.getFrame ()).getHeight ();
 		for (int i = -((int)viewX % imgWidth); i < width; i += imgWidth) {
