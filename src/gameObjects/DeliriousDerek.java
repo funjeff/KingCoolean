@@ -12,5 +12,13 @@ public class DeliriousDerek extends Enemy {
 		this.setSprite(new Sprite ("resources/sprites/config/deliriousDerek.txt"));
 		this.getAnimationHandler().setFlipHorizontal(true);
 		pieceType = 5;
+		this.playSound("DeliriousDerekIntro.wav");
 	}
-}
+	
+	public void onDefeat() {
+		this.playSound("DeliriousDerekPlayerWins.wav");
+	}
+	public void onVictory() {
+		this.playSound("DeliriousDerekPlayerWins.wav");
+	}
+ }

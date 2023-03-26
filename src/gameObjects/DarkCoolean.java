@@ -6,6 +6,7 @@ public class DarkCoolean extends Enemy{
 		super (c);
 		this.pieceType = 6;
 		this.difficulty = 7;
+		this.playSound("darkCoolean.wav");
 	}
 
 }

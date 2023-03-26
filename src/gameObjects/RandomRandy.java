@@ -24,6 +24,7 @@ public class RandomRandy extends Enemy {
 	
 	@Override
 	public void onDefeat () {
+		this.playSound("RRPlayerWins.wav");
 		this.mapConnect.setBelow(mapConnect.getDownConnectByPosition());
 		this.mapConnect.getBelow().setAbove(this.mapConnect);
 		GameCode.map.declare();

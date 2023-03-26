@@ -28,6 +28,7 @@ public class GameCode {
 
 	static ArrayList <Asker> askers = new ArrayList <Asker> ();
 	public static ConnectMap map;
+	
 
 	public static void testBitch () {
 		
@@ -47,7 +48,7 @@ public class GameCode {
 		//Test
 	
 		ConnectFourGame b = new ConnectFourGame ();
-		b.setEnemy(new DeliriousDerek (new Connect ()));
+		b.setEnemy(new MirroredMeryl (new Connect ()));
 		b.declare();
 		
 //
