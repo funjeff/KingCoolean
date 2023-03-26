@@ -16,6 +16,8 @@ public class Enemy extends GameObject {
 	int pieceType;
 	int difficulty = 7;
 	
+	Sprite background = new Sprite ("resources/sprites/Background1.png");
+	
 	public Enemy (Connect map) {
 		mapConnect = map;
 		

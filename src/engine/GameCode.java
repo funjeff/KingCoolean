@@ -15,6 +15,7 @@ import gameObjects.DerekConnect;
 import gameObjects.HenryConnect;
 import gameObjects.HorizontalHenry;
 import gameObjects.Imagamer;
+import gameObjects.JeffWeiner;
 import gameObjects.Jerry;
 import gameObjects.LeftLarry;
 import gameObjects.MerylConnect;
@@ -63,7 +64,7 @@ public class GameCode {
 		//TitleScreen titleScreen = new TitleScreen ();
 
 		ConnectFourGame b = new ConnectFourGame ();
-		b.setEnemy(new MirroredMeryl (new Connect ()));
+		b.setEnemy(new JeffWeiner (new Connect ()));
 		b.declare();
 		
 //

@@ -83,9 +83,9 @@ public class ConnectFourGame extends GameObject {
 		b.draw();
 		k.draw();
 		e.draw();
-		if (turn == 0) {
-			indecator.draw();
-		}
+//		if (turn == 0) {
+//			indecator.draw();
+//		}
 		
 		if (menu != null) {
 			menu.draw();
@@ -94,18 +94,10 @@ public class ConnectFourGame extends GameObject {
 	
 	@Override
 	public void frameEvent () {
-		YouSomething you = null;
+		
 		if (!inSpecialMenu) {
 			if (turn == -1) {
 				if (keyPressed (GLFW.GLFW_KEY_ENTER)) {
-					if (you instanceof YouWin) {
-						e.onDefeat();
-						ObjectHandler.getObjectsByName("YouWin").get(0).forget();
-					}
-					else if (you instanceof YouLose) {
-						e.onVictory();
-						ObjectHandler.getObjectsByName("YouLose").get(0).forget();
-					}
 
 					
 					ArrayList <GameObject> peices = ObjectHandler.getObjectsByName("Piece");
@@ -128,6 +120,17 @@ public class ConnectFourGame extends GameObject {
 					back.forget();
 					
 					this.forget();
+					
+
+					if (ObjectHandler.getObjectsByName("YouWin") != null) {
+						ObjectHandler.getObjectsByName("YouWin").get(0).forget();
+						e.onDefeat();
+					}
+					
+					if (ObjectHandler.getObjectsByName("YouLose") != null) {
+						ObjectHandler.getObjectsByName("YouLose").get(0).forget();
+						e.onVictory();
+					}
 				}
 			}
 			
@@ -187,15 +190,20 @@ public class ConnectFourGame extends GameObject {
 						boardState[peicePos][firstOpen] = 1;
 						peicePos = 0;
 						
-						if (checkForWin (boardState) == 1) {
-							turn = -1;
-							you = new YouWin ();
-							you.declare();
-						}
-						if (checkForWin (boardState) == 2) {
-							turn = -1;
-							you = new YouLose();
-							you.declare();
+					
+						
+						if (e instanceof WeffJiener) {
+							if (checkForFive (boardState) == 1) {
+								turn = -1;
+								YouWin you = new YouWin ();
+								you.declare();
+							}
+						} else {
+							if (checkForWin (boardState) == 1) {
+								turn = -1;
+								YouWin you = new YouWin ();
+								you.declare();
+							}
 						}
 						
 						Random rand = new Random ();
@@ -375,6 +383,12 @@ public class ConnectFourGame extends GameObject {
 					
 					turn = 0;
 					
+					if (checkForWin (boardState) == 2) {
+						turn = -1;
+						YouLose you = new YouLose();
+						you.declare();
+					}
+					
 					if (e instanceof CheatingCharlie && checkForThree(boardState) == 1) {
 						turn = 1;
 					}
@@ -429,6 +443,8 @@ public class ConnectFourGame extends GameObject {
 			toDrop.forget();
 			toDrop = new Piece(e.pieceType);	
 		}
+		
+		back.setSprite(e.background);
 		
 		if (e instanceof MirroredMeryl) {
 			menu = null;	
@@ -532,13 +548,43 @@ public class ConnectFourGame extends GameObject {
 	}
 	
 	
+	public int checkForFive(int[][] board) {
+		int check, count = 1;
+		for (int wx = 0; wx < 7; wx++) {
+			for (int wy = 0; wy < 6; wy++) {
+				if (board[wx][wy] != 0) {
+					check = board[wx][wy];
+					for (int q = 0; q < 4; q++) {
+						int xMove = wx + xDir[q];
+						int yMove = wy + yDir[q];
+						while (xMove > -1 && xMove < 7 && yMove > -1 && yMove < 6) {
+							if (board[xMove][yMove] == 0 || 
+									board[xMove][yMove] == 
+									((check == 1) ? 2 : 1)) break;
+							if (board[xMove][yMove] == check) {
+								count++;
+							}
+							xMove += xDir[q];
+							yMove += yDir[q];
+						}
+						if (count >= 5) {
+							return check;
+						}
+						count = 1;
+					}
+				}
+			}
+		}
+		return 0;
+	}
+	
 	public int checkForThree(int[][] board) {
 		int check, count = 1;
 		for (int wx = 0; wx < 7; wx++) {
 			for (int wy = 0; wy < 6; wy++) {
 				if (board[wx][wy] != 0) {
 					check = board[wx][wy];
-					for (int q = 0; q < 3; q++) {
+					for (int q = 0; q <4; q++) {
 						int xMove = wx + xDir[q];
 						int yMove = wy + yDir[q];
 						while (xMove > -1 && xMove < 7 && yMove > -1 && yMove < 6) {
@@ -923,16 +969,20 @@ public class ConnectFourGame extends GameObject {
 			
 			peicePos = 0;
 			
-			if (checkForWin (boardState) == 1) {
-				turn = -1;
-				YouWin you = new YouWin ();
-				you.declare();
+			if (e instanceof WeffJiener) {
+				if (checkForFive (boardState) == 1) {
+					turn = -1;
+					YouWin you = new YouWin ();
+					you.declare();
+				}
+			} else {
+				if (checkForWin (boardState) == 1) {
+					turn = -1;
+					YouWin you = new YouWin ();
+					you.declare();
+				}
 			}
-			if (checkForWin (boardState) == 2) {
-				turn = -1;
-				YouLose you = new YouLose ();
-				you.declare();
-			}
+			
 			
 			Random rand = new Random ();
 			
@@ -1021,10 +1071,18 @@ public class ConnectFourGame extends GameObject {
 			
 			peicePos = 0;
 			
-			if (checkForWin (boardState) == 1) {
-				turn = -1;
-				YouWin you = new YouWin ();
-				you.declare();
+			if (e instanceof WeffJiener) {
+				if (checkForFive (boardState) == 1) {
+					turn = -1;
+					YouWin you = new YouWin ();
+					you.declare();
+				}
+			} else {
+				if (checkForWin (boardState) == 1) {
+					turn = -1;
+					YouWin you = new YouWin ();
+					you.declare();
+				}
 			}
 			if (checkForWin (boardState) == 2) {
 				turn = -1;
