@@ -6,6 +6,7 @@ import gameObjects.Connect;
 import gameObjects.LarryConnect;
 import gameObjects.ConnectFourGame;
 import gameObjects.ConnectMap;
+import gameObjects.DeliriousDerek;
 import gameObjects.HorizontalHenry;
 import gameObjects.LeftLarry;
 import gameObjects.MerylConnect;
@@ -44,78 +45,79 @@ public class GameCode {
 		
 		//Test
 	
-//		ConnectFourGame b = new ConnectFourGame ();
-//		b.setEnemy(new MirroredMeryl ());
-//		b.declare();
+		ConnectFourGame b = new ConnectFourGame ();
+		b.setEnemy(new DeliriousDerek (new Connect ()));
+		b.declare();
 		
-		Connect king = new Connect ();
-		LarryConnect larry = new LarryConnect ();
-		RandyConnect randy = new RandyConnect ();
-		MerylConnect meryl = new MerylConnect ();
-		Connect charlie = new Connect ();
-		Connect sam = new Connect ();
-		Connect henry = new Connect ();
-		Connect derek = new Connect ();
-		
-		Connect boss2 = new Connect ();
-		Connect boss3 = new Connect ();
-		Connect jerry = new Connect ();
-		
-		jerry.makeForBoss();
-		boss2.makeForBoss();
-		boss3.makeForBoss();
-		
-		king.setY(230);
-		king.setX(260);
-		
-		king.getResume().setSprite(new Sprite ("resources/sprites/resumes/king coolean resume.png"));
-		larry.getResume().setSprite(new Sprite ("resources/sprites/resumes/left larry resume.png"));
-		randy.getResume().setSprite(new Sprite ("resources/sprites/resumes/random randy resume.png"));
-		meryl.getResume().setSprite(new Sprite ("resources/sprites/resumes/mirrored meryl resume.png"));
-		charlie.getResume().setSprite(new Sprite ("resources/sprites/resumes/cheating charlie resume.png"));
-		
-		
-		king.setAbove(larry);
-		larry.setBelow(king);
-		
-		king.setBelow(randy);
-		randy.setAbove(king);
-		
-		king.setLeft(henry);
-		henry.setRight(king);
-		
-		king.setRight(charlie);
-		charlie.setLeft(king);
-		
-		derek.positionAbove(henry);
-		
-		meryl.positionRight(larry);
-		
-		sam.positionBelow(randy);
-		
-		jerry.positionAbove(meryl);
-		
-		boss2.positionLeft(sam);
-		
-		boss3.positionLeft(derek);
-		
-		ConnectMap.allConnects.add(king);
-		ConnectMap.allConnects.add(larry);
-		ConnectMap.allConnects.add(randy);
-		ConnectMap.allConnects.add(meryl);
-		ConnectMap.allConnects.add(charlie);
-		ConnectMap.allConnects.add(henry);
-		ConnectMap.allConnects.add(derek);
-		ConnectMap.allConnects.add(sam);
-		ConnectMap.allConnects.add(jerry);
-		ConnectMap.allConnects.add(boss2);
-		ConnectMap.allConnects.add(boss3);
-		
-		
-		map = new ConnectMap (king);
-		map.declare();
-		//Room2 room2 = new Room2 ();
-		//room2.loadMap ("big_test.tmj");
+//
+//		Connect king = new Connect ();
+//		LarryConnect larry = new LarryConnect ();
+//		RandyConnect randy = new RandyConnect ();
+//		MerylConnect meryl = new MerylConnect ();
+//		Connect charlie = new Connect ();
+//		Connect sam = new Connect ();
+//		Connect henry = new Connect ();
+//		Connect derek = new Connect ();
+//		
+//		Connect boss2 = new Connect ();
+//		Connect boss3 = new Connect ();
+//		Connect jerry = new Connect ();
+//		
+//		jerry.makeForBoss();
+//		boss2.makeForBoss();
+//		boss3.makeForBoss();
+//		
+//		king.setY(230);
+//		king.setX(260);
+//		
+//		king.getResume().setSprite(new Sprite ("resources/sprites/resumes/king coolean resume.png"));
+//		larry.getResume().setSprite(new Sprite ("resources/sprites/resumes/left larry resume.png"));
+//		randy.getResume().setSprite(new Sprite ("resources/sprites/resumes/random randy resume.png"));
+//		meryl.getResume().setSprite(new Sprite ("resources/sprites/resumes/mirrored meryl resume.png"));
+//		charlie.getResume().setSprite(new Sprite ("resources/sprites/resumes/cheating charlie resume.png"));
+//		
+//		
+//		king.setAbove(larry);
+//		larry.setBelow(king);
+//		
+//		king.setBelow(randy);
+//		randy.setAbove(king);
+//		
+//		king.setLeft(henry);
+//		henry.setRight(king);
+//		
+//		king.setRight(charlie);
+//		charlie.setLeft(king);
+//		
+//		derek.positionAbove(henry);
+//		
+//		meryl.positionRight(larry);
+//		
+//		sam.positionBelow(randy);
+//		
+//		jerry.positionAbove(meryl);
+//		
+//		boss2.positionLeft(sam);
+//		
+//		boss3.positionLeft(derek);
+//		
+//		ConnectMap.allConnects.add(king);
+//		ConnectMap.allConnects.add(larry);
+//		ConnectMap.allConnects.add(randy);
+//		ConnectMap.allConnects.add(meryl);
+//		ConnectMap.allConnects.add(charlie);
+//		ConnectMap.allConnects.add(henry);
+//		ConnectMap.allConnects.add(derek);
+//		ConnectMap.allConnects.add(sam);
+//		ConnectMap.allConnects.add(jerry);
+//		ConnectMap.allConnects.add(boss2);
+//		ConnectMap.allConnects.add(boss3);
+//		
+//		
+//		map = new ConnectMap (king);
+//		map.declare();
+//		//Room2 room2 = new Room2 ();
+//		//room2.loadMap ("big_test.tmj");
 
 	}
 		

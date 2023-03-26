@@ -31,6 +31,9 @@ public class Piece extends GameObject{
 		case 4:
 			this.setSprite(new Sprite ("resources/sprites/Random Randy Piece.png"));
 			break;
+		case 5:
+			this.setSprite(new Sprite ("resources/sprites/Delerious Derryl.png"));
+			break;
 		}
 		
 	}
