@@ -12,6 +12,7 @@ public class DarkCoolean extends Enemy{
 		this.playSound("darkCoolean.wav");
 		this.setSprite(new Sprite ("resources/sprites/evilcoolean.png"));
 		this.getAnimationHandler().setFlipHorizontal(true);
+		this.background = new Sprite ("resources/sprites/Volcano.png");
 	}
 	
 	@Override
