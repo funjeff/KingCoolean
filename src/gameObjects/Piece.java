@@ -105,6 +105,18 @@ public class Piece extends GameObject{
 		case 7:
 			this.setSprite(new Sprite ("resources/sprites/Cheating Charlie coin.png"));
 			break;
+		case 8:
+			this.setSprite(new Sprite ("resources/sprites/imagamer coin.png"));
+			break;
+		case 9:
+			this.setSprite(new Sprite ("resources/sprites/jeff weiner coin.png"));
+			break;
+		case 10:
+			this.setSprite(new Sprite ("resources/sprites/Jerry the Jragon Piece.png"));
+			break;
+		case 11:
+			this.setSprite(new Sprite ("resources/sprites/weff geiner piece.png"));
+			break;
 		}
 	}
 }

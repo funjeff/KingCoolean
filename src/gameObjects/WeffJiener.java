@@ -6,7 +6,7 @@ import engine.Sprite;
 public class WeffJiener extends Enemy{
 	public WeffJiener (Connect c) {
 		super (c);
-		this.pieceType = 6;
+		this.pieceType = 11;
 		this.difficulty = 7;
 		this.setSprite(new Sprite ("resources/sprites/Weff Jeiner.png"));
 		this.background = new Sprite ("resources/sprites/SPACE.png");
@@ -14,7 +14,7 @@ public class WeffJiener extends Enemy{
 	
 	@Override
 	public void onDefeat () {
-		GameCode.map.forget();
+		GameCode.map.declare();
 		ConnectFourGame.unlockedMoves[0] = true;
 		
 	}

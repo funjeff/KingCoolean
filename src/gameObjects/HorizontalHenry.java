@@ -57,4 +57,8 @@ public class HorizontalHenry extends Enemy {
 		this.mapConnect.getAbove().setBelow(this.mapConnect);
 		GameCode.map.declare();
 	}
+	@Override
+	public void onVictory () {
+		GameCode.map.declare();
+	}
 }

@@ -18,13 +18,14 @@ public class DeliriousDerek extends Enemy {
 	
 	@Override
 	public void onDefeat() {
-	this.mapConnect.setLeft(mapConnect.getLeftConnectByPosition());
-	this.mapConnect.getLeft().setRight(this.mapConnect);
+	this.mapConnect.setAbove(mapConnect.getUpConnectByPosition());
+	this.mapConnect.getAbove().setBelow(this.mapConnect);
 		this.playSound("DeliriousDerekPlayerWins.wav");
 		GameCode.map.declare();
 	}
 	@Override
 	public void onVictory() {
+		GameCode.map.declare();
 		this.playSound("DeliriousDerekPlayerWins.wav");
 	}
  }

@@ -31,4 +31,9 @@ public class RandomRandy extends Enemy {
 		ConnectFourGame.unlockedMoves[3] = true;
 		GameCode.map.declare();
 	}
+	
+	@Override
+	public void onVictory () {
+		GameCode.map.declare();
+	}
 }

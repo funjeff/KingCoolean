@@ -53,13 +53,14 @@ public class MirroredMeryl extends Enemy{
 		
 		@Override
 		public void onDefeat () {
-			this.mapConnect.setAbove(mapConnect.getUpConnectByPosition());
-			this.mapConnect.getAbove().setBelow(this.mapConnect);
+			this.mapConnect.setLeft(mapConnect.getLeftConnectByPosition());
+			this.mapConnect.getLeft().setRight(this.mapConnect);
 			this.playSound("MMPlayerWins.wav");
 			ConnectFourGame.unlockedMoves[1] = true;
 			GameCode.map.declare();
 		}
 		public void onVictory() {
 			this.playSound("MMPlayerLoses.wav");
+			GameCode.map.declare();
 		}
 }

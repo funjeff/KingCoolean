@@ -122,12 +122,12 @@ public class ConnectFourGame extends GameObject {
 					this.forget();
 					
 
-					if (ObjectHandler.getObjectsByName("YouWin") != null) {
+					if (ObjectHandler.getObjectsByName("YouWin") != null && ObjectHandler.getObjectsByName("YouWin").size() != 0 ) {
 						ObjectHandler.getObjectsByName("YouWin").get(0).forget();
 						e.onDefeat();
 					}
 					
-					if (ObjectHandler.getObjectsByName("YouLose") != null) {
+					if (ObjectHandler.getObjectsByName("YouLose") != null && ObjectHandler.getObjectsByName("YouLose").size() != 0) {
 						ObjectHandler.getObjectsByName("YouLose").get(0).forget();
 						e.onVictory();
 					}
@@ -378,16 +378,18 @@ public class ConnectFourGame extends GameObject {
 						toDrop = new Piece (6);
 					}
 					
+					if (checkForWin (boardState) == 2) {
+						turn = -1;
+						YouLose you = new YouLose();
+						you.declare();
+						return;
+					}
+					
 					toDrop.hide();
 					
 					
 					turn = 0;
 					
-					if (checkForWin (boardState) == 2) {
-						turn = -1;
-						YouLose you = new YouLose();
-						you.declare();
-					}
 					
 					if (e instanceof CheatingCharlie && checkForThree(boardState) == 1) {
 						turn = 1;
@@ -1191,7 +1193,7 @@ public class ConnectFourGame extends GameObject {
 		Sprite og;
 		
 		public YouLose () {
-			this.setSprite(new Sprite ("resources/sprites/you lose.png"));
+			this.setSprite(new Sprite ("resources/sprites/you_lose.png"));
 			if (og == null) {
 				og = new Sprite (this.getSprite());
 			}

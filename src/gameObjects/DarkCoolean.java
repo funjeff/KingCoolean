@@ -18,7 +18,18 @@ public class DarkCoolean extends Enemy{
 	@Override
 	public void onDefeat () {
 		GameCode.defeatedDarkCoolean = true;
-		GameCode.map.declare();
+		if (GameCode.defeatedJerry && GameCode.defeatedImagamer && GameCode.defeatedDarkCoolean) {
+			ConnectFourGame g = new ConnectFourGame();
+			g.setEnemy(new JeffWeiner(new Connect ()));
+			g.declare();
+		} else {
+			GameCode.map.declare();
+		}
 	}
 
+	@Override
+	public void onVictory () {
+		GameCode.map.declare();
+	}
+	
 }
