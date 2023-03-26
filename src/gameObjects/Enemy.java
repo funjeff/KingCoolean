@@ -26,7 +26,7 @@ public class Enemy extends GameObject {
 	}
 	@Override
 	public void draw() {
-		if (!frameOrNah) {
+		if (frameOrNah) {
 			f.draw();
 		}
 		super.draw();

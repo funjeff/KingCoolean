@@ -64,79 +64,9 @@ public class GameCode {
 		
 		//Test
 	
-		//TitleScreen titleScreen = new TitleScreen ();
+		TitleScreen titleScreen = new TitleScreen ();
 
-
-//		ConnectFourGame b = new ConnectFourGame ();
-//		b.setEnemy(new JeffWeiner (new Connect ()));
-//		b.declare();
-//		
-//
-		Connect king = new Connect ();
-		LarryConnect larry = new LarryConnect ();
-		RandyConnect randy = new RandyConnect ();
-		MerylConnect meryl = new MerylConnect ();
-		Connect charlie = new Connect ();
-		HenryConnect henry = new HenryConnect ();
-		DerekConnect derek = new DerekConnect ();
-		
-		ImagamerConnect imagamer = new ImagamerConnect ();
-		DarkCooleanConnect darkCoolean = new DarkCooleanConnect ();
-		JerryConnect jerry = new JerryConnect ();
-		
-		jerry.makeForBoss();
-		darkCoolean.makeForBoss();
-		imagamer.makeForBoss();
-		
-		king.setY(230);
-		king.setX(260);
-		
-		king.getResume().setSprite(new Sprite ("resources/sprites/resumes/king coolean resume.png"));
-		larry.getResume().setSprite(new Sprite ("resources/sprites/resumes/left larry resume.png"));
-		randy.getResume().setSprite(new Sprite ("resources/sprites/resumes/random randy resume.png"));
-		meryl.getResume().setSprite(new Sprite ("resources/sprites/resumes/mirrored meryl resume.png"));
-		charlie.getResume().setSprite(new Sprite ("resources/sprites/resumes/cheating charlie resume.png"));
-		
-		
-		king.setAbove(larry);
-		larry.setBelow(king);
-		
-		king.setBelow(randy);
-		randy.setAbove(king);
-		
-		king.setLeft(henry);
-		henry.setRight(king);
-		
-		king.setRight(charlie);
-		charlie.setLeft(king);
-		
-		meryl.positionAbove(henry);
-		
-		derek.positionRight(larry);
-		
-		
-		jerry.positionAbove(derek);
-		
-		imagamer.positionBelow(randy);
-		
-		darkCoolean.positionLeft(meryl);
-		
-		ConnectMap.allConnects.add(king);
-		ConnectMap.allConnects.add(larry);
-		ConnectMap.allConnects.add(randy);
-		ConnectMap.allConnects.add(meryl);
-		ConnectMap.allConnects.add(charlie);
-		ConnectMap.allConnects.add(henry);
-		ConnectMap.allConnects.add(derek);
-		ConnectMap.allConnects.add(jerry);
-		ConnectMap.allConnects.add(darkCoolean);
-		ConnectMap.allConnects.add(imagamer);
-
-
-////		
-////		
-		map = new ConnectMap (king);
-		map.declare();
+	
 //		//Room2 room2 = new Room2 ();
 //		//room2.loadMap ("big_test.tmj");
 		
