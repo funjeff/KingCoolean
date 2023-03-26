@@ -128,17 +128,23 @@ public class InputManager implements GLFWKeyCallbackI {
 	private class InputManagerKeyListener {
 
 		public void keyPressed (int key) {
-			keysPressed [key] = true;
-			keysDown [key] = true;
+			if (key >= 0 && key <= GLFW.GLFW_KEY_LAST) {
+				keysPressed [key] = true;
+				keysDown [key] = true;
+			}
 		}
 
 		public void keyReleased (int key) {
-			keysReleased [key] = true;
-			keysDown [key] = false;
+			if (key >= 0 && key <= GLFW.GLFW_KEY_LAST) {
+				keysReleased [key] = true;
+				keysDown [key] = false;
+			}
 		}
 
 		public void keyTyped (int key) {
-			chars += key;
+			if (key >= 0 && key <= GLFW.GLFW_KEY_LAST) {
+				chars += key;
+			}
 		}
 		
 	}

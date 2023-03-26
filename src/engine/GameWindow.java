@@ -42,6 +42,8 @@ import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 import gl.*;
+import titleSequence.IgnoresFade;
+import titleSequence.TitleScreenObject;
 
 /**
  * The window which the game is displayed in. Also handles keyboard and mouse events.
@@ -78,6 +80,8 @@ public class GameWindow {
 	//GL state things
 	private GLProgram program;
 	private ObjectVBOS vbos;
+	
+	public double fade = 0.0;
 	
 	/**
 	 * Constructs a new GameWindow with the given width and height.
@@ -145,13 +149,17 @@ public class GameWindow {
 		//OpenGL init
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable (GL_BLEND);
-		glEnable (GL_DEPTH_TEST);
+		//glEnable (GL_DEPTH_TEST);
 		
 		program = GLProgram.programFromDirectory ("resources/shaders/default/");
 		vbos = new ObjectVBOS ();
 		
 	}
 
+	public void setProgram (GLProgram program) {
+		this.program = program;
+	}
+	
 	public void closeWindow () {
 		
 		// Free the window callbacks and destroy the window
@@ -205,6 +213,8 @@ public class GameWindow {
 			int transformLoc = glGetUniformLocation (program.getProgramName (), "transform");
 			int vpLoc = glGetUniformLocation (program.getProgramName (), "vp");
 			int samplerLoc = glGetUniformLocation (program.getProgramName (), "texture");
+			int fadeTimerGlobalLoc = glGetUniformLocation (program.getProgramName (), "fade_timer_global");
+			int fadeTimerLocalLoc = glGetUniformLocation (program.getProgramName (), "fade_timer_local");
 			GLTexture currentTexture = null;
 			glUniform1i(samplerLoc, 0);
 			float[] transformBuffer = new float[16];
@@ -214,7 +224,19 @@ public class GameWindow {
 			//System.out.println (vp);
 
 			for (int i = 0; i < drawCalls.size (); i++) {
+				
 				DrawCall working = drawCalls.get (i);
+				if (working.getCallingObject () != null && working.getCallingObject () instanceof IgnoresFade) {
+					glUniform1f(fadeTimerGlobalLoc, (float)0);
+				} else {
+					glUniform1f(fadeTimerGlobalLoc, (float)fade);
+				}
+				if (working.getCallingObject () != null && working.getCallingObject () instanceof TitleScreenObject) {
+					glUniform1f (fadeTimerLocalLoc, (float)((TitleScreenObject)working.getCallingObject ()).getFadeTime ());
+				} else {
+					glUniform1f (fadeTimerLocalLoc, (float)0);
+				}
+				
 				Mat4 mvp = vp.multiply (working.getTransform ());
 				if (currentTexture != working.getTexture ()) {
 					currentTexture = working.getTexture ();
@@ -279,8 +301,12 @@ public class GameWindow {
 		inputManager.resetMouseBuffers ();
 	}
 	
+	public void drawSprite (Mat4 matrix, GLTexture tex, GameObject obj) {
+		drawCalls.add (new DrawCall (matrix, tex, obj));
+	}
+	
 	public void drawSprite (Mat4 matrix, GLTexture tex) {
-		drawCalls.add (new DrawCall (matrix, tex));
+		drawCalls.add (new DrawCall (matrix, tex, null));
 	}
 	
 	public class WinResizeCallback implements GLFWWindowSizeCallbackI {

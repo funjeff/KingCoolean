@@ -378,33 +378,38 @@ public abstract class GameObject extends GameAPI {
 		return b;
 	}
 	
+	public Mat4 getDisplayTransform () {
+		
+		Mat4 pxScale = new Mat4 (
+				getSprite ().getWidth (), 0, 0, 0,
+				0, getSprite ().getHeight (), 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1
+				);
+		Mat4 realign = new Mat4 (
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				getSprite ().getWidth () / 2, getSprite ().getHeight () / 2, 0, 1
+				);
+		return realign.multiply (pxScale);
+		
+	}
+	
 	/**
 	 * Draws this GameObject at its x and y coordinates relative to the room view.
 	 */
 	public void draw () {
+		
 		if (this.getSprite () != null) {
-			Mat4 pxScale = new Mat4 (
-					getSprite ().getWidth (), 0, 0, 0,
-					0, getSprite ().getHeight (), 0, 0,
-					0, 0, 1, 0,
-					0, 0, 0, 1
-					);
-			Mat4 realign = new Mat4 (
-					1, 0, 0, 0,
-					0, 1, 0, 0,
-					0, 0, 1, 0,
-					getSprite ().getWidth () / 2, getSprite ().getHeight () / 2, 0, 1
-					);
-				
-			Mat4 a, b;
-			a = getTransform ().multiply (realign);
-			b = a.multiply (pxScale);
+			Mat4 finalTransform = getTransform ().multiply (getDisplayTransform ());
 			if (getAnimationHandler () != null) {
-				getSprite ().draw (b, 0);
+				getSprite ().draw (finalTransform, 0);
 			} else {
-				getAnimationHandler ().draw (b);
+				getAnimationHandler ().draw (finalTransform);
 			}
 		}
+		
 	}
 	
 	/**

@@ -28,7 +28,7 @@ public class ConnectFourGame extends GameObject {
 	
 	int [][] boardState = new int [7][6];
 	
-	boolean [] unlockedMoves = new boolean [4];
+	static boolean [] unlockedMoves = new boolean [4];
 	
 	SpecialMenu menu;
 	
@@ -36,9 +36,11 @@ public class ConnectFourGame extends GameObject {
 	
 	boolean mirrorMove = false;
 	
+	Indicater indecator = new Indicater ();
+	
 	public ConnectFourGame () {
 		
-		Arrays.fill(unlockedMoves, true);
+
 		b.setX(170);
 		b.setY(69);
 		
@@ -48,10 +50,14 @@ public class ConnectFourGame extends GameObject {
 		e.setX(750);
 		e.setY(200);
 		
+		indecator.setX(170 + 10);
+		
 		toDrop.setX(170 + 10);
 		toDrop.declare();
+		toDrop.hide();
 		
-		b.getAnimationHandler().setFrameTime(200);
+		b.getAnimationHandler().setFrameTime(100);
+
 		back.declare();
 		
 		back.setRenderPriority(-4);
@@ -77,6 +83,9 @@ public class ConnectFourGame extends GameObject {
 		b.draw();
 		k.draw();
 		e.draw();
+		if (turn == 0) {
+			indecator.draw();
+		}
 		
 		if (menu != null) {
 			menu.draw();
@@ -116,6 +125,7 @@ public class ConnectFourGame extends GameObject {
 					while (blasts != null && !blasts.isEmpty()) {
 						blasts.remove(0);
 					}
+					back.forget();
 					
 					this.forget();
 				}
@@ -126,10 +136,13 @@ public class ConnectFourGame extends GameObject {
 				if (timer == 0) {
 					if (keyPressed('D') && peicePos != 6) {
 						peicePos = peicePos + 1;
+						indecator.setX(indecator.getX() + 82);
 						toDrop.setX(toDrop.getX() + 82);
+						
 					}
 					if (keyPressed('A') && peicePos != 0) {
 						peicePos = peicePos -1;
+						indecator.setX(indecator.getX() - 82);
 						toDrop.setX(toDrop.getX() - 82);
 					}
 					
@@ -139,12 +152,17 @@ public class ConnectFourGame extends GameObject {
 					
 					if (keyPressed (GLFW.GLFW_KEY_ENTER)) {
 						
+						indecator.setX(180);
+						
+						toDrop.show();
 						int firstOpen = getFirstOpen(peicePos);
 						
 						if (firstOpen == -1) {
 							return;
 						}
 						
+						toDrop.setCurPosX(peicePos);
+						toDrop.setCurPosY(firstOpen);
 						
 						toDrop.dropTo(69 + (78 * firstOpen));
 						
@@ -153,6 +171,8 @@ public class ConnectFourGame extends GameObject {
 							if (secondOpen != -1) {
 								toDrop = new Piece (0);
 								toDrop.declare(180 + (82 * (6-peicePos)),0);
+								toDrop.setCurPosX(peicePos);
+								toDrop.setCurPosY(secondOpen);
 								toDrop.dropTo(69 + (78 * secondOpen));
 								boardState[6-peicePos][secondOpen] = 1;
 							} else {
@@ -190,8 +210,72 @@ public class ConnectFourGame extends GameObject {
 				}
 			} else if (turn == 1) {
 				if (timer == 0) {
+					
+					if (e instanceof CheatingCharlie) {
+						if (checkForThree(boardState) == 0) {
+							turn = 0;
+							Random rand = new Random ();
+							
+							timer = rand.nextInt(10) + 20;
+							toDrop.hide();
+							toDrop.setColor(0);
+							return;
+						}
+					}
+					
+					if (e instanceof DeliriousDerek) {
+						ArrayList<GameObject> peices = ObjectHandler.getObjectsByName("Piece");
+						if (peices != null && getNumMoves(boardState) % 3 == 0) {
+							Random r = new Random();
+							int pos = r.nextInt(peices.size());
+							Piece p = (Piece) peices.get(pos);
+							while (p.curPosX > 7 || p.curPosY > 6  || (boardState[p.curPosX][p.curPosY] == 0 )) {
+								pos = r.nextInt(peices.size());
+								p = (Piece) peices.get(pos);	
+							}
+							peices.get(pos).setRenderPriority(1);
+							p.dropTo(700);
+							refreshBoard(p.curPosX, p.curPosY, peices);
+						}
+					} else if (e instanceof Jerry) {
+						ArrayList<GameObject> peices = ObjectHandler.getObjectsByName("Piece");
+						if (peices != null && getNumMoves(boardState) % 9 == 0) {
+							DragonCoffee coffee = new DragonCoffee ();
+							coffee.declare(180, 470);
+							for (int i = 0; i < boardState.length; i++) {
+								if (boardState[i][5] != 0) {
+									Piece toDrop = getPieceAt (i,5);
+									toDrop.setCurPosY(-1);
+									toDrop.setCurPosX(-1);
+									
+									toDrop.setRenderPriority(5);
+									
+									toDrop.dropTo(700);
+									refreshBoard(i, 5, peices);
+								}
+							}
+						}
+					} else if (e instanceof Imagamer) {
+						if (getNumMoves(boardState) % 3 == 0) {
+							for (int i = 0; i < boardState.length; i++) {
+								for (int j = 0; j < boardState[i].length; j++) {
+									if (boardState[i][j] == 1) {
+										boardState[i][j] = 2;
+										getPieceAt(i,j).setColor(e.pieceType);
+									} else if (boardState[i][j] == 2) {
+										boardState[i][j] = 1;
+										getPieceAt(i,j).setColor(0);
+									}
+								}
+							}
+						}
+					}
+					
+					
+					
 					int chosenMove = e.getMove(boardState);
 					int columToChange = getFirstOpen(chosenMove);
+					
 					
 					if (columToChange == -1 && (e instanceof LeftLarry)) {
 						turn = 0;
@@ -269,9 +353,15 @@ public class ConnectFourGame extends GameObject {
 							else e.playSound("MMDialog2.wav");
 						}
 					}
+					while (columToChange == -1) {
+						chosenMove = e.getMove(boardState);
+						columToChange = getFirstOpen(chosenMove);
+					}
 
 					boardState[chosenMove][columToChange] = 2;
 					toDrop.declare(170 + 10 + (82 * chosenMove), 0);
+					toDrop.setCurPosX(chosenMove);
+					toDrop.setCurPosY(columToChange);
 					toDrop.dropTo(69 + (78 * columToChange));
 					
 					if (!(e instanceof DarkCoolean)) {
@@ -280,7 +370,14 @@ public class ConnectFourGame extends GameObject {
 						toDrop = new Piece (6);
 					}
 					
+					toDrop.hide();
+					
+					
 					turn = 0;
+					
+					if (e instanceof CheatingCharlie && checkForThree(boardState) == 1) {
+						turn = 1;
+					}
 					
 					Random rand = new Random ();
 					
@@ -295,6 +392,18 @@ public class ConnectFourGame extends GameObject {
 		}
 	}
 
+	private Piece getPieceAt (int x, int y) {
+		ArrayList <GameObject> pieces = ObjectHandler.getObjectsByName("Piece");
+		
+		for (int i = 0; i < pieces.size(); i++) {
+			Piece cur = (Piece) pieces.get(i);
+			if (cur.getCurPosX() == x && cur.getCurPosY() == y ) {
+				return (Piece)pieces.get(i);
+			}
+		}
+		return null;
+	}
+	
 	public int getNumMoves(int[][] boardState) {
 		int numMoves = 0;
 		for (int i = 0; i < 7; i++) {
@@ -330,8 +439,8 @@ public class ConnectFourGame extends GameObject {
 		}
 		
 		
-		e.setX(750);
-		e.setY(200);
+		e.setX(770);
+		e.setY(20);
 	}
 	private void refreshBoard(int x, int y, ArrayList<GameObject> peices) {
 		int[][] temp = new int[7][6];
@@ -343,10 +452,9 @@ public class ConnectFourGame extends GameObject {
 		temp[x][y] = 0;
 		for (int i = 0; i < peices.size(); i++) {
 			Piece p = (Piece) peices.get(i);
-			int peiceX = (int) ((-180 + p.getX())/82);
-			int peiceY = (int) ((-69 + p.getY())/78);
-			if (peiceX == x && peiceY < y) {
-				p.dropTo((int) p.getY() + 82);
+			if (p.getCurPosX() == x && p.getCurPosY() < y) {
+				p.setCurPosY(p.getCurPosY() + 1);
+				p.dropTo(69 + (p.getCurPosY() * 78));
 			}
 		}
 		int foundEmpty = -1;
@@ -424,6 +532,61 @@ public class ConnectFourGame extends GameObject {
 	}
 	
 	
+	public int checkForThree(int[][] board) {
+		int check, count = 1;
+		for (int wx = 0; wx < 7; wx++) {
+			for (int wy = 0; wy < 6; wy++) {
+				if (board[wx][wy] != 0) {
+					check = board[wx][wy];
+					for (int q = 0; q < 3; q++) {
+						int xMove = wx + xDir[q];
+						int yMove = wy + yDir[q];
+						while (xMove > -1 && xMove < 7 && yMove > -1 && yMove < 6) {
+							if (board[xMove][yMove] == 0 || 
+									board[xMove][yMove] == 
+									((check == 1) ? 2 : 1)) break;
+							if (board[xMove][yMove] == check) {
+								count++;
+							}
+							xMove += xDir[q];
+							yMove += yDir[q];
+						}
+						if (count >= 3) {
+							return check;
+						}
+						count = 1;
+					}
+				}
+			}
+		}
+		return 0;
+	}
+	
+	public class Indicater extends GameObject {
+		public Indicater () {
+			this.setSprite(new Sprite ("resources/sprites/indicator.png"));
+		}
+	}
+	
+	public class DragonCoffee extends GameObject {
+		int curFrame = -10000;
+		
+		public DragonCoffee () {
+			this.setSprite(new Sprite ("resources/sprites/config/coffeeSpit.txt"));
+			this.getAnimationHandler().setFrameTime(20);
+			this.setRenderPriority(4);
+			this.getAnimationHandler().setFlipHorizontal(true);
+		}
+		
+		@Override
+		public void frameEvent () {
+			if (this.getAnimationHandler().getFrame() < curFrame) {
+				this.forget();
+			}
+			curFrame = this.getAnimationHandler().getFrame();
+		}
+	}
+	
 	public class SpecialMenu extends GameObject {
 		
 		SpecialButton button = new SpecialButton ();
@@ -455,6 +618,16 @@ public class ConnectFourGame extends GameObject {
 			
 			if (unlockedMoves[3]) {
 				rand = new RandomIcon();
+			}
+			
+			if (unlockedMoves[3]) {
+				hovering = 3;
+			} else if (unlockedMoves[0]) {
+				hovering = 0;
+			} else if (unlockedMoves [2]) {
+				hovering = 2;
+			} else {
+				hovering = 1;
 			}
 			
 		}
@@ -723,6 +896,10 @@ public class ConnectFourGame extends GameObject {
 			}
 			
 			toDrop.setX(180);
+			
+			toDrop.setCurPosX(0);
+			toDrop.setCurPosY(firstOpen);
+			
 			toDrop.dropTo(69 + (78 * firstOpen));
 			boardState[0][firstOpen] = 1;
 			
@@ -731,6 +908,8 @@ public class ConnectFourGame extends GameObject {
 			if (secondOpen != -1) {
 				toDrop = new Piece (0);
 				toDrop.declare(180,0);
+				toDrop.setCurPosX(0);
+				toDrop.setCurPosY(secondOpen);
 				toDrop.dropTo(69 + (78 * secondOpen));
 				boardState[0][secondOpen] = 1;
 			} else {
@@ -779,6 +958,8 @@ public class ConnectFourGame extends GameObject {
 			
 			if (firstOpen != -1) {
 				toDrop.setX(180 + (82 * dropPos));
+				toDrop.setCurPosX(dropPos);
+				toDrop.setCurPosY(firstOpen);
 				toDrop.dropTo(69 + (78 * firstOpen));
 				boardState[dropPos][firstOpen] = 1;
 			} else {
@@ -792,6 +973,8 @@ public class ConnectFourGame extends GameObject {
 			if (secondOpen != -1) {
 				toDrop = new Piece (0);
 				toDrop.declare(180 + (82 * dropPos2),0);
+				toDrop.setCurPosX(dropPos2);
+				toDrop.setCurPosY(secondOpen);
 				toDrop.dropTo(69 + (78 * secondOpen));
 				boardState[dropPos2][secondOpen] = 1;
 			} else {
@@ -806,6 +989,8 @@ public class ConnectFourGame extends GameObject {
 			if (thirdOpen != -1) {
 				toDrop = new Piece (0);
 				toDrop.declare(180 + (82 * dropPos3),0);
+				toDrop.setCurPosX(dropPos3);
+				toDrop.setCurPosY(thirdOpen);
 				toDrop.dropTo(69 + (78 * thirdOpen));
 				boardState[dropPos3][thirdOpen] = 1;
 			} else {
@@ -821,6 +1006,8 @@ public class ConnectFourGame extends GameObject {
 			if (fourOpen != -1) {
 				toDrop = new Piece (e.pieceType);
 				toDrop.declare(180 + (82 * dropPos4),0);
+				toDrop.setCurPosX(dropPos4);
+				toDrop.setCurPosY(fourOpen);
 				toDrop.dropTo(69 + (78 * fourOpen));
 				boardState[dropPos4][fourOpen] = 2;
 			} else {

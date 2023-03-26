@@ -56,6 +56,7 @@ public class MirroredMeryl extends Enemy{
 			this.mapConnect.setAbove(mapConnect.getUpConnectByPosition());
 			this.mapConnect.getAbove().setBelow(this.mapConnect);
 			this.playSound("MMPlayerWins.wav");
+			ConnectFourGame.unlockedMoves[1] = true;
 			GameCode.map.declare();
 		}
 		public void onVictory() {
