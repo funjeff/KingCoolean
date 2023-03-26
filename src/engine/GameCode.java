@@ -16,6 +16,8 @@ import gameObjects.MirroredMeryl;
 import gameObjects.RandomRandy;
 import gameObjects.RandyConnect;
 import map.Room;
+import titleSequence.TitleScreen;
+
 import java.awt.event.KeyEvent;
 
 
@@ -46,9 +48,11 @@ public class GameCode {
 		
 		//Test
 	
-		ConnectFourGame b = new ConnectFourGame ();
-		b.setEnemy(new DarkCoolean (new Connect ()));
-		b.declare();
+		TitleScreen titleScreen = new TitleScreen ();
+		
+		//ConnectFourGame b = new ConnectFourGame ();
+		//b.setEnemy(new DarkCoolean (new Connect ()));
+		//b.declare();
 		
 //
 //		Connect king = new Connect ();

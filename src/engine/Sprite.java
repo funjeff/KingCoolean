@@ -269,6 +269,10 @@ public class Sprite {
 		draw (usedX, usedY, 0);
 	}
 	
+	public void draw (Mat4 transform, int frame, GameObject obj) {
+		GameLoop.wind.drawSprite (transform, glTextures[frame], obj);
+	}
+	
 	public void draw (Mat4 transform, int frame) {
 		GameLoop.wind.drawSprite (transform, glTextures[frame]);
 	}
