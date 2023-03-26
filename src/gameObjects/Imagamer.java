@@ -7,7 +7,11 @@ public class Imagamer extends Enemy{
 	
 	public Imagamer (Connect c) {
 		super (c);
+
 		this.pieceType = 8;
+
+		this.playSound("ImagamerIntro.wav");
+
 		this.difficulty = 7;
 		this.setSprite(new Sprite ("resources/sprites/config/imagamer.txt"));
 	}

@@ -17,7 +17,7 @@ public class ConnectFourGame extends GameObject {
 	KingCoolean k = new KingCoolean ();
 	Enemy e = new Enemy (new Connect());
 	Background back = new Background ();
-	
+	boolean blocked = false;
 	int turn = 0;
 	
 	Piece toDrop = new Piece(0);
@@ -47,8 +47,8 @@ public class ConnectFourGame extends GameObject {
 		k.setX(10);
 		k.setY(380);
 		
-		e.setX(750);
-		e.setY(200);
+		e.setX(765);
+		e.setY(380);
 		
 		indecator.setX(170 + 10);
 		
@@ -94,12 +94,9 @@ public class ConnectFourGame extends GameObject {
 	
 	@Override
 	public void frameEvent () {
-		
 		if (!inSpecialMenu) {
 			if (turn == -1) {
 				if (keyPressed (GLFW.GLFW_KEY_ENTER)) {
-
-					
 					ArrayList <GameObject> peices = ObjectHandler.getObjectsByName("Piece");
 					
 					while (peices != null && !peices.isEmpty()) {
@@ -200,9 +197,15 @@ public class ConnectFourGame extends GameObject {
 							}
 						} else {
 							if (checkForWin (boardState) == 1) {
-								turn = -1;
-								YouWin you = new YouWin ();
-								you.declare();
+								if (!(e instanceof MirroredMeryl)) {
+									turn = -1;
+									YouWin you = new YouWin ();
+									you.declare();
+								} else {
+									turn = -1;
+									YouLose you = new YouLose ();
+									you.declare();
+								}
 							}
 						}
 						
@@ -223,7 +226,7 @@ public class ConnectFourGame extends GameObject {
 						if (checkForThree(boardState) == 0) {
 							turn = 0;
 							Random rand = new Random ();
-							
+							e.playSound("LLPlayerBlocks.wav");
 							timer = rand.nextInt(10) + 20;
 							toDrop.hide();
 							toDrop.setColor(0);
@@ -231,7 +234,7 @@ public class ConnectFourGame extends GameObject {
 						}
 					}
 					
-					if (e instanceof DeliriousDerek) {
+					else if (e instanceof DeliriousDerek) {
 						ArrayList<GameObject> peices = ObjectHandler.getObjectsByName("Piece");
 						if (peices != null && getNumMoves(boardState) % 3 == 0) {
 							Random r = new Random();
@@ -289,23 +292,25 @@ public class ConnectFourGame extends GameObject {
 						turn = 0;
 						
 						Random rand = new Random ();
-						int choice = rand.nextInt(8);
-						if (peicePos == 0) {
-							if (choice >= 4) {
-								e.playSound("LLDialog1.wav");
+						int choice = rand.nextInt(4);
+						if (peicePos == 0 && !blocked) {
+							if (choice == 2) {
+								e.playSound("LLOverflow1.wav");
 							}
-							if (choice == 7) {
-								e.playSound("LLDialog2.wav");
+							if (choice == 3) {
+								e.playSound("LLOverflow2.wav");
 							}
-							e.playSound("LLPlayerBlocks.wav");
 						}
-						else if (choice >= 6) {
-							if (choice == 6) {
+						else if (!blocked) {
+							if (choice == 2) {
 								e.playSound("LLDialog1.wav");
 							}
-							if (choice == 7) {
+							if (choice == 3) {
 								e.playSound("LLDialog2.wav");
 							}
+						}
+						else if (blocked) { 
+							blocked = false;
 						}
 						timer = rand.nextInt(10) + 20;
 						
@@ -361,6 +366,24 @@ public class ConnectFourGame extends GameObject {
 							else e.playSound("MMDialog2.wav");
 						}
 					}
+					else if (e instanceof RandomRandy) {
+						Random r = new Random();
+						int pos = r.nextInt(4);
+						if (pos == 0) e.playSound("RRDialog1.wav");
+						else if (pos == 1) e.playSound("RRDialog2.wav");
+						else if (pos == 2) e.playSound("RRDialog3.wav");
+					}
+					else if (e instanceof Imagamer) {
+						Random r = new Random();
+						int pos = r.nextInt(8);
+						if (pos == 0)  e.playSound("ImagamerDialog1.wav");
+						if (pos == 1)  e.playSound("ImagamerDialog2.wav");
+						if (pos == 2)  e.playSound("ImagamerDialog3.wav");
+						if (pos == 3)  e.playSound("ImagamerDialog4.wav");
+						if (pos == 4)  e.playSound("ImagamerDialog5.wav");
+						if (pos == 5)  e.playSound("ImagamerDialog6.wav");
+						if (pos == 6)  e.playSound("ImagamerDialog7.wav");
+					}
 					while (columToChange == -1) {
 						chosenMove = e.getMove(boardState);
 						columToChange = getFirstOpen(chosenMove);
@@ -379,9 +402,15 @@ public class ConnectFourGame extends GameObject {
 					}
 					
 					if (checkForWin (boardState) == 2) {
-						turn = -1;
-						YouLose you = new YouLose();
-						you.declare();
+						if (!(e instanceof MirroredMeryl)) {
+							turn = -1;
+							YouLose you = new YouLose ();
+							you.declare();
+						} else {
+							turn = -1;
+							YouWin you = new YouWin ();
+							you.declare();
+						}
 						return;
 					}
 					
@@ -979,9 +1008,18 @@ public class ConnectFourGame extends GameObject {
 				}
 			} else {
 				if (checkForWin (boardState) == 1) {
-					turn = -1;
-					YouWin you = new YouWin ();
-					you.declare();
+					
+					if (checkForWin (boardState) == 1) {
+						if (!(e instanceof MirroredMeryl)) {
+							turn = -1;
+							YouWin you = new YouWin ();
+							you.declare();
+						} else {
+							turn = -1;
+							YouLose you = new YouLose ();
+							you.declare();
+						}
+					}
 				}
 			}
 			
@@ -1081,15 +1119,29 @@ public class ConnectFourGame extends GameObject {
 				}
 			} else {
 				if (checkForWin (boardState) == 1) {
+					if (checkForWin (boardState) == 1) {
+						if (!(e instanceof MirroredMeryl)) {
+							turn = -1;
+							YouWin you = new YouWin ();
+							you.declare();
+						} else {
+							turn = -1;
+							YouLose you = new YouLose ();
+							you.declare();
+						}
+					}
+				}
+			}
+			if (checkForWin (boardState) == 2) {
+				if (!(e instanceof MirroredMeryl)) {
+					turn = -1;
+					YouLose you = new YouLose ();
+					you.declare();
+				} else {
 					turn = -1;
 					YouWin you = new YouWin ();
 					you.declare();
 				}
-			}
-			if (checkForWin (boardState) == 2) {
-				turn = -1;
-				YouLose you = new YouLose ();
-				you.declare();
 			}
 			
 			

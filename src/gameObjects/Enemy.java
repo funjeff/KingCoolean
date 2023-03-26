@@ -16,11 +16,16 @@ public class Enemy extends GameObject {
 	int pieceType;
 	int difficulty = 7;
 	
+	Frame f = new Frame ();
 	Sprite background = new Sprite ("resources/sprites/Background1.png");
 	
 	public Enemy (Connect map) {
 		mapConnect = map;
-		
+	}
+	@Override
+	public void draw() {
+		f.draw();
+		super.draw();
 	}
 	
 	public int getMove (int [] [] boardState) {
@@ -52,6 +57,16 @@ public class Enemy extends GameObject {
 	
 	public void setPieceType (int type) {
 		pieceType = type;
+	}
+
+	public class Frame extends GameObject {
+		public Frame() {
+			Sprite s = new Sprite("resources/sprites/config/frame.txt");
+			this.setSprite(s);
+			this.setX(765);
+			this.setY(30);
+		}
+
 	}
 	
 }

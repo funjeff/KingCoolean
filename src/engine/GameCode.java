@@ -3,6 +3,7 @@ package engine;
 import java.util.ArrayList;
 
 import gameObjects.Test;
+import javafx.scene.media.AudioClip;
 import gameObjects.CheatingCharlie;
 import gameObjects.Connect;
 import gameObjects.LarryConnect;
@@ -64,6 +65,7 @@ public class GameCode {
 		//Test
 	
 		//TitleScreen titleScreen = new TitleScreen ();
+
 
 //		ConnectFourGame b = new ConnectFourGame ();
 //		b.setEnemy(new JeffWeiner (new Connect ()));
@@ -129,6 +131,8 @@ public class GameCode {
 		ConnectMap.allConnects.add(jerry);
 		ConnectMap.allConnects.add(darkCoolean);
 		ConnectMap.allConnects.add(imagamer);
+
+
 ////		
 ////		
 		map = new ConnectMap (king);

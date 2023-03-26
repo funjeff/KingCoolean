@@ -7,13 +7,14 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
 import engine.GameCode;
+import engine.GameObject;
 import engine.Sprite;
 
 public class LeftLarry extends Enemy {
-	
 	public LeftLarry (Connect connect) {
 		super(connect);
 		this.setSprite(new Sprite ("resources/sprites/config/leftLarry.txt"));
+		this.getAnimationHandler().setFrameTime(50);
 		this.getAnimationHandler().setFlipHorizontal(true);
 		pieceType = 2;
 		Random rand = new Random();
@@ -39,6 +40,5 @@ public class LeftLarry extends Enemy {
 		this.playSound("LLPlayerLoses.wav");
 		GameCode.map.declare();
 	}
-	
-	
+
 }

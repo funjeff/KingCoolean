@@ -11,6 +11,7 @@ public class JeffWeiner extends Enemy{
 		this.difficulty = 9;
 		this.setSprite(new Sprite ("resources/sprites/jeff weiner.png"));
 		this.background = new Sprite ("resources/sprites/SPACE.png");
+		this.playSound("JeffWeinerIntro.wav");
 	}
 	
 	@Override
@@ -18,6 +19,13 @@ public class JeffWeiner extends Enemy{
 		ConnectFourGame g = new ConnectFourGame();
 		g.setEnemy(new WeffJiener(new Connect ()));
 		g.declare();
+		this.playSound("JeffWeinerPlayerWins1.wav");
+	}
+	
+	@Override
+	public void onVictory() {
+		this.playSound("JeffWeinerPlayerLoses.wav");
+		GameCode.map.declare();
 	}
 
 }
