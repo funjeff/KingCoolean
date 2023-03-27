@@ -23,7 +23,7 @@ public class MirroredMeryl extends Enemy{
 			Arrays.fill(curHeights, 5);
 			pieceType = 3;
 			clip.setCycleCount (100);
-			clip.play ():
+			clip.play ();
 		}
 		
 		@Override
@@ -58,14 +58,26 @@ public class MirroredMeryl extends Enemy{
 		
 		@Override
 		public void onDefeat () {
-			this.mapConnect.setAbove(mapConnect.getUpConnectByPosition());
-			this.mapConnect.getAbove().setBelow(this.mapConnect);
-			this.playSound("MMPlayerWins.wav");
+			this.mapConnect.setLeft(mapConnect.getLeftConnectByPosition());
+			this.mapConnect.getLeft().setRight(this.mapConnect);
+			
 			ConnectFourGame.unlockedMoves[1] = true;
 			GameCode.map.declare();
 			clip.stop ();
 		}
 		public void onVictory() {
+			clip.stop();
+			GameCode.map.declare();
+		}
+		
+		@Override
+		public void onDefeatLine () {
+			this.playSound("MMPlayerWins.wav");
+		}
+
+		@Override
+		public void onVictoryLine () {
 			this.playSound("MMPlayerLoses.wav");
 		}
+
 }

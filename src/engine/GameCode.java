@@ -16,8 +16,10 @@ import gameObjects.DerekConnect;
 import gameObjects.HenryConnect;
 import gameObjects.HorizontalHenry;
 import gameObjects.Imagamer;
+import gameObjects.ImagamerConnect;
 import gameObjects.JeffWeiner;
 import gameObjects.Jerry;
+import gameObjects.JerryConnect;
 import gameObjects.LeftLarry;
 import gameObjects.MerylConnect;
 import gameObjects.MirroredMeryl;
@@ -61,78 +63,78 @@ public class GameCode {
 	public static void init () {
 		
 		//Test
-	
-		TitleScreen titleScreen = new TitleScreen ();
 
-//		ConnectFourGame b = new ConnectFourGame ();
-//		b.setEnemy(new LeftLarry (new Connect ()));
-//		b.declare();
+		Connect king = new Connect ();
+		LarryConnect larry = new LarryConnect ();
+		RandyConnect randy = new RandyConnect ();
+		MerylConnect meryl = new MerylConnect ();
+		Connect charlie = new Connect ();
+		HenryConnect henry = new HenryConnect ();
+		DerekConnect derek = new DerekConnect ();
+
+		ImagamerConnect imagamer = new ImagamerConnect ();
+		DarkCooleanConnect darkCoolean = new DarkCooleanConnect ();
+		JerryConnect jerry = new JerryConnect ();
 		
-//		AudioClip music = new AudioClip("resources/music/idk.wav");
-//		music.play();
-//		Connect king = new Connect ();
-//		LarryConnect larry = new LarryConnect ();
-//		RandyConnect randy = new RandyConnect ();
-//		MerylConnect meryl = new MerylConnect ();
-//		Connect charlie = new Connect ();
-//		HenryConnect henry = new HenryConnect ();
-//		DerekConnect derek = new DerekConnect ();
-//		
-//		ImagamerConnect imagamer = new ImagamerConnect ();
-//		DarkCooleanConnect darkCoolean = new DarkCooleanConnect ();
-//		JerryConnect jerry = new JerryConnect ();
-//		
-//		jerry.makeForBoss();
-//		darkCoolean.makeForBoss();
-//		imagamer.makeForBoss();
-//		
-//		king.setY(230);
-//		king.setX(260);
-//		
-//		king.getResume().setSprite(new Sprite ("resources/sprites/resumes/king coolean resume.png"));
-//		larry.getResume().setSprite(new Sprite ("resources/sprites/resumes/left larry resume.png"));
-//		randy.getResume().setSprite(new Sprite ("resources/sprites/resumes/random randy resume.png"));
-//		meryl.getResume().setSprite(new Sprite ("resources/sprites/resumes/mirrored meryl resume.png"));
-//		charlie.getResume().setSprite(new Sprite ("resources/sprites/resumes/cheating charlie resume.png"));
-//		
-//		
-//		king.setAbove(larry);
-//		larry.setBelow(king);
-//		
-//		king.setBelow(randy);
-//		randy.setAbove(king);
-//		
-//		king.setLeft(henry);
-//		henry.setRight(king);
-//		
-//		king.setRight(charlie);
-//		charlie.setLeft(king);
-//		
-//		meryl.positionAbove(henry);
-//		
-//		derek.positionRight(larry);
-//		
-//		
-//		jerry.positionAbove(derek);
-//		
-//		imagamer.positionBelow(randy);
-//		
-//		darkCoolean.positionLeft(meryl);
-//		
-//		ConnectMap.allConnects.add(king);
-//		ConnectMap.allConnects.add(larry);
-//		ConnectMap.allConnects.add(randy);
-//		ConnectMap.allConnects.add(meryl);
-//		ConnectMap.allConnects.add(charlie);
-//		ConnectMap.allConnects.add(henry);
-//		ConnectMap.allConnects.add(derek);
-//		ConnectMap.allConnects.add(jerry);
-//		ConnectMap.allConnects.add(darkCoolean);
-//		ConnectMap.allConnects.add(imagamer);
+		jerry.makeForBoss();
+		darkCoolean.makeForBoss();
+		imagamer.makeForBoss();
+		
+		king.setY(230);
+		king.setX(260);
+		
+		king.getResume().setSprite(new Sprite ("resources/sprites/resumes/king coolean resume.png"));
+		larry.getResume().setSprite(new Sprite ("resources/sprites/resumes/left larry resume.png"));
+		randy.getResume().setSprite(new Sprite ("resources/sprites/resumes/random randy resume.png"));
+		meryl.getResume().setSprite(new Sprite ("resources/sprites/resumes/mirrored meryl resume.png"));
+		charlie.getResume().setSprite(new Sprite ("resources/sprites/resumes/cheating charlie resume.png"));
+		imagamer.getResume().setSprite(new Sprite ("resources/sprites/resumes/Imagamer resume.png"));
+		jerry.getResume().setSprite(new Sprite ("resources/sprites/resumes/JERRY THE JRAGON RESUME.png"));
+		henry.getResume().setSprite(new Sprite ("resources/sprites/resumes/Horizontal Henry resume copy.png"));
+		darkCoolean.getResume().setSprite(new Sprite ("resources/sprites/resumes/Dark Coolean resume.png"));
+		
+		
+		
+		king.setAbove(larry);
+		larry.setBelow(king);
+		
+		king.setBelow(randy);
+		randy.setAbove(king);
+		
+		king.setLeft(henry);
+		henry.setRight(king);
+		
+		king.setRight(charlie);
+		charlie.setLeft(king);
+		
+		meryl.positionAbove(henry);
+		
+		derek.positionRight(larry);
+		
+		
+		jerry.positionAbove(derek);
+		
+		imagamer.positionBelow(randy);
+		
+		darkCoolean.positionLeft(meryl);
+		
+		ConnectMap.allConnects.add(king);
+		ConnectMap.allConnects.add(larry);
+		ConnectMap.allConnects.add(randy);
+		ConnectMap.allConnects.add(meryl);
+		ConnectMap.allConnects.add(charlie);
+		ConnectMap.allConnects.add(henry);
+		ConnectMap.allConnects.add(derek);
+		ConnectMap.allConnects.add(jerry);
+		ConnectMap.allConnects.add(darkCoolean);
+		ConnectMap.allConnects.add(imagamer);
+
+
 ////		
 ////		
-//		map = new ConnectMap (king);
-//		map.declare();
+		GameCode.map = new ConnectMap (king);
+		GameCode.map.declare();
+	
 //		//Room2 room2 = new Room2 ();
 //		//room2.loadMap ("big_test.tmj");
 		

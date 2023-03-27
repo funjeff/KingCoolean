@@ -16,6 +16,8 @@ public class Enemy extends GameObject {
 	int pieceType;
 	int difficulty = 7;
 	
+	boolean frameOrNah = true;
+	
 	Frame f = new Frame ();
 	Sprite background = new Sprite ("resources/sprites/Background1.png");
 	
@@ -24,7 +26,9 @@ public class Enemy extends GameObject {
 	}
 	@Override
 	public void draw() {
-		f.draw();
+		if (frameOrNah) {
+			f.draw();
+		}
 		super.draw();
 	}
 	
@@ -52,6 +56,14 @@ public class Enemy extends GameObject {
 	}
 	
 	public void onVictory () {
+		
+	}
+	
+	public void onDefeatLine () {
+		
+	}
+	
+	public void onVictoryLine () {
 		
 	}
 	

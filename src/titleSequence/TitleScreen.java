@@ -6,10 +6,21 @@ import org.lwjgl.glfw.GLFW;
 
 import com.hackoeur.jglm.Mat4;
 
+import engine.GameCode;
 import engine.GameLoop;
 import engine.GameObject;
 import engine.Sprite;
+import gameObjects.Connect;
+import gameObjects.ConnectMap;
+import gameObjects.DarkCooleanConnect;
+import gameObjects.DerekConnect;
 import gameObjects.FadeTimer;
+import gameObjects.HenryConnect;
+import gameObjects.ImagamerConnect;
+import gameObjects.JerryConnect;
+import gameObjects.LarryConnect;
+import gameObjects.MerylConnect;
+import gameObjects.RandyConnect;
 import gl.GLProgram;
 import javafx.scene.media.AudioClip;
 
@@ -72,6 +83,77 @@ public class TitleScreen extends GameObject {
 			legends.forget ();
 		}
 		GLProgram titleProgram = GLProgram.programFromDirectory ("resources/shaders/default/");
+		
+		Connect king = new Connect ();
+		LarryConnect larry = new LarryConnect ();
+		RandyConnect randy = new RandyConnect ();
+		MerylConnect meryl = new MerylConnect ();
+		Connect charlie = new Connect ();
+		HenryConnect henry = new HenryConnect ();
+		DerekConnect derek = new DerekConnect ();
+
+		ImagamerConnect imagamer = new ImagamerConnect ();
+		DarkCooleanConnect darkCoolean = new DarkCooleanConnect ();
+		JerryConnect jerry = new JerryConnect ();
+		
+		jerry.makeForBoss();
+		darkCoolean.makeForBoss();
+		imagamer.makeForBoss();
+		
+		king.setY(230);
+		king.setX(260);
+		
+		king.getResume().setSprite(new Sprite ("resources/sprites/resumes/king coolean resume.png"));
+		larry.getResume().setSprite(new Sprite ("resources/sprites/resumes/left larry resume.png"));
+		randy.getResume().setSprite(new Sprite ("resources/sprites/resumes/random randy resume.png"));
+		meryl.getResume().setSprite(new Sprite ("resources/sprites/resumes/mirrored meryl resume.png"));
+		charlie.getResume().setSprite(new Sprite ("resources/sprites/resumes/cheating charlie resume.png"));
+		imagamer.getResume().setSprite(new Sprite ("resources/sprites/resumes/Imagamer resume.png"));
+		jerry.getResume().setSprite(new Sprite ("resources/sprites/resumes/JERRY THE JRAGON RESUME.png"));
+		henry.getResume().setSprite(new Sprite ("resources/sprites/resumes/Horizontal Henry resume copy.png"));
+		darkCoolean.getResume().setSprite(new Sprite ("resources/sprites/resumes/Dark Coolean resume.png"));
+		
+		
+		
+		king.setAbove(larry);
+		larry.setBelow(king);
+		
+		king.setBelow(randy);
+		randy.setAbove(king);
+		
+		king.setLeft(henry);
+		henry.setRight(king);
+		
+		king.setRight(charlie);
+		charlie.setLeft(king);
+		
+		meryl.positionAbove(henry);
+		
+		derek.positionRight(larry);
+		
+		
+		jerry.positionAbove(derek);
+		
+		imagamer.positionBelow(randy);
+		
+		darkCoolean.positionLeft(meryl);
+		
+		ConnectMap.allConnects.add(king);
+		ConnectMap.allConnects.add(larry);
+		ConnectMap.allConnects.add(randy);
+		ConnectMap.allConnects.add(meryl);
+		ConnectMap.allConnects.add(charlie);
+		ConnectMap.allConnects.add(henry);
+		ConnectMap.allConnects.add(derek);
+		ConnectMap.allConnects.add(jerry);
+		ConnectMap.allConnects.add(darkCoolean);
+		ConnectMap.allConnects.add(imagamer);
+
+
+////		
+////		
+		GameCode.map = new ConnectMap (king);
+		GameCode.map.declare();
 		forget ();
 
 	}
@@ -347,6 +429,7 @@ public class TitleScreen extends GameObject {
 				titleFadeTimer.start ();
 				Thread.sleep (3000);
 				music.stop ();
+				close();
 				
 			} catch (InterruptedException e) {
 				System.out.println ("oops");

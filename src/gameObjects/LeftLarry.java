@@ -35,7 +35,7 @@ public class LeftLarry extends Enemy {
 	public void onDefeat() {
 		this.mapConnect.setRight(mapConnect.getRightConnectByPosition());
 		this.stopAllSounds();
-		this.playSound("leftLarryPlayerWins.wav");
+		
 		this.mapConnect.getRight().setLeft(this.mapConnect);
 		GameCode.map.declare();
 		ConnectFourGame.unlockedMoves[2] = true;
@@ -43,7 +43,18 @@ public class LeftLarry extends Enemy {
 	}
 	
 	public void onVictory() {
-		this.playSound("leftLarryPlayerLoses.wav");
+		clip.stop();
+		GameCode.map.declare();
+	}
+	
+	@Override
+	public void onDefeatLine () {
+		this.playSound("llPlayerWins.wav");
+	}
+
+	@Override
+	public void onVictoryLine () {
+		this.playSound("LLPlayerLoses.wav");
 	}
 
 }

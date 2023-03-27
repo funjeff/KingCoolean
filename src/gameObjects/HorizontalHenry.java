@@ -62,4 +62,11 @@ public class HorizontalHenry extends Enemy {
 		GameCode.map.declare();
 		clip.stop ();
 	}
+	@Override
+	public void onVictory () {
+		GameCode.map.declare();
+		clip.stop();
+	}
+	
+	
 }

@@ -119,12 +119,12 @@ public class ConnectFourGame extends GameObject {
 					this.forget();
 					
 
-					if (ObjectHandler.getObjectsByName("YouWin") != null) {
+					if (ObjectHandler.getObjectsByName("YouWin") != null && ObjectHandler.getObjectsByName("YouWin").size() != 0 ) {
 						ObjectHandler.getObjectsByName("YouWin").get(0).forget();
 						e.onDefeat();
 					}
 					
-					if (ObjectHandler.getObjectsByName("YouLose") != null) {
+					if (ObjectHandler.getObjectsByName("YouLose") != null && ObjectHandler.getObjectsByName("YouLose").size() != 0) {
 						ObjectHandler.getObjectsByName("YouLose").get(0).forget();
 						e.onVictory();
 					}
@@ -193,13 +193,22 @@ public class ConnectFourGame extends GameObject {
 							if (checkForFive (boardState) == 1) {
 								turn = -1;
 								YouWin you = new YouWin ();
+								e.onDefeatLine();
 								you.declare();
 							}
 						} else {
 							if (checkForWin (boardState) == 1) {
-								turn = -1;
-								YouWin you = new YouWin ();
-								you.declare();
+								if (!(e instanceof MirroredMeryl)) {
+									turn = -1;
+									YouWin you = new YouWin ();
+									e.onDefeatLine();
+									you.declare();
+								} else {
+									turn = -1;
+									YouLose you = new YouLose ();
+									e.onVictoryLine();
+									you.declare();
+								}
 							}
 						}
 						
@@ -401,16 +410,26 @@ public class ConnectFourGame extends GameObject {
 						toDrop = new Piece (6);
 					}
 					
+					if (checkForWin (boardState) == 2) {
+						if (!(e instanceof MirroredMeryl)) {
+							turn = -1;
+							YouLose you = new YouLose ();
+							e.onVictoryLine();
+							you.declare();
+						} else {
+							turn = -1;
+							YouWin you = new YouWin ();
+							e.onDefeatLine();
+							you.declare();
+						}
+						return;
+					}
+					
 					toDrop.hide();
 					
 					
 					turn = 0;
 					
-					if (checkForWin (boardState) == 2) {
-						turn = -1;
-						YouLose you = new YouLose();
-						you.declare();
-					}
 					
 					if (e instanceof CheatingCharlie && checkForThree(boardState) == 1) {
 						turn = 1;
@@ -996,13 +1015,25 @@ public class ConnectFourGame extends GameObject {
 				if (checkForFive (boardState) == 1) {
 					turn = -1;
 					YouWin you = new YouWin ();
+					e.onDefeatLine();
 					you.declare();
 				}
 			} else {
 				if (checkForWin (boardState) == 1) {
-					turn = -1;
-					YouWin you = new YouWin ();
-					you.declare();
+					
+					if (checkForWin (boardState) == 1) {
+						if (!(e instanceof MirroredMeryl)) {
+							turn = -1;
+							YouWin you = new YouWin ();
+							e.onDefeatLine();
+							you.declare();
+						} else {
+							turn = -1;
+							YouLose you = new YouLose ();
+							e.onVictoryLine();
+							you.declare();
+						}
+					}
 				}
 			}
 			
@@ -1098,19 +1129,38 @@ public class ConnectFourGame extends GameObject {
 				if (checkForFive (boardState) == 1) {
 					turn = -1;
 					YouWin you = new YouWin ();
+					e.onDefeatLine();
 					you.declare();
 				}
 			} else {
 				if (checkForWin (boardState) == 1) {
-					turn = -1;
-					YouWin you = new YouWin ();
-					you.declare();
+					if (checkForWin (boardState) == 1) {
+						if (!(e instanceof MirroredMeryl)) {
+							turn = -1;
+							YouWin you = new YouWin ();
+							e.onDefeatLine();
+							you.declare();
+						} else {
+							turn = -1;
+							YouLose you = new YouLose ();
+							e.onVictoryLine();
+							you.declare();
+						}
+					}
 				}
 			}
 			if (checkForWin (boardState) == 2) {
-				turn = -1;
-				YouLose you = new YouLose ();
-				you.declare();
+				if (!(e instanceof MirroredMeryl)) {
+					turn = -1;
+					YouLose you = new YouLose ();
+					e.onVictoryLine();
+					you.declare();
+				} else {
+					turn = -1;
+					YouWin you = new YouWin ();
+					e.onDefeatLine();
+					you.declare();
+				}
 			}
 			
 			
