@@ -32,6 +32,25 @@ public class Enemy extends GameObject {
 		super.draw();
 	}
 	
+	@Override
+	public void frameEvent () {
+		if (!audio.isEmpty()) {
+			for (int i = 0; i < audio.size(); i++) {
+			
+				if (audio.get(i).isPlaying()) {
+					this.getAnimationHandler().setFrameTime(100);
+				} else {
+					audio.remove(i);
+					i = i - 1;
+				}
+			}
+		} else {
+			if (this.getAnimationHandler().getFrameTime() != 0) {
+				this.getAnimationHandler().setFrameTime(0);
+			}
+		}
+	}
+	
 	public int getMove (int [] [] boardState) {
 		SerbianConnectFour scf = new SerbianConnectFour();
 		AlphaBetaSearch abs = new AlphaBetaSearch(scf);
@@ -40,10 +59,33 @@ public class Enemy extends GameObject {
 	}
 	
 	public void playSound(String sound) {
+		
+		while (!audio.isEmpty()) {
+			if (audio.get(0).isPlaying()) {
+				return;
+			} else {
+				audio.remove(0);
+			}
+		}
+		
 		AudioClip clip = new AudioClip("file:resources/sound/" + sound);
 		audio.add(clip);
 		clip.play();
 	}
+	
+
+	public void playSound(String sound, boolean doItBRO) {
+		
+		while (!audio.isEmpty()) {
+			audio.get(0).stop();
+			audio.remove(0);
+		}
+		
+		AudioClip clip = new AudioClip("file:resources/sound/" + sound);
+		audio.add(clip);
+		clip.play();
+	}
+	
 	
 	public void stopAllSounds() {
 		for (int i = 0; i < audio.size(); i++) {

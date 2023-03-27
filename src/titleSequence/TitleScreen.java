@@ -90,6 +90,7 @@ public class TitleScreen extends GameObject {
 		GLProgram gameProgram = GLProgram.programFromDirectory ("resources/shaders/default/");
 		GameLoop.wind.setProgram (gameProgram);
 		GameCode.initMap ();
+		
 		forget ();
 
 	}

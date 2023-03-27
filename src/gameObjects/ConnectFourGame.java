@@ -94,6 +94,7 @@ public class ConnectFourGame extends GameObject {
 	
 	@Override
 	public void frameEvent () {
+		e.frameEvent();
 		if (!inSpecialMenu) {
 			if (turn == -1) {
 				if (keyPressed (GLFW.GLFW_KEY_ENTER)) {
@@ -155,14 +156,16 @@ public class ConnectFourGame extends GameObject {
 					
 					if (keyPressed (GLFW.GLFW_KEY_ENTER)) {
 						
-						indecator.setX(180);
-						
-						toDrop.show();
 						int firstOpen = getFirstOpen(peicePos);
 						
 						if (firstOpen == -1) {
 							return;
 						}
+						
+						indecator.setX(180);
+						
+						toDrop.show();
+						
 						
 						toDrop.setCurPosX(peicePos);
 						toDrop.setCurPosY(firstOpen);
@@ -435,6 +438,7 @@ public class ConnectFourGame extends GameObject {
 					if (e instanceof CheatingCharlie && checkForThree(boardState) != 0) {
 						turn = 1;
 						toDrop.setColor(e.pieceType);
+						toDrop.show();
 					}
 					
 					Random rand = new Random ();

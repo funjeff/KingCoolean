@@ -17,7 +17,7 @@ public class LeftLarry extends Enemy {
 	public LeftLarry (Connect connect) {
 		super(connect);
 		this.setSprite(new Sprite ("resources/sprites/config/leftLarry.txt"));
-		this.getAnimationHandler().setFrameTime(50);
+		this.getAnimationHandler().setFrameTime(0);
 		this.getAnimationHandler().setFlipHorizontal(true);
 		pieceType = 2;
 		Random rand = new Random();

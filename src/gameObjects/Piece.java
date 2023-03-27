@@ -4,6 +4,7 @@ import java.util.Random;
 
 import engine.GameObject;
 import engine.Sprite;
+import javafx.scene.media.AudioClip;
 
 public class Piece extends GameObject{
 	int dropTo = -1;
@@ -31,6 +32,8 @@ public class Piece extends GameObject{
 			this.setY(this.getY() + vy);
 			if (this.getY() > dropTo && vy > 0) {
 				if (vy > 2) {
+					AudioClip clip = new AudioClip("file:resources/sound/" + "peiceDrop.wav");
+					clip.play();
 					vy = -vy * .8;
 				} else {
 					vy = 0;

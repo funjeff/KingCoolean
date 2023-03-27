@@ -95,7 +95,7 @@ public class AlphaBetaSearch {
 	    y1 = y;
 	    while ((x1 > -1 && x1 < 7 && y1 > -1 && y1 < 6) && board[x1][y1] == player) {
 	      x1 -= xDir[dir];
-	      y1 -= xDir[dir];
+	      y1 -= yDir[dir];
 	      count++;
 	    }
 	    return count - 1 >= 4;

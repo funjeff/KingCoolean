@@ -24,7 +24,9 @@ public class WeffJiener extends Enemy{
 	public void onDefeat () {
 		GameCode.map.declare();
 
-		
+		ConnectFourGame g = new ConnectFourGame();
+		g.setEnemy(new WeffJiener(new Connect ()));
+		g.declare();
 
 		ConnectFourGame.unlockedMoves[0] = true;
 		clip.stop ();
