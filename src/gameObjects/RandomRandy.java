@@ -40,6 +40,7 @@ public class RandomRandy extends Enemy {
 	
 	@Override
 	public void onVictory () {
+		clip.stop();
 		GameCode.map.declare();
 	}
 	

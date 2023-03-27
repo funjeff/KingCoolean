@@ -34,7 +34,7 @@ public class JeffWeiner extends Enemy{
 	
 	@Override
 	public void onVictory() {
-		
+		clip.stop();
 		GameCode.map.declare();
 	}
 	

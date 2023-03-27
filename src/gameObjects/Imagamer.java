@@ -31,6 +31,7 @@ public class Imagamer extends Enemy{
 		} else {
 			GameCode.map.declare();
 		}
+		clip.stop();
 	}
 	
 	@Override

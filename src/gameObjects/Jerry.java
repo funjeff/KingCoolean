@@ -34,6 +34,7 @@ public class Jerry extends Enemy{
 		} else {
 			GameCode.map.declare();
 		}
+		clip.stop();
 	}
 	
 	@Override

@@ -23,7 +23,7 @@ public class MirroredMeryl extends Enemy{
 			Arrays.fill(curHeights, 5);
 			pieceType = 3;
 			clip.setCycleCount (100);
-			clip.play ():
+			clip.play ();
 		}
 		
 		@Override
@@ -66,7 +66,7 @@ public class MirroredMeryl extends Enemy{
 			clip.stop ();
 		}
 		public void onVictory() {
-			
+			clip.stop();
 			GameCode.map.declare();
 		}
 		

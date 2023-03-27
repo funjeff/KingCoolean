@@ -31,11 +31,13 @@ public class DarkCoolean extends Enemy{
 		} else {
 			GameCode.map.declare();
 		}
+		
 	}
 
 	@Override
 	public void onVictory () {
 		GameCode.map.declare();
+		clip.stop();
 	}
 	
 }

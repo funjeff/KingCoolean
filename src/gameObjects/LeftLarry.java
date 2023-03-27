@@ -43,7 +43,7 @@ public class LeftLarry extends Enemy {
 	}
 	
 	public void onVictory() {
-	
+		clip.stop();
 		GameCode.map.declare();
 	}
 	
