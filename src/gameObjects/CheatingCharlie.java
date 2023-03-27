@@ -15,5 +15,7 @@ public class CheatingCharlie extends Enemy {
 		pieceType = 7;
 	}
 	
-	
+	public void onVictory () {
+		GameCode.map.declare();
+	}
 }

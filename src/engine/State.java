@@ -31,19 +31,18 @@ public class State {
 		return -1;
 	}
 	public int findChildPlay(int val) {
-		int[] checkOrder;
-		Random r = new Random();
-		int order = r.nextInt(6);
-		if (order == 0) checkOrder = new int[]{0, 1, 2, 3, 4, 5};
-		else if (order == 1) checkOrder = new int[]{1, 2, 3, 4, 5, 0};
-		else if (order == 2) checkOrder = new int[]{2, 3, 4, 5, 0, 1};
-		else if (order == 3) checkOrder = new int[]{3, 4, 5, 0, 1, 2};
-		else if (order == 4) checkOrder = new int[]{4, 5, 0, 1, 2, 3};
-		else checkOrder = new int[]{5, 0, 1, 2, 3, 4};
-		for (int i = 0; i < checkOrder.length; i++) {
-			if (children[checkOrder[i]].value == val) return children[checkOrder[i]].play;
+	
+		if (children == null) {
+			return 0;
 		}
-		return -2;
+		
+		for (int i = 0; i < 6; i++) {
+			if (children[i].value == val) {
+				return children[i].play;
+			}
+		}
+		
+		return 0;
 	}
 	public void setValue(int val) {
 		this.value = val;

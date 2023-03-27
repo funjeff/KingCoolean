@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import gameObjects.Test;
 import javafx.scene.media.AudioClip;
+import gameObjects.CharlieConnect;
 import gameObjects.CheatingCharlie;
 import gameObjects.Connect;
 import gameObjects.LarryConnect;
@@ -68,7 +69,7 @@ public class GameCode {
 		LarryConnect larry = new LarryConnect ();
 		RandyConnect randy = new RandyConnect ();
 		MerylConnect meryl = new MerylConnect ();
-		Connect charlie = new Connect ();
+		CharlieConnect charlie = new CharlieConnect ();
 		HenryConnect henry = new HenryConnect ();
 		DerekConnect derek = new DerekConnect ();
 

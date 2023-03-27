@@ -83,9 +83,9 @@ public class ConnectFourGame extends GameObject {
 		b.draw();
 		k.draw();
 		e.draw();
-//		if (turn == 0) {
-//			indecator.draw();
-//		}
+		if (turn == 0) {
+			indecator.draw();
+		}
 		
 		if (menu != null) {
 			menu.draw();
@@ -140,15 +140,18 @@ public class ConnectFourGame extends GameObject {
 						toDrop.setX(toDrop.getX() + 82);
 						
 					}
+					
+					if (keyPressed('A') && peicePos == 0 && menu != null && !menu.isUsedUp()) {
+						inSpecialMenu = true;
+					}
+					
 					if (keyPressed('A') && peicePos != 0) {
 						peicePos = peicePos -1;
 						indecator.setX(indecator.getX() - 82);
 						toDrop.setX(toDrop.getX() - 82);
 					}
 					
-					if (keyPressed('A') && peicePos == 0 && menu != null && !menu.isUsedUp()) {
-						inSpecialMenu = true;
-					}
+					
 					
 					if (keyPressed (GLFW.GLFW_KEY_ENTER)) {
 						
@@ -229,7 +232,6 @@ public class ConnectFourGame extends GameObject {
 						if (checkForThree(boardState) == 0) {
 							turn = 0;
 							Random rand = new Random ();
-							e.playSound("LLPlayerBlocks.wav");
 							timer = rand.nextInt(10) + 20;
 							toDrop.hide();
 							toDrop.setColor(0);
@@ -320,11 +322,10 @@ public class ConnectFourGame extends GameObject {
 						toDrop.bounceLeft();
 						toDrop.declare(170 + 10,0);
 						
-						if (!(e instanceof DarkCoolean)) {
-							toDrop = new Piece (0);
-						} else {
-							toDrop = new Piece (6);
-						}
+					
+						toDrop = new Piece (0);
+						
+						toDrop.hide();
 						return;
 						
 					}
@@ -431,8 +432,9 @@ public class ConnectFourGame extends GameObject {
 					turn = 0;
 					
 					
-					if (e instanceof CheatingCharlie && checkForThree(boardState) == 1) {
+					if (e instanceof CheatingCharlie && checkForThree(boardState) != 0) {
 						turn = 1;
+						toDrop.setColor(e.pieceType);
 					}
 					
 					Random rand = new Random ();

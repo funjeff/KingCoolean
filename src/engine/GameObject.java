@@ -403,7 +403,7 @@ public abstract class GameObject extends GameAPI {
 		
 		if (this.getSprite () != null) {
 			Mat4 finalTransform = getTransform ().multiply (getDisplayTransform ());
-			if (getAnimationHandler () != null) {
+			if (getAnimationHandler () == null) {
 				getSprite ().draw (finalTransform, 0);
 			} else {
 				getAnimationHandler ().draw (finalTransform);

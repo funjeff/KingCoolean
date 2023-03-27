@@ -10,14 +10,17 @@ public class AlphaBetaSearch {
 	public AlphaBetaSearch(SerbianConnectFour scf) {
 		this.scf = scf;
 	}
+	
 	public boolean checkForNextTurnWin(int[][] board, int player) {
-		int[][] temp = new int[7][6];
+		
 		for (int x = 0; x < 6; x++) {
+			int[][] temp = new int[7][6];
 			for (int i = 0; i < 7; i++) {
 				for (int j = 0; j < 6; j++) {
 					temp[i][j] = board[i][j];
 				}
 			}
+			
 			if (!isFullColumn(board, x)) {
 				scf.add(temp, x, player);
 				if (scf.checkForWin(temp) == player) return true;
@@ -36,8 +39,8 @@ public class AlphaBetaSearch {
 	        if(scf.checkForWin(board) == 1) {
 	        	score = 1000000;
 	        }
-
 	    }
+	    
 	    else if(checkForNextTurnWin(board, 2) == true) {
 	    	score = -1000;
 	    }
@@ -179,13 +182,25 @@ public class AlphaBetaSearch {
 		else {
 			int v = Integer.MIN_VALUE;
 			for (int i = 0; i < 6; i++) {
+				while (isFullColumn(parent.board, i)) {
+					i = i + 1;
+					if (i == 6) {
+						break;
+					}
+				}
 				int[][] childBoard = new int[7][6];
 				for (int wx = 0; wx < 7; wx++) {
 					for (int wy = 0; wy < 6; wy++) {
 						childBoard[wx][wy] = parent.board[wx][wy];
 					}
 				}
-				scf.add(childBoard, i, parent.getPlayer());
+				
+				if (parent.getPlayer() == 1) {
+					scf.add(childBoard, i, 2);
+				} else {
+					scf.add(childBoard, i, 1);
+				}
+				
 				State s;
 				if (parent.getPlayer() == 1) {
 					s = new State(i, childBoard, 2);
@@ -193,10 +208,12 @@ public class AlphaBetaSearch {
 				else s = new State(i, childBoard, 1);
 				parent.addChild(s);
 				v = Math.max(v, minValue(s, a, b, depth + 1, difficulty));
+				
 				if (v >= b) {
 					parent.setValue(v);
 					return v;
 				}
+				
 				a = Math.max(a, v);
 			}
 			parent.setValue(v);
@@ -210,15 +227,28 @@ public class AlphaBetaSearch {
 			return parent.getValue();
 		}
 		else {
+			
 			int v = Integer.MAX_VALUE;
 			for (int i = 0; i < 6; i++) {
+				while (isFullColumn(parent.board, i)) {
+					i = i + 1;
+					if (i == 6) {
+						break;
+					}
+				}
+				
 				int[][] childBoard = new int[7][6];
 				for (int wx = 0; wx < 7; wx++) {
 					for (int wy = 0; wy < 6; wy++) {
 						childBoard[wx][wy] = parent.board[wx][wy];
 					}
 				}
-				scf.add(childBoard, i, parent.getPlayer());
+				if (parent.getPlayer() == 1) {
+					scf.add(childBoard, i, 2);
+				} else {
+					scf.add(childBoard, i, 1);
+				}
+				
 				State s;
 				if (parent.getPlayer() == 1) {
 					s = new State(i, childBoard, 2);
@@ -226,6 +256,7 @@ public class AlphaBetaSearch {
 				else s = new State(i, childBoard, 1);
 				parent.addChild(s);
 				v = Math.min(v, maxValue(s, a, b, depth + 1, difficulty));
+				
 				if (v <= a) {
 					parent.setValue(v);
 					return v;
