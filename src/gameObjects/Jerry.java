@@ -2,8 +2,11 @@ package gameObjects;
 
 import engine.GameCode;
 import engine.Sprite;
+import javafx.scene.media.AudioClip;
 
 public class Jerry extends Enemy{
+	
+	AudioClip clip = new AudioClip ("file:resources/music/idk2.wav");
 	
 	public Jerry (Connect c) {
 		super (c);
@@ -11,7 +14,12 @@ public class Jerry extends Enemy{
 		this.difficulty = 7;
 		this.setSprite(new Sprite ("resources/sprites/Jerry the Jragon.png"));
 		this.background = new Sprite ("resources/sprites/Office.png");
+
 		this.frameOrNah = false;
+
+		clip.setCycleCount (100);
+		clip.play ();
+
 	}
 	
 	@Override
@@ -31,6 +39,7 @@ public class Jerry extends Enemy{
 	@Override
 	public void onVictory () {
 		GameCode.map.declare();
+		clip.stop ();
 	}
 
 }

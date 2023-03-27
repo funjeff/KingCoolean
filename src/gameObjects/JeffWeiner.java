@@ -2,9 +2,10 @@ package gameObjects;
 
 import engine.GameCode;
 import engine.Sprite;
+import javafx.scene.media.AudioClip;
 
 public class JeffWeiner extends Enemy{
-	
+	AudioClip clip = new AudioClip ("file:resources/music/idk2.wav");
 	public JeffWeiner (Connect c) {
 		super (c);
 		this.pieceType = 9;
@@ -13,7 +14,12 @@ public class JeffWeiner extends Enemy{
 		this.setSprite(new Sprite ("resources/sprites/jeff weiner.png"));
 		this.background = new Sprite ("resources/sprites/SPACE.png");
 		this.playSound("JeffWeinerIntro.wav");
+
 		this.frameOrNah = false;
+
+		clip.setCycleCount (100);
+		clip.play ();
+
 	}
 	
 	@Override
@@ -21,7 +27,9 @@ public class JeffWeiner extends Enemy{
 		ConnectFourGame g = new ConnectFourGame();
 		g.setEnemy(new WeffJiener(new Connect ()));
 		g.declare();
-		
+
+		clip.stop ();
+
 	}
 	
 	@Override

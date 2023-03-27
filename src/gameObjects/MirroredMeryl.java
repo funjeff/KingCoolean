@@ -6,6 +6,7 @@ import java.util.Random;
 import engine.GameCode;
 import engine.GameObject;
 import engine.Sprite;
+import javafx.scene.media.AudioClip;
 
 public class MirroredMeryl extends Enemy{
 		
@@ -13,12 +14,16 @@ public class MirroredMeryl extends Enemy{
 	
 	//	boolean firstMove = true;
 		
+		AudioClip clip = new AudioClip ("file:resources/music/idk2.wav");
+		
 		public MirroredMeryl (Connect connect) {
 			super(connect);
 			this.setSprite(new Sprite ("resources/sprites/config/MirroredMeryl.txt"));
 			this.getAnimationHandler().setFlipHorizontal(false);
 			Arrays.fill(curHeights, 5);
 			pieceType = 3;
+			clip.setCycleCount (100);
+			clip.play ():
 		}
 		
 		@Override
@@ -58,6 +63,7 @@ public class MirroredMeryl extends Enemy{
 			
 			ConnectFourGame.unlockedMoves[1] = true;
 			GameCode.map.declare();
+			clip.stop ();
 		}
 		public void onVictory() {
 			

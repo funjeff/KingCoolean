@@ -154,6 +154,7 @@ public class TitleScreen extends GameObject {
 		GameCode.map = new ConnectMap (king);
 		GameCode.map.declare();
 		forget ();
+
 	}
 	
 	@Override
@@ -426,6 +427,7 @@ public class TitleScreen extends GameObject {
 				titleFadeTimer.start ();
 				Thread.sleep (3000);
 				music.stop ();
+				close();
 				
 			} catch (InterruptedException e) {
 				System.out.println ("oops");
