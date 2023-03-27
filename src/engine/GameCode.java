@@ -64,7 +64,15 @@ public class GameCode {
 	public static void init () {
 		
 		//Test
+		new TitleScreen ();
 
+	
+//		//Room2 room2 = new Room2 ();
+//		//room2.loadMap ("big_test.tmj");
+		
+	}
+		
+	public static void initMap () {
 		Connect king = new Connect ();
 		LarryConnect larry = new LarryConnect ();
 		RandyConnect randy = new RandyConnect ();
@@ -135,13 +143,7 @@ public class GameCode {
 ////		
 		GameCode.map = new ConnectMap (king);
 		GameCode.map.declare();
-	
-//		//Room2 room2 = new Room2 ();
-//		//room2.loadMap ("big_test.tmj");
-		
 	}
-		
-	
 	
 	public static void gameLoopFunc () {
 		

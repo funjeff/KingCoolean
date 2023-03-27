@@ -13,5 +13,5 @@ void main()
 	if (c.w == 0) {
 		discard;
 	}
-    gl_FragColor = mix (vec4 (c.x, c.y, c.z, 1.0 - fade_timer_local), vec4 (0.0, 0.0, 0.0, 1.0), fade_timer_global);
+    gl_FragColor = mix (vec4 (c.x, c.y, c.z, (1.0 - fade_timer_local) * c.w), vec4 (0.0, 0.0, 0.0, 1.0), fade_timer_global);
 }

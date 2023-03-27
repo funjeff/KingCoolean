@@ -1184,6 +1184,7 @@ public class ConnectFourGame extends GameObject {
 		
 		public Board () {
 			this.setSprite(new Sprite ("resources/sprites/config/RGB board.txt"));
+			this.getAnimationHandler ().setFrameTime (0.1);
 		}
 	}
 	

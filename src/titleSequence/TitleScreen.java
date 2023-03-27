@@ -41,6 +41,7 @@ public class TitleScreen extends GameObject {
 	double scrollDestY = 0;
 	
 	Thread timingThread;
+	boolean shouldClose = false;
 	
 	FadeTimer titleFadeTimer;
 	FadeTimer scrollingTimer;
@@ -82,85 +83,22 @@ public class TitleScreen extends GameObject {
 		if (legends != null) {
 			legends.forget ();
 		}
-		GLProgram titleProgram = GLProgram.programFromDirectory ("resources/shaders/default/");
-		
-		Connect king = new Connect ();
-		LarryConnect larry = new LarryConnect ();
-		RandyConnect randy = new RandyConnect ();
-		MerylConnect meryl = new MerylConnect ();
-		Connect charlie = new Connect ();
-		HenryConnect henry = new HenryConnect ();
-		DerekConnect derek = new DerekConnect ();
-
-		ImagamerConnect imagamer = new ImagamerConnect ();
-		DarkCooleanConnect darkCoolean = new DarkCooleanConnect ();
-		JerryConnect jerry = new JerryConnect ();
-		
-		jerry.makeForBoss();
-		darkCoolean.makeForBoss();
-		imagamer.makeForBoss();
-		
-		king.setY(230);
-		king.setX(260);
-		
-		king.getResume().setSprite(new Sprite ("resources/sprites/resumes/king coolean resume.png"));
-		larry.getResume().setSprite(new Sprite ("resources/sprites/resumes/left larry resume.png"));
-		randy.getResume().setSprite(new Sprite ("resources/sprites/resumes/random randy resume.png"));
-		meryl.getResume().setSprite(new Sprite ("resources/sprites/resumes/mirrored meryl resume.png"));
-		charlie.getResume().setSprite(new Sprite ("resources/sprites/resumes/cheating charlie resume.png"));
-		imagamer.getResume().setSprite(new Sprite ("resources/sprites/resumes/Imagamer resume.png"));
-		jerry.getResume().setSprite(new Sprite ("resources/sprites/resumes/JERRY THE JRAGON RESUME.png"));
-		henry.getResume().setSprite(new Sprite ("resources/sprites/resumes/Horizontal Henry resume copy.png"));
-		darkCoolean.getResume().setSprite(new Sprite ("resources/sprites/resumes/Dark Coolean resume.png"));
-		
-		
-		
-		king.setAbove(larry);
-		larry.setBelow(king);
-		
-		king.setBelow(randy);
-		randy.setAbove(king);
-		
-		king.setLeft(henry);
-		henry.setRight(king);
-		
-		king.setRight(charlie);
-		charlie.setLeft(king);
-		
-		meryl.positionAbove(henry);
-		
-		derek.positionRight(larry);
-		
-		
-		jerry.positionAbove(derek);
-		
-		imagamer.positionBelow(randy);
-		
-		darkCoolean.positionLeft(meryl);
-		
-		ConnectMap.allConnects.add(king);
-		ConnectMap.allConnects.add(larry);
-		ConnectMap.allConnects.add(randy);
-		ConnectMap.allConnects.add(meryl);
-		ConnectMap.allConnects.add(charlie);
-		ConnectMap.allConnects.add(henry);
-		ConnectMap.allConnects.add(derek);
-		ConnectMap.allConnects.add(jerry);
-		ConnectMap.allConnects.add(darkCoolean);
-		ConnectMap.allConnects.add(imagamer);
-
-
-////		
-////		
-		GameCode.map = new ConnectMap (king);
-		GameCode.map.declare();
+		GameLoop.wind.fade = 0;
+		if (timingThread != null) {
+			timingThread.interrupt ();
+		}
+		GLProgram gameProgram = GLProgram.programFromDirectory ("resources/shaders/default/");
+		GameLoop.wind.setProgram (gameProgram);
+		GameCode.initMap ();
 		forget ();
 
 	}
 	
 	@Override
 	public void frameEvent () {
-		
+		if (shouldClose) {
+			close ();
+		}
 		if (!playingSequence) {
 			if (keyPressed (GLFW.GLFW_KEY_ENTER)) {
 				playingSequence = true;
@@ -429,10 +367,12 @@ public class TitleScreen extends GameObject {
 				titleFadeTimer.start ();
 				Thread.sleep (3000);
 				music.stop ();
-				close();
+				shouldClose = true;
+				return;
 				
 			} catch (InterruptedException e) {
-				System.out.println ("oops");
+				shouldClose = true;
+				return;
 			}
 			
 		}
