@@ -65,6 +65,7 @@ public class TitleScreen extends GameObject {
 		muralOverlay = new Sprite ("resources/sprites/mural_overlay.png");
 		scrollingScreen = new TitleScreenObject ();
 		scrollingScreen.setSprite (new Sprite ("resources/sprites/mural/title.png"));
+		scrollingScreen.hide ();
 		declare (0, 0);
 		
 		//Init program
@@ -244,6 +245,7 @@ public class TitleScreen extends GameObject {
 				
 				music.play ();
 				overlayHidden = false;
+				scrollingScreen.show ();
 				legends = new LegendsText ();
 				legends.fadeIn (1000);
 				Thread.sleep (7000);
