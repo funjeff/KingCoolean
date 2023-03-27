@@ -52,6 +52,20 @@ import titleSequence.TitleScreenObject;
  */
 public class GameWindow {
 
+	public String[] splashes = new String[] {
+		"Hello World!",
+		"Left Larry for president!",
+		"Jerry the Jragon Dating Simulator",
+		"Jerry the Jragon is my waifu",
+		"Patch Notes: Jerry the Jragon is now slightly hotter",
+		"Art by Eddy :)",
+		"Connect 4 boards are randomly generated!",
+		"Jeff Weiner is my waifu",
+		"Now using LWJGL",
+		"Imagamer is banned from XBOX live",
+		"Press ENTER to continue"
+	};
+	
 	int width, height;
 	int[] resolution = new int[2];
 	
@@ -108,7 +122,7 @@ public class GameWindow {
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
 		// Create the window
-		window = glfwCreateWindow(width, height, "Hello World!", NULL, NULL);
+		window = glfwCreateWindow(width, height, splashes[(int)(Math.random () * splashes.length)], NULL, NULL);
 		if ( window == NULL )
 			throw new RuntimeException ("Failed to create the GLFW window");
 		
