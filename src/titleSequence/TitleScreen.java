@@ -2,9 +2,8 @@ package titleSequence;
 
 import java.util.HashMap;
 
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
-
-import com.hackoeur.jglm.Mat4;
 
 import engine.GameCode;
 import engine.GameLoop;
@@ -130,7 +129,8 @@ public class TitleScreen extends GameObject {
 		if (overlayHidden) {
 			super.draw ();
 		}
-		Mat4 transform = getTransform ().multiply (getDisplayTransform ());
+		Matrix4f transform = new Matrix4f ();
+		transform.mulAffine (getTransform ()).mulAffine (getDisplayTransform ());
 		if (order == 0) {
 			if (staticScreen != null) {
 				if (staticScreen.visible) {

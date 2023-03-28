@@ -6,7 +6,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
-import com.hackoeur.jglm.Mat4;
+import org.joml.Matrix4f;
 
 import map.Room;
 
@@ -111,7 +111,7 @@ public class AnimationHandler {
 	 * @param x The x coordinate to draw at
 	 * @param y The y coordinate to draw at
 	 */
-	public void draw (Mat4 transform) {
+	public void draw (Matrix4f transform) {
 		if (visible) {
 		if (image != null) {
 			if (frameTime == 0) {

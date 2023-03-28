@@ -1,28 +1,28 @@
 package engine;
 
-import com.hackoeur.jglm.*;
+import org.joml.Matrix4f;
 
 import gl.GLTexture;
 
 public class DrawCall {
 	
-	private Mat4 transform;
+	private Matrix4f transform;
 	private GLTexture tex;
 	private GameObject obj;
 	
-	public DrawCall (Mat4 transform, GLTexture tex, GameObject obj) {
+	public DrawCall (Matrix4f transform, GLTexture tex, GameObject obj) {
 		this.transform = transform;
 		this.tex = tex;
 		this.obj = obj;
 	}
 	
-	/*public DrawCall (Mat4 transform, GLTexture tex) {
+	/*public DrawCall (Matrix4f transform, GLTexture tex) {
 		this.transform = transform;
 		this.tex = tex;
 		this.obj = null;
 	}*/
 	
-	public Mat4 getTransform () {
+	public Matrix4f getTransform () {
 		return transform;
 	}
 	

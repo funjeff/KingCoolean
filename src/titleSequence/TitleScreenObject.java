@@ -1,6 +1,6 @@
 package titleSequence;
 
-import com.hackoeur.jglm.Mat4;
+import org.joml.Matrix4f;
 
 import engine.GameObject;
 import engine.Sprite;
@@ -52,7 +52,7 @@ public class TitleScreenObject extends GameObject {
 			spritePath = null;
 		}
 		if (this.getSprite () != null) {
-			Mat4 finalTransform = getTransform ().multiply (getDisplayTransform ());
+			Matrix4f finalTransform = getTransform ().mul (getDisplayTransform ());
 			if (getAnimationHandler () != null) {
 				getSprite ().draw (finalTransform, 0, this);
 			} else {

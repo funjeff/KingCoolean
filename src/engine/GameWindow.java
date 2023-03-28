@@ -24,14 +24,12 @@ import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
 
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
-
-import com.hackoeur.jglm.Mat4;
-import com.hackoeur.jglm.Matrices;
-import com.hackoeur.jglm.Vec4;
 
 import java.nio.*;
 
@@ -234,7 +232,7 @@ public class GameWindow {
 			float[] transformBuffer = new float[16];
 			float[] vpBuffer = new float[16];
 			
-			Mat4 vp = Matrices.ortho (0f, (float)resolution[0], (float)resolution[1], 0, -5000, 5000);
+			Matrix4f vp = new Matrix4f ().ortho (0f, (float)resolution[0], (float)resolution[1], 0, -5000, 5000);
 			//System.out.println (vp);
 
 			for (int i = 0; i < drawCalls.size (); i++) {
@@ -251,18 +249,20 @@ public class GameWindow {
 					glUniform1f (fadeTimerLocalLoc, (float)0);
 				}
 				
-				Mat4 mvp = vp.multiply (working.getTransform ());
+				Matrix4f mvp = new Matrix4f ();
+				vp.mulAffine (working.getTransform (), mvp);
 				if (currentTexture != working.getTexture ()) {
 					currentTexture = working.getTexture ();
 					currentTexture.bindTexture ();
 					glActiveTexture (GL_TEXTURE0);
 				}
+				Vector4f column = new Vector4f ();
 				for (int wx = 0; wx < 4; wx++) {
-					Vec4 column = mvp.getColumn (wx);
-					vpBuffer[wx * 4] = column.getX ();
-					vpBuffer[wx * 4 + 1] = column.getY ();
-					vpBuffer[wx * 4 + 2] = column.getZ ();
-					vpBuffer[wx * 4 + 3] = column.getW ();
+					mvp.getColumn (wx, column);
+					vpBuffer[wx * 4] = column.x;
+					vpBuffer[wx * 4 + 1] = column.y;
+					vpBuffer[wx * 4 + 2] = column.z;
+					vpBuffer[wx * 4 + 3] = column.w;
 				}
 				glUniformMatrix4fv (transformLoc, false, transformBuffer);
 				glUniformMatrix4fv (vpLoc, false, vpBuffer);
@@ -315,11 +315,11 @@ public class GameWindow {
 		inputManager.resetMouseBuffers ();
 	}
 	
-	public void drawSprite (Mat4 matrix, GLTexture tex, GameObject obj) {
+	public void drawSprite (Matrix4f matrix, GLTexture tex, GameObject obj) {
 		drawCalls.add (new DrawCall (matrix, tex, obj));
 	}
 	
-	public void drawSprite (Mat4 matrix, GLTexture tex) {
+	public void drawSprite (Matrix4f matrix, GLTexture tex) {
 		drawCalls.add (new DrawCall (matrix, tex, null));
 	}
 	

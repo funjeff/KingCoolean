@@ -15,7 +15,7 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
-import com.hackoeur.jglm.Mat4;
+import org.joml.Matrix4f;
 
 import gl.GLTexture;
 
@@ -269,16 +269,16 @@ public class Sprite {
 		draw (usedX, usedY, 0);
 	}
 	
-	public void draw (Mat4 transform, int frame, GameObject obj) {
+	public void draw (Matrix4f transform, int frame, GameObject obj) {
 		GameLoop.wind.drawSprite (transform, glTextures[frame], obj);
 	}
 	
-	public void draw (Mat4 transform, int frame) {
+	public void draw (Matrix4f transform, int frame) {
 		GameLoop.wind.drawSprite (transform, glTextures[frame]);
 	}
 	
 	public void drawScaled (int x, int y, double scaleX, double scaleY, int frame) {
-		Mat4 transform = new Mat4 (
+		Matrix4f transform = new Matrix4f (
 				(float)scaleX, 0, 0, 0,
 				0, (float)scaleY, 0, 0,
 				0, 0, 1, 0,
@@ -294,7 +294,7 @@ public class Sprite {
 	 * @param frame The frame of this sprite to draw
 	 */
 	public void draw (int usedX, int usedY, int frame) {
-		Mat4 mat = new Mat4 (
+		Matrix4f mat = new Matrix4f (
 				1, 0, 0, (float)usedX,
 				0, 1, 0, (float)usedY,
 				0, 0, 1, 0,

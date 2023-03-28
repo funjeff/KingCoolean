@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
-import com.hackoeur.jglm.Mat4;
+import org.joml.Matrix4f;
 
 import gameObjects.Fragment;
 import map.Room;
@@ -353,46 +353,44 @@ public abstract class GameObject extends GameAPI {
 		}
 	}
 	
-	public Mat4 getTransform () {
-		Mat4 trans = new Mat4 (
+	public Matrix4f getTransform () {
+		Matrix4f trans = new Matrix4f (
 				1, 0, 0, 0,
 				0, 1, 0, 0,
 				0, 0, 1, 0,
 				(float)x, (float)y, (float)renderPriority, 1
 				);
-		Mat4 scale = new Mat4 (
+		Matrix4f scale = new Matrix4f (
 				(float)scaleX, 0, 0, 0,
 				0, (float)scaleY, 0, 0,
 				0, 0, 1, 0,
 				0, 0, 0, 1
 				);
-		Mat4 rot = new Mat4 (
+		Matrix4f rot = new Matrix4f (
 				(float)Math.cos (rotation), (float)Math.sin (rotation), 0, 0,
 				(float)-Math.sin (rotation), (float)Math.cos (rotation), 0, 0,
 				0, 0, 1, 0, 
 				0, 0, 0, 1
 				);
-		Mat4 a, b;
-		a = trans.multiply (scale);
-		b = a.multiply (rot);
-		return b;
+		Matrix4f a = new Matrix4f ();
+		return a.mulAffine (trans).mulAffine (scale).mulAffine (rot);
 	}
 	
-	public Mat4 getDisplayTransform () {
+	public Matrix4f getDisplayTransform () {
 		
-		Mat4 pxScale = new Mat4 (
+		Matrix4f pxScale = new Matrix4f (
 				getSprite ().getWidth (), 0, 0, 0,
 				0, getSprite ().getHeight (), 0, 0,
 				0, 0, 1, 0,
 				0, 0, 0, 1
 				);
-		Mat4 realign = new Mat4 (
+		Matrix4f realign = new Matrix4f (
 				1, 0, 0, 0,
 				0, 1, 0, 0,
 				0, 0, 1, 0,
 				getSprite ().getWidth () / 2, getSprite ().getHeight () / 2, 0, 1
 				);
-		return realign.multiply (pxScale);
+		return realign.mul (pxScale);
 		
 	}
 	
@@ -402,7 +400,8 @@ public abstract class GameObject extends GameAPI {
 	public void draw () {
 		
 		if (this.getSprite () != null) {
-			Mat4 finalTransform = getTransform ().multiply (getDisplayTransform ());
+			Matrix4f finalTransform = new Matrix4f ();
+			finalTransform.mulAffine (getTransform ()).mulAffine (getDisplayTransform ());
 			if (getAnimationHandler () == null) {
 				getSprite ().draw (finalTransform, 0);
 			} else {
