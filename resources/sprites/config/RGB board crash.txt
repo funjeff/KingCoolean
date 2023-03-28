@@ -1,0 +1,24 @@
+$src resources/sprites/RGB Board unstacked.png
+
+rectangle 0 0 582 942:
+	grid 582 471;
+rectangle 2910 471 582 471,
+rectangle 1164 1413 582 471,
+rectangle 3492 1884 582 471,
+rectangle 0 942 нн1164 471:
+	grid 582 471;
+rectangle нннн582 0 2910 471:
+	grid 582 471;
+rectangle 3492 471 582 471,
+rectangle 0 942 4074 471:
+	grid 582 471;
+rectangle 0 1413 1164 471:
+	grid 582 471;
+rectangle 1746 1413 2328 471:
+	grid 582 471;
+rectangle 0 1884 3492 471:
+	grid 582 471;
+rectangle 0 2355 4074 471:
+	grid 582 471;
+rectangle 0 2826 3492 471:
+	grid 582 471;

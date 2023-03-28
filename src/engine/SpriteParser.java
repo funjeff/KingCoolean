@@ -215,20 +215,20 @@ public class SpriteParser {
 								case ';':
 									images = splitGrid (source, fields [0], fields [1]);
 									for (int j = 2; j < fields.length; j ++) {
-										frames.add (images [j]);
+										frames.add (images [fields[j]]);
 									}
 									return frames;
 								case ',':
 									images = splitGrid (source, fields [0], fields [1]);
 									for (int j = 2; j < fields.length; j ++) {
-										frames.add (images [j]);
+										frames.add (images [fields[j]]);
 									}
 									frames.addAll (parseParameter (source, remaining));
 									return frames;
 								default:
 									images = splitGrid (source, fields [0], fields [1]);
 									for (int j = 2; j < fields.length; j ++) {
-										frames.add (images [j]);
+										frames.add (images [fields[j]]);
 									}
 									return frames;
 							}
