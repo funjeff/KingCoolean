@@ -6,7 +6,7 @@ import java.util.Random;
 import engine.GameCode;
 import engine.GameObject;
 import engine.Sprite;
-import javafx.scene.media.AudioClip;
+import engine.AudioClip;
 
 public class MirroredMeryl extends Enemy{
 		
@@ -22,8 +22,7 @@ public class MirroredMeryl extends Enemy{
 			this.getAnimationHandler().setFlipHorizontal(false);
 			Arrays.fill(curHeights, 5);
 			pieceType = 3;
-			clip.setCycleCount (100);
-			clip.play ();
+			clip.loop ();
 		}
 		
 		@Override

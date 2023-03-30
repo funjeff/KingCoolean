@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 
+import engine.AudioClip;
 import engine.GameCode;
 import engine.GameLoop;
 import engine.GameObject;
@@ -21,7 +22,6 @@ import gameObjects.LarryConnect;
 import gameObjects.MerylConnect;
 import gameObjects.RandyConnect;
 import gl.GLProgram;
-import javafx.scene.media.AudioClip;
 
 public class TitleScreen extends GameObject {
 	
@@ -57,7 +57,7 @@ public class TitleScreen extends GameObject {
 	public TitleScreen () {
 		
 		//Load music
-		music = new AudioClip ("file:resources/sound/intro_music.mp3");
+		music = new AudioClip ("file:resources/music/tlozww_intro.wav");
 		
 		GameLoop.wind.setResolution (1280, 720);
 		titleImg = new Sprite ("resources/sprites/title.png");

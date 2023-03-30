@@ -1,11 +1,8 @@
 package gameObjects;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 import engine.GameCode;
 import engine.Sprite;
-import javafx.scene.media.AudioClip;
+import engine.AudioClip;
 
 public class DeliriousDerek extends Enemy {
 	
@@ -17,8 +14,7 @@ public class DeliriousDerek extends Enemy {
 		this.getAnimationHandler().setFlipHorizontal(true);
 		pieceType = 5;
 		this.playSound("DeliriousDerekIntro.wav");
-		clip.setCycleCount (100);
-		clip.play ();
+		clip.loop ();
 	}
 	
 	@Override

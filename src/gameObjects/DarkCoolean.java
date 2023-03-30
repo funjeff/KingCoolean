@@ -2,7 +2,7 @@ package gameObjects;
 
 import engine.GameCode;
 import engine.Sprite;
-import javafx.scene.media.AudioClip;
+import engine.AudioClip;
 
 public class DarkCoolean extends Enemy{
 	
@@ -16,8 +16,7 @@ public class DarkCoolean extends Enemy{
 		this.setSprite(new Sprite ("resources/sprites/evilcoolean.png"));
 		this.getAnimationHandler().setFlipHorizontal(true);
 		this.background = new Sprite ("resources/sprites/Volcano.png");
-		clip.setCycleCount (100);
-		clip.play ();
+		clip.loop ();
 	}
 	
 	@Override

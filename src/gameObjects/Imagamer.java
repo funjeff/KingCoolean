@@ -2,7 +2,7 @@ package gameObjects;
 
 import engine.GameCode;
 import engine.Sprite;
-import javafx.scene.media.AudioClip;
+import engine.AudioClip;
 
 public class Imagamer extends Enemy{
 	
@@ -17,8 +17,7 @@ public class Imagamer extends Enemy{
 
 		this.difficulty = 7;
 		this.setSprite(new Sprite ("resources/sprites/config/imagamer.txt"));
-		clip.setCycleCount (100);
-		clip.play ();
+		clip.loop ();
 	}
 	
 	@Override

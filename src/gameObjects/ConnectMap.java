@@ -1,12 +1,11 @@
 package gameObjects;
 
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import org.lwjgl.glfw.GLFW;
 
 import engine.GameObject;
-import javafx.scene.media.AudioClip;
+import engine.AudioClip;
 
 public class ConnectMap extends GameObject {
 	
@@ -34,7 +33,7 @@ public class ConnectMap extends GameObject {
 	
 	@Override
 	public void onDeclare () {
-		clip.play ();
+		clip.loop ();
 	}
 	
 	@Override

@@ -2,7 +2,7 @@ package gameObjects;
 
 import engine.GameCode;
 import engine.Sprite;
-import javafx.scene.media.AudioClip;
+import engine.AudioClip;
 
 public class WeffJiener extends Enemy{
 	AudioClip clip = new AudioClip ("file:resources/music/idk3.wav");
@@ -16,8 +16,7 @@ public class WeffJiener extends Enemy{
 
 		this.frameOrNah = false;
 
-		clip.setCycleCount (100);
-		clip.play ();
+		clip.loop ();
 	}
 	
 	@Override

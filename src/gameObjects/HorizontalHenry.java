@@ -1,10 +1,8 @@
 package gameObjects;
 
-import java.util.Random;
-
 import engine.GameCode;
 import engine.Sprite;
-import javafx.scene.media.AudioClip;
+import engine.AudioClip;
 
 public class HorizontalHenry extends Enemy {
 	
@@ -18,8 +16,7 @@ public class HorizontalHenry extends Enemy {
 		this.setSprite(new Sprite ("resources/sprites/config/horizontalHenry.txt"));
 		this.getAnimationHandler().setFlipHorizontal(true);
 		pieceType = 1;
-		clip.setCycleCount (100);
-		clip.play ();
+		clip.loop ();
 	}
 	
 	public int getMove (int [] [] boardState) {

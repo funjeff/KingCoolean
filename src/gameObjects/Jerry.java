@@ -2,7 +2,7 @@ package gameObjects;
 
 import engine.GameCode;
 import engine.Sprite;
-import javafx.scene.media.AudioClip;
+import engine.AudioClip;
 
 public class Jerry extends Enemy{
 	
@@ -17,8 +17,7 @@ public class Jerry extends Enemy{
 
 		this.frameOrNah = false;
 
-		clip.setCycleCount (100);
-		clip.play ();
+		clip.loop ();
 
 	}
 	

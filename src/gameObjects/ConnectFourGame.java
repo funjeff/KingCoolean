@@ -837,9 +837,11 @@ public class ConnectFourGame extends GameObject {
 			button.draw();
 			
 			if (unlockedMoves[0]) {
-				crown.setX(this.getX() + 75);
-				crown.setY(this.getY() + 160);
-				crown.draw();
+				if (crown != null) {
+					crown.setX(this.getX() + 75);
+					crown.setY(this.getY() + 160);
+					crown.draw();
+				}
 			}
 			
 			if (unlockedMoves[1]) {

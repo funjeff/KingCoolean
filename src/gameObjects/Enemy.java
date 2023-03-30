@@ -1,6 +1,6 @@
 package gameObjects;
 
-import javafx.scene.media.AudioClip;
+import engine.AudioClip;
 
 import java.util.ArrayList;
 

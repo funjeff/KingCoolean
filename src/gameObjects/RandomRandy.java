@@ -4,7 +4,7 @@ import java.util.Random;
 
 import engine.GameCode;
 import engine.Sprite;
-import javafx.scene.media.AudioClip;
+import engine.AudioClip;
 
 public class RandomRandy extends Enemy {
 	
@@ -15,8 +15,7 @@ public class RandomRandy extends Enemy {
 		this.setSprite(new Sprite ("resources/sprites/config/randomRandy.txt"));
 		this.getAnimationHandler().setFlipHorizontal(true);
 		this.pieceType = 4;
-		clip.setCycleCount (100);
-		clip.play ();
+		clip.loop ();
 	}
 	
 	public int getMove (int [] [] boardState) {

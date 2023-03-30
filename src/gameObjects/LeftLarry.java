@@ -9,7 +9,7 @@ import javax.sound.sampled.Clip;
 import engine.GameCode;
 import engine.GameObject;
 import engine.Sprite;
-import javafx.scene.media.AudioClip;
+import engine.AudioClip;
 
 public class LeftLarry extends Enemy {
 	
@@ -23,8 +23,7 @@ public class LeftLarry extends Enemy {
 		Random rand = new Random();
 		if (rand.nextInt(2) == 1) this.playSound("LLStartDialog.wav");
 		else this.playSound("LLStartDialog2.wav");
-		clip.setCycleCount (100);
-		clip.play ();
+		clip.loop ();
 	}
 	
 	public int getMove (int [] [] boardState) {
