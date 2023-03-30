@@ -3,3 +3,4 @@ build.jar
 .classpath
 .project
 *.log
+*.dll

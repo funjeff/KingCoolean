@@ -1,0 +1,1 @@
+java -Djava.library.path="resources/dll/" -jar build.jar
