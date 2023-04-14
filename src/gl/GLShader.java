@@ -11,9 +11,19 @@ public class GLShader {
 	private int shaderName;
 	private boolean compiled = false;
 	
+	private String shaderSource;
+	private int shaderType;
+	
 	public GLShader (String shaderSource, int shaderType) {
 		
 		//Compile shader
+		this.shaderSource = shaderSource;
+		this.shaderType = shaderType;
+		
+	}
+	
+	public void compile () {
+		
 		shaderName = glCreateShader (shaderType);
 		glShaderSource (shaderName, shaderSource);
 		glCompileShader (shaderName);

@@ -21,17 +21,13 @@ public class GLTexture {
 	private int sourceDataType;
 	private int texDataFormat;
 	private int texDataType;
+	private boolean complete = false;
+	
+	private BufferedImage imgData;
 	
 	public GLTexture (int textureType) {
 		
-		this.textureType = textureType;
-		textureName = glGenTextures ();
-		
-		//Set parameters
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		this (textureType, null);
 	
 	}
 	
@@ -39,6 +35,13 @@ public class GLTexture {
 		
 		//Gen texture
 		this.textureType = textureType;
+		this.imgData = img;
+		
+	}
+	
+	//Not called by default
+	public void load () {
+		
 		textureName = glGenTextures ();
 		glBindTexture (textureType, textureName);
 		
@@ -48,7 +51,9 @@ public class GLTexture {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		
-		setData (img, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+		loadImageData (imgData, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+		
+		complete = true;
 		
 	}
 	
@@ -61,23 +66,28 @@ public class GLTexture {
 		
 	}
 	
-	public void setData (BufferedImage srcImg, int sourceDataType, int texDataFormat, int texDataType) {
+	public void setImageParams (BufferedImage srcImg, int sourceDataType, int texDataFormat, int texDataType) {
 		
-		BufferedImage image = new BufferedImage (srcImg.getWidth (), srcImg.getHeight (), BufferedImage.TYPE_INT_ARGB);
-		image.getGraphics ().drawImage (srcImg, 0, 0, null);
+		imgData = new BufferedImage (srcImg.getWidth (), srcImg.getHeight (), BufferedImage.TYPE_INT_ARGB);
+		imgData.getGraphics ().drawImage (srcImg, 0, 0, null);
 		
 		this.sourceDataType = sourceDataType;
 		this.texDataFormat = texDataFormat;
 		this.texDataType = texDataType;
+		
+	}
+	
+	public void loadImageData (BufferedImage srcImg, int sourceDataType, int texDataFormat, int texDataType) {
+		
 		glBindTexture (textureType, textureName);
-		int[] pixels = new int[image.getWidth() * image.getHeight()];
-        image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
+		int[] pixels = new int[imgData.getWidth() * imgData.getHeight()];
+        imgData.getRGB(0, 0, imgData.getWidth(), imgData.getHeight(), pixels, 0, imgData.getWidth());
 
-        ByteBuffer buffer = BufferUtils.createByteBuffer (image.getWidth() * image.getHeight() * 4); //4 for RGBA, 3 for RGB
+        ByteBuffer buffer = BufferUtils.createByteBuffer (imgData.getWidth() * imgData.getHeight() * 4); //4 for RGBA, 3 for RGB
 
-        for(int y = 0; y < image.getHeight(); y++){
-            for(int x = 0; x < image.getWidth(); x++){
-                int pixel = pixels[y * image.getWidth() + x];
+        for(int y = 0; y < imgData.getHeight(); y++){
+            for(int x = 0; x < imgData.getWidth(); x++){
+                int pixel = pixels[y * imgData.getWidth() + x];
                 buffer.put((byte) ((pixel >> 16) & 0xFF));     // Red component
                 buffer.put((byte) ((pixel >> 8) & 0xFF));      // Green component
                 buffer.put((byte) (pixel & 0xFF));               // Blue component
@@ -93,8 +103,8 @@ public class GLTexture {
 						GL_TEXTURE_2D,
 						0,
 						GL_RGBA8,
-						image.getWidth (),
-						image.getHeight (),
+						imgData.getWidth (),
+						imgData.getHeight (),
 						0,
 						texDataFormat,
 						texDataType,
@@ -112,6 +122,10 @@ public class GLTexture {
 	
 	public void bindTexture () {
 		glBindTexture (textureType, textureName);
+	}
+	
+	public boolean isComplete () {
+		return complete;
 	}
 	
 }

@@ -1,19 +1,20 @@
 package engine;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-
 /**
  * The loop for rendering the game to the GameWindow. Runs on the event dispatching thread.
  * @author nathan
  *
  */
-public class GameLoop {
+public class GameLoop implements Runnable {
 	
 	/**
-	 * The maximum framerate the game can run at
+	 * The maximum (target) simulation rate the game can run at
 	 */
-	public static final double maxFramerate = 60;
+	public static final double maxStepRate = 30;
+	/**
+	 * The maximum (target) framerate the game can run at
+	 */
+	public static final double maxFramerate = 120;
 	/**
 	 * The time of the last update to the GameWindow, in nanoseconds.
 	 */
@@ -23,26 +24,53 @@ public class GameLoop {
 	 * The system time when this frame's rendering began
 	 */
 	static private long frameTime;
+	static private long frameTimeNs;
 	
 	/**
 	 * The image of the input from the past GameLogic frame
 	 */
 	static private InputManager inputImage;
 	
-	public static final GameWindow wind = new GameWindow (960, 540);
-	
+	public static GameWindow wind;
+
 	public static void main (String[] args) {
+		wind = new GameWindow (960, 540);
+		GameLoop loop = new GameLoop ();
+		Thread renderThread = new Thread (loop);
+		renderThread.start ();
+		while (true) {
+			long startTime = System.currentTimeMillis ();
+			int frames = 0;
+			while (System.currentTimeMillis () - startTime < 1000) {
+				long frameStart = System.nanoTime ();
+				wind.refresh ();
+				frames++;
+				//For some reason, trying to cap the framerate results in terrible performance and weird texture issues
+				/*try {
+					Thread.sleep (1);
+				} catch (InterruptedException e) {
+					//do nothing, it's not that important
+				}*/
+			}
+			System.out.println ("FPS: " + frames);
+		}
+	}
+	
+	@Override
+	public void run () {
 		GameCode.init ();
 		//Sets the initial frame time
 		frameTime = System.currentTimeMillis ();
+		frameTimeNs = System.nanoTime ();
 		//Initializes lastUpdate to the current time
 		lastUpdate = System.nanoTime ();
 		while (true) {
 			//Get the target time in nanoseconds for this iteration; should be constant if the framerate doesn't change
-			long targetNanoseconds = (long)(1000000000 / maxFramerate);
+			long targetNanoseconds = (long)(1000000000 / maxStepRate);
 			//Get the time before refreshing the window
 			long startTime = System.nanoTime ();
 			frameTime = System.currentTimeMillis ();
+			frameTimeNs = System.nanoTime ();
 			//Render the window
 			inputImage = GameLoop.wind.getInputImage ();
 			GameCode.beforeGameLogic ();
@@ -54,7 +82,7 @@ public class GameLoop {
 			GameCode.renderFunc();
 			ObjectHandler.renderAll ();
 			GameCode.afterRender ();
-			wind.refresh ();
+			wind.render ();
 			//Calculate elapsed time and time to sleep for
 			lastUpdate = System.nanoTime ();
 			long elapsedTime = lastUpdate - startTime;
@@ -77,11 +105,39 @@ public class GameLoop {
 	}
 	
 	/**
-	 * Gets the value returned by System.currentTimeMillis() at the start of the frame being rendered.
+	 * Gets the value returned by System.currentTimeMillis at the start of the frame being rendered.
 	 * @return The start time of the current frame
 	 */
 	public static long frameStartTime () {
 		return frameTime;
+	}
+	
+	/**
+	 * Gets the value returned by System.nanoTime() at the start of the frame being rendered.
+	 * @return The start time of the current frame
+	 */
+	public static long frameStartTimeNs () {
+		return frameTimeNs;
+	}
+	
+	/**
+	 * Gets the length of one (game logic) frame in nanoseconds
+	 * @return The length of one frame
+	 */
+	public static long stepLength () {
+		return (long)(1000000000L / maxStepRate); //10^9 ns in one s
+	}
+	
+	/**
+	 * Gets the length of one (rendered) frame in nanoseconds
+	 * @return The length of one frame
+	 */
+	public static long frameLength () {
+		return (long)(1000000000L / maxFramerate); //10^9 ns in one s
+	}
+	
+	public static double deltaTime () {
+		return (double)(System.nanoTime () - frameTimeNs) / stepLength ();
 	}
 	
 	/**

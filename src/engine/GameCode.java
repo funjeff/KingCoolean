@@ -2,7 +2,6 @@ package engine;
 
 import java.util.ArrayList;
 
-import gameObjects.Test;
 import javafx.scene.media.AudioClip;
 import gameObjects.CharlieConnect;
 import gameObjects.CheatingCharlie;
@@ -220,10 +219,7 @@ public class GameCode {
 	
 	
 	public static void renderFunc () {
-		
 		Room.render();
-		ObjectHandler.renderAll();
-		
 	}
 	
 	public static void beforeRender() {

@@ -12,10 +12,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.imageio.ImageIO;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 import gl.GLTexture;
 
@@ -59,6 +62,11 @@ public class Sprite {
 	 * does this get scalled by the changes of resolution
 	 */
 	protected boolean doesScale = true;
+	/**
+	 * GL texture queue
+	 */
+	private static ArrayList<GLTexture> loadQueue = new ArrayList<GLTexture> (); 
+	private static ReentrantLock textureLoadLock = new ReentrantLock ();
 	
 	private float opacity = 1;
 	
@@ -215,10 +223,23 @@ public class Sprite {
 	}
 	
 	public void genGLTextures () {
+		textureLoadLock.lock ();
 		glTextures = new GLTexture[images.length];
 		for (int i = 0; i < images.length; i++) {
 			glTextures [i] = new GLTexture (GL_TEXTURE_2D, images[i]);
+			loadQueue.add (glTextures[i]);
 		}
+		textureLoadLock.unlock ();
+	}
+	
+	public static void loadTextures () {
+		textureLoadLock.lock ();
+		for (int i = 0; i < loadQueue.size (); i++) {
+			GLTexture curr = loadQueue.get (i);
+			curr.load ();
+		}
+		loadQueue = new ArrayList<GLTexture> ();
+		textureLoadLock.unlock ();
 	}
 	
 	/**
@@ -269,12 +290,20 @@ public class Sprite {
 		draw (usedX, usedY, 0);
 	}
 	
-	public void draw (Matrix4f transform, int frame, GameObject obj) {
-		GameLoop.wind.drawSprite (transform, glTextures[frame], obj);
+	public void draw (Transform t, int frame, GameObject obj) {
+		GameLoop.wind.drawSprite (t, glTextures[frame], obj);
 	}
 	
-	public void draw (Matrix4f transform, int frame) {
-		GameLoop.wind.drawSprite (transform, glTextures[frame]);
+	public void draw (Transform t, int frame) {
+		GameLoop.wind.drawSprite (t, glTextures[frame]);
+	}
+	
+	public void draw (Transform a, Transform b, int frame, GameObject obj) {
+		GameLoop.wind.drawSprite (a, b, glTextures[frame], obj);
+	}
+	
+	public void draw (Transform a, Transform b, int frame) {
+		GameLoop.wind.drawSprite (a, b, glTextures[frame]);
 	}
 	
 	public void drawScaled (int x, int y, double scaleX, double scaleY, int frame) {

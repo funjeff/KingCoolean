@@ -163,6 +163,7 @@ public class ConnectFourGame extends GameObject {
 						}
 						
 						indecator.setX(180);
+						indecator.snap ();
 						
 						toDrop.show();
 						

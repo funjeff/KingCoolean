@@ -9,6 +9,7 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.lwjgl.glfw.GLFWKeyCallbackI;
 import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
@@ -81,21 +82,27 @@ public class InputManager implements GLFWKeyCallbackI {
 	 */
 	private double cursorY;
 	
+	
+	private ReentrantLock genImageLock;
+	
 	/**
 	 * Default no-arg constructor
 	 */
 	protected InputManager () {
+		genImageLock = new ReentrantLock ();
 		keyListener = new InputManagerKeyListener ();
 		mouseListener = new InputManagerMouseListener ();
 	}
 	
 	@Override
 	public void invoke (long window, int key, int scancode, int action, int mods) {
+		genImageLock.lock ();
 		if (action == GLFW.GLFW_PRESS) {
 			keyListener.keyPressed (key);
 		} else if (action == GLFW.GLFW_RELEASE) {
 			keyListener.keyReleased (key);
 		}
+		genImageLock.unlock ();
 	}
 	
 	/**
@@ -103,6 +110,7 @@ public class InputManager implements GLFWKeyCallbackI {
 	 * @return An image of the current input state
 	 */
 	public InputManager createImage () {
+		genImageLock.lock ();
 		InputManager image = new InputManager ();
 		System.arraycopy (keysDown, 0, image.keysDown, 0, keysDown.length);
 		System.arraycopy (keysPressed, 0, image.keysPressed, 0, keysPressed.length);
@@ -122,6 +130,7 @@ public class InputManager implements GLFWKeyCallbackI {
 		image.cursorX = cursorX;
 		image.cursorY = cursorY;
 		image.isImage = true;
+		genImageLock.unlock ();
 		return image;
 	}
 	

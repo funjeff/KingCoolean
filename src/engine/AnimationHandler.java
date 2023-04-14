@@ -108,15 +108,14 @@ public class AnimationHandler {
 	
 	/**
 	 * Draws the sprite's current animation frame at the given x and y coordinates.
-	 * @param x The x coordinate to draw at
-	 * @param y The y coordinate to draw at
+	 * @param transform the transform to draw with
 	 */
-	public void draw (Matrix4f transform) {
+	public void draw (Transform a, Transform b) {
 		if (visible) {
 		if (image != null) {
 			if (frameTime == 0) {
 				startTime = GameLoop.frameStartTime ();
-				image.draw (transform, startFrame);
+				image.draw (a, b, startFrame);
 			} else {
 				if (startTime == 0) {
 					startTime = GameLoop.frameStartTime();
@@ -124,7 +123,7 @@ public class AnimationHandler {
 				long elapsedTime = GameLoop.frameStartTime () - startTime;
 				int elapsedFrames = ((int)(((double)elapsedTime) / ((double)frameTime)) + startFrame);
 				if (!repeat && elapsedFrames >= image.getFrameCount ()) {
-					image.draw (transform, image.getFrameCount () - 1);
+					image.draw (a, b, image.getFrameCount () - 1);
 				} else {
 					int frame = elapsedFrames % image.getFrameCount ();
 //					if (alternate) {
@@ -153,11 +152,15 @@ public class AnimationHandler {
 						startFrame = frame - 1;
 					}
 					
-					image.draw (transform, frame);
+					image.draw (a, b, frame);
 				}
 			}
 		}
 		}
+	}
+	
+	public void draw (Transform t) {
+		draw (t, t);
 	}
 
 

@@ -10,6 +10,7 @@ import engine.GameCode;
 import engine.GameLoop;
 import engine.GameObject;
 import engine.Sprite;
+import engine.Transform;
 import gameObjects.Connect;
 import gameObjects.ConnectMap;
 import gameObjects.DarkCooleanConnect;
@@ -129,8 +130,8 @@ public class TitleScreen extends GameObject {
 		if (overlayHidden) {
 			super.draw ();
 		}
-		Matrix4f transform = new Matrix4f ();
-		transform.mulAffine (getTransform ()).mulAffine (getDisplayTransform ());
+		Transform transform = new Transform ();
+		displayTransform (transform);
 		if (order == 0) {
 			if (staticScreen != null) {
 				if (staticScreen.visible) {

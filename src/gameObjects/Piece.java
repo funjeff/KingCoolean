@@ -20,6 +20,7 @@ public class Piece extends GameObject{
 		this.setRenderPriority(-3);
 		
 		setColor (color);
+		snap ();
 		
 	}
 	

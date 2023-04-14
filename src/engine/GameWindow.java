@@ -1,37 +1,19 @@
 package engine;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
-import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.LinkedList;
-
-import javax.imageio.ImageIO;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
 
-import java.nio.*;
+import engine.DrawCall.DrawData;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -87,13 +69,17 @@ public class GameWindow {
 	private long window;
 	
 	//Draw calls
-	private ArrayList<DrawCall> drawCalls = new ArrayList<DrawCall> ();
+	private ArrayList<DrawCall> lastCalls = new ArrayList<DrawCall> ();
+	private ArrayList<DrawCall> callBuffer = new ArrayList<DrawCall> ();
 	
 	//GL state things
 	private GLProgram program;
 	private ObjectVBOS vbos;
 	
 	public double fade = 0.0;
+	
+	//GPU rendering thread
+	private ReentrantLock drawLock;
 	
 	/**
 	 * Constructs a new GameWindow with the given width and height.
@@ -163,8 +149,10 @@ public class GameWindow {
 		glEnable (GL_BLEND);
 		//glEnable (GL_DEPTH_TEST);
 		
-		program = GLProgram.programFromDirectory ("resources/shaders/default/");
+		setProgram (GLProgram.programFromDirectory ("resources/shaders/default/"));
 		vbos = new ObjectVBOS ();
+		
+		drawLock = new ReentrantLock ();
 		
 	}
 
@@ -188,9 +176,6 @@ public class GameWindow {
 	 * Renders the contents of the buffers onto the window.
 	 */
 	public void refresh () {
-
-		// Set the clear color
-		glClearColor(0.75f, 0.75f, 0.75f, 1.0f);
 		
 		// Run the rendering loop until the user has attempted to close
 		// the window or has pressed the ESCAPE key.
@@ -198,93 +183,119 @@ public class GameWindow {
 			this.closeWindow ();
 			GameLoop.end ();
 		} else {
+			//Load all textures that need loaded
+			Sprite.loadTextures ();
 			
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-			
-			//Draw to the screen
-			program.use ();
-			vbos.bindSpriteVBO ();
-			glVertexAttribPointer (
-					0,
-					3,
-					GL_DOUBLE,
-					false,
-					8 * 5,
-					0);
-			glEnableVertexAttribArray (0);
-			glVertexAttribPointer (
-					1,
-					2,
-					GL_DOUBLE,
-					false,
-					8 * 5,
-					8 * 3);
-			glEnableVertexAttribArray (1);
-			
-			//Get the uniforms
-			int transformLoc = glGetUniformLocation (program.getProgramName (), "transform");
-			int vpLoc = glGetUniformLocation (program.getProgramName (), "vp");
-			int samplerLoc = glGetUniformLocation (program.getProgramName (), "texture");
-			int fadeTimerGlobalLoc = glGetUniformLocation (program.getProgramName (), "fade_timer_global");
-			int fadeTimerLocalLoc = glGetUniformLocation (program.getProgramName (), "fade_timer_local");
-			GLTexture currentTexture = null;
-			glUniform1i(samplerLoc, 0);
-			float[] transformBuffer = new float[16];
-			float[] vpBuffer = new float[16];
-			
-			Matrix4f vp = new Matrix4f ().ortho (0f, (float)resolution[0], (float)resolution[1], 0, -5000, 5000);
-			//System.out.println (vp);
-
-			for (int i = 0; i < drawCalls.size (); i++) {
+			// Set the clear color
+			glClearColor(0.75f, 0.75f, 0.75f, 1.0f);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 				
-				DrawCall working = drawCalls.get (i);
-				if (working.getCallingObject () != null && working.getCallingObject () instanceof IgnoresFade) {
-					glUniform1f(fadeTimerGlobalLoc, (float)0);
-				} else {
-					glUniform1f(fadeTimerGlobalLoc, (float)fade);
-				}
-				if (working.getCallingObject () != null && working.getCallingObject () instanceof TitleScreenObject) {
-					glUniform1f (fadeTimerLocalLoc, (float)((TitleScreenObject)working.getCallingObject ()).getFadeTime ());
-				} else {
-					glUniform1f (fadeTimerLocalLoc, (float)0);
-				}
-				
-				Matrix4f mvp = new Matrix4f ();
-				vp.mulAffine (working.getTransform (), mvp);
-				if (currentTexture != working.getTexture ()) {
-					currentTexture = working.getTexture ();
-					currentTexture.bindTexture ();
-					glActiveTexture (GL_TEXTURE0);
-				}
-				Vector4f column = new Vector4f ();
-				for (int wx = 0; wx < 4; wx++) {
-					mvp.getColumn (wx, column);
-					vpBuffer[wx * 4] = column.x;
-					vpBuffer[wx * 4 + 1] = column.y;
-					vpBuffer[wx * 4 + 2] = column.z;
-					vpBuffer[wx * 4 + 3] = column.w;
-				}
-				glUniformMatrix4fv (transformLoc, false, transformBuffer);
-				glUniformMatrix4fv (vpLoc, false, vpBuffer);
-				glDrawArrays (
-						GL_TRIANGLE_STRIP,
+				//Draw to the screen
+				program.use ();
+				vbos.bindSpriteVBO ();
+				glVertexAttribPointer (
 						0,
-						4);
-			}
-			
-			glDisableVertexAttribArray (0);
-			glDisableVertexAttribArray (1);
+						3,
+						GL_DOUBLE,
+						false,
+						8 * 5,
+						0);
+				glEnableVertexAttribArray (0);
+				glVertexAttribPointer (
+						1,
+						2,
+						GL_DOUBLE,
+						false,
+						8 * 5,
+						8 * 3);
+				glEnableVertexAttribArray (1);
+				
+				//Get the uniforms
+				int posALoc = glGetUniformLocation (program.getProgramName (), "pos_a");
+				int sclALoc = glGetUniformLocation (program.getProgramName (), "scl_a");
+				int rotALoc = glGetUniformLocation (program.getProgramName (), "rot_a");
+				int posBLoc = glGetUniformLocation (program.getProgramName (), "pos_b");
+				int sclBLoc = glGetUniformLocation (program.getProgramName (), "scl_b");
+				int rotBLoc = glGetUniformLocation (program.getProgramName (), "rot_b");
+				int dtLoc = glGetUniformLocation (program.getProgramName (), "delta_t");
+				int[] uniformsA = new int[] {posALoc, sclALoc, rotALoc};
+				int[] uniformsB = new int[] {posBLoc, sclBLoc, rotBLoc};
+				
+				int vpLoc = glGetUniformLocation (program.getProgramName (), "vp");
+				
+				int samplerLoc = glGetUniformLocation (program.getProgramName (), "texture");
+				
+				int fadeTimerGlobalLoc = glGetUniformLocation (program.getProgramName (), "fade_timer_global");
+				int fadeTimerLocalLoc = glGetUniformLocation (program.getProgramName (), "fade_timer_local");
+				
+				//Configure textures
+				GLTexture currentTexture = null;
+				glUniform1i(samplerLoc, 0);
+				
+				//VP matrix
+				float[] vpBuffer = new float[16];
+				Matrix4f vp = new Matrix4f ().ortho (0f, (float)resolution[0], (float)resolution[1], 0, -5000, 5000);
 
-			glfwSwapBuffers(window); // swap the color buffers
+				//Clone the draw calls
+				ArrayList<DrawCall> currDrawCalls = new ArrayList<DrawCall> ();
+				drawLock.lock ();
+				for (int i = 0; i < lastCalls.size (); i++) {
+					currDrawCalls.add (lastCalls.get (i));
+				}
+				drawLock.unlock ();
+				
+				//Render the draw calls
+				for (int i = 0; i < currDrawCalls.size (); i++) {
+					
+					DrawCall working = currDrawCalls.get (i);
+					working.drawData (0).setTextures (new int[] {0});
+					if (working.getCallingObject () != null && working.getCallingObject () instanceof IgnoresFade) {
+						glUniform1f(fadeTimerGlobalLoc, (float)0);
+					} else {
+						glUniform1f(fadeTimerGlobalLoc, (float)fade);
+					}
+					if (working.getCallingObject () != null && working.getCallingObject () instanceof TitleScreenObject) {
+						glUniform1f (fadeTimerLocalLoc, (float)((TitleScreenObject)working.getCallingObject ()).getFadeTime ());
+					} else {
+						glUniform1f (fadeTimerLocalLoc, (float)0);
+					}
+					
+					Vector4f column = new Vector4f ();
+					for (int wx = 0; wx < 4; wx++) {
+						vp.getColumn (wx, column);
+						vpBuffer[wx * 4] = column.x;
+						vpBuffer[wx * 4 + 1] = column.y;
+						vpBuffer[wx * 4 + 2] = column.z;
+						vpBuffer[wx * 4 + 3] = column.w;
+					}
+					working.drawData (0).setUniforms (uniformsA);
+					working.drawData (1).setUniforms (uniformsB);
+					glUniform1f (dtLoc, (float)GameLoop.deltaTime ());
+					glUniformMatrix4fv (vpLoc, true, vpBuffer);
+					glDrawArrays (
+							GL_TRIANGLE_STRIP,
+							0,
+							4);
+				}
+				
+				glDisableVertexAttribArray (0);
+				glDisableVertexAttribArray (1);
 
-			// Poll for window events. The key callback above will only be
-			// invoked during this call.
-			glfwPollEvents();
+				glfwSwapBuffers(window); // swap the color buffers
+		}		
+		// Poll for window events. The key callback above will only be
+		// invoked during this call.
+		glfwPollEvents();
 			
-			//Reset the draw call buffer
-			drawCalls = new ArrayList<DrawCall> ();
+	}
+	
+	public void render () {
 			
-		}
+		//Reset the draw call buffer
+		drawLock.lock ();
+		lastCalls = callBuffer;
+		callBuffer = new ArrayList<DrawCall> ();
+		drawLock.unlock ();
 		
 	}
 	
@@ -315,12 +326,34 @@ public class GameWindow {
 		inputManager.resetMouseBuffers ();
 	}
 	
-	public void drawSprite (Matrix4f matrix, GLTexture tex, GameObject obj) {
-		drawCalls.add (new DrawCall (matrix, tex, obj));
+	public void drawSprite (Transform t, GLTexture tex, GameObject obj) {
+		drawLock.lock ();
+		DrawCall.DefaultDrawData drawData = new DrawCall.DefaultDrawData (t, tex);
+		callBuffer.add (new DrawCall (new DrawCall.DrawData[] {drawData, drawData}, obj));
+		drawLock.unlock ();
 	}
 	
-	public void drawSprite (Matrix4f matrix, GLTexture tex) {
-		drawCalls.add (new DrawCall (matrix, tex, null));
+	public void drawSprite (Transform t, GLTexture tex) {
+		drawLock.lock ();
+		DrawCall.DefaultDrawData drawData = new DrawCall.DefaultDrawData (t, tex);
+		callBuffer.add (new DrawCall (new DrawCall.DrawData[] {drawData, drawData}, null));
+		drawLock.unlock ();
+	}
+	
+	public void drawSprite (Transform a, Transform b, GLTexture tex, GameObject obj) {
+		drawLock.lock ();
+		DrawCall.DefaultDrawData drawDataA = new DrawCall.DefaultDrawData (a, tex);
+		DrawCall.DefaultDrawData drawDataB = new DrawCall.DefaultDrawData (b, tex);
+		callBuffer.add (new DrawCall (new DrawCall.DrawData[] {drawDataA, drawDataB}, obj));
+		drawLock.unlock ();
+	}
+	
+	public void drawSprite (Transform a, Transform b, GLTexture tex) {
+		drawLock.lock ();
+		DrawCall.DefaultDrawData drawDataA = new DrawCall.DefaultDrawData (a, tex);
+		DrawCall.DefaultDrawData drawDataB = new DrawCall.DefaultDrawData (b, tex);
+		callBuffer.add (new DrawCall (new DrawCall.DrawData[] {drawDataA, drawDataB}, null));
+		drawLock.unlock ();
 	}
 	
 	public class WinResizeCallback implements GLFWWindowSizeCallbackI {

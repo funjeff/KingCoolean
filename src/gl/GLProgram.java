@@ -16,6 +16,18 @@ public class GLProgram {
 		this.vertexShader = vertexShader;
 		this.fragShader = fragShader;
 		
+	}
+	
+	public void link () { 
+		
+		//Compile the shaders (if applicable)
+		if (!vertexShader.isCompiled ()) {
+			vertexShader.compile ();
+		}
+		if (!fragShader.isCompiled ()) {
+			fragShader.compile ();
+		}
+		
 		//Link the programs
 		programName = glCreateProgram ();
 		glAttachShader (programName, vertexShader.getShaderName ());
@@ -50,7 +62,11 @@ public class GLProgram {
 		return programName;
 	}
 	
+	//NOTE: Failing to pre-link a program (and/or pre-compile the shaders it uses) using the link() method can result in a performance hit when first calling use().
 	public void use () {
+		if (!isLinked ()) {
+			link ();
+		}
 		glUseProgram (programName);
 	}
 	

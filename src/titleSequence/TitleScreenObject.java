@@ -4,6 +4,7 @@ import org.joml.Matrix4f;
 
 import engine.GameObject;
 import engine.Sprite;
+import engine.Transform;
 import gameObjects.FadeTimer;
 
 public class TitleScreenObject extends GameObject {
@@ -52,7 +53,8 @@ public class TitleScreenObject extends GameObject {
 			spritePath = null;
 		}
 		if (this.getSprite () != null) {
-			Matrix4f finalTransform = getTransform ().mul (getDisplayTransform ());
+			Transform finalTransform = getTransform ();
+			displayTransform (finalTransform);
 			if (getAnimationHandler () != null) {
 				getSprite ().draw (finalTransform, 0, this);
 			} else {

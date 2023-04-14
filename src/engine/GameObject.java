@@ -9,8 +9,13 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
+import engine.DrawCall.DefaultDrawData;
+import engine.DrawCall.DrawData;
 import gameObjects.Fragment;
+import gameObjects.Piece;
 import map.Room;
 
 /**
@@ -135,6 +140,8 @@ public abstract class GameObject extends GameAPI {
 	public double speed = 0;
 	
 	boolean collsionsEnabled = true;
+	
+	private Transform lastFrame;
 	
 	/**
 	 * Container and utility class for GameObject variants
@@ -353,45 +360,13 @@ public abstract class GameObject extends GameAPI {
 		}
 	}
 	
-	public Matrix4f getTransform () {
-		Matrix4f trans = new Matrix4f (
-				1, 0, 0, 0,
-				0, 1, 0, 0,
-				0, 0, 1, 0,
-				(float)x, (float)y, (float)renderPriority, 1
-				);
-		Matrix4f scale = new Matrix4f (
-				(float)scaleX, 0, 0, 0,
-				0, (float)scaleY, 0, 0,
-				0, 0, 1, 0,
-				0, 0, 0, 1
-				);
-		Matrix4f rot = new Matrix4f (
-				(float)Math.cos (rotation), (float)Math.sin (rotation), 0, 0,
-				(float)-Math.sin (rotation), (float)Math.cos (rotation), 0, 0,
-				0, 0, 1, 0, 
-				0, 0, 0, 1
-				);
-		Matrix4f a = new Matrix4f ();
-		return a.mulAffine (trans).mulAffine (scale).mulAffine (rot);
+	public Transform getTransform () {
+		return new Transform ((float)x, (float)y, (float)renderPriority, (float)scaleX, (float)scaleY, (float)rotation);
 	}
 	
-	public Matrix4f getDisplayTransform () {
-		
-		Matrix4f pxScale = new Matrix4f (
-				getSprite ().getWidth (), 0, 0, 0,
-				0, getSprite ().getHeight (), 0, 0,
-				0, 0, 1, 0,
-				0, 0, 0, 1
-				);
-		Matrix4f realign = new Matrix4f (
-				1, 0, 0, 0,
-				0, 1, 0, 0,
-				0, 0, 1, 0,
-				getSprite ().getWidth () / 2, getSprite ().getHeight () / 2, 0, 1
-				);
-		return realign.mul (pxScale);
-		
+	public void displayTransform (Transform rawTransform) {
+		rawTransform.scale (new Vector2f ((float)getSprite ().getWidth (), (float)getSprite ().getHeight ()));
+		rawTransform.translate (new Vector3f ((float)(getSprite ().getWidth () / 2), (float)(getSprite ().getHeight () / 2), 0));
 	}
 	
 	/**
@@ -400,13 +375,17 @@ public abstract class GameObject extends GameAPI {
 	public void draw () {
 		
 		if (this.getSprite () != null) {
-			Matrix4f finalTransform = new Matrix4f ();
-			finalTransform.mulAffine (getTransform ()).mulAffine (getDisplayTransform ());
-			if (getAnimationHandler () == null) {
-				getSprite ().draw (finalTransform, 0);
-			} else {
-				getAnimationHandler ().draw (finalTransform);
+			Transform finalTransform = getTransform ();
+			displayTransform (finalTransform);
+			if (lastFrame == null) {
+				lastFrame = finalTransform;
 			}
+			if (getAnimationHandler () == null) {
+				getSprite ().draw (lastFrame, finalTransform, 0);
+			} else {
+				getAnimationHandler ().draw (lastFrame, finalTransform);
+			}
+			lastFrame = finalTransform;
 		}
 		
 	}
@@ -1113,6 +1092,12 @@ public abstract class GameObject extends GameAPI {
 		y = val - hitbox().height/2;
 	}
 	
+	/**
+	 * Call after moving the object to ignore inbetween-frame interpolation.
+	 */
+	public void snap () {
+		lastFrame = null;
+	}
 	
 	/*
 	 * override to write code that is run on declaration of this object
@@ -1403,10 +1388,12 @@ public abstract class GameObject extends GameAPI {
 	public void hide () {
 		this.visible = false;
 		this.getAnimationHandler().hide();
+		snap ();
 	}
 	public void show () {
 		this.visible = true;
 		this.getAnimationHandler().show();
+		snap ();
 	}
 
 	public ArrayList<String> getExcludeList() {		return excludeList;
