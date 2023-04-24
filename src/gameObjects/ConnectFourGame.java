@@ -19,6 +19,9 @@ public class ConnectFourGame extends GameObject {
 	Background back = new Background ();
 	boolean blocked = false;
 	int turn = 0;
+	int moveToUse = -1;
+	boolean checkingMove = false;
+	MoveThread moveThread;
 	
 	Piece toDrop = new Piece(0);
 	
@@ -230,7 +233,7 @@ public class ConnectFourGame extends GameObject {
 					}
 				}
 			} else if (turn == 1) {
-				if (timer == 0) {
+				if ((timer == 0 && !checkingMove) || (moveThread != null && moveThread.isDone ())) {
 					
 					if (e instanceof CheatingCharlie) {
 						if (checkForThree(boardState) == 0) {
@@ -275,7 +278,7 @@ public class ConnectFourGame extends GameObject {
 								}
 							}
 						}
-					} else if (e instanceof Imagamer) {
+					} else if (e instanceof Imagamer && moveThread == null) {
 						if (getNumMoves(boardState) % 3 == 0) {
 							for (int i = 0; i < boardState.length; i++) {
 								for (int j = 0; j < boardState[i].length; j++) {
@@ -293,11 +296,11 @@ public class ConnectFourGame extends GameObject {
 					
 					
 					
-					int chosenMove = e.getMove(boardState);
-					int columToChange = getFirstOpen(chosenMove);
+					int chosenMove = -1;
+					int columToChange = -1;
 					
 					
-					if (columToChange == -1 && (e instanceof LeftLarry)) {
+					if (getFirstOpen (0) == -1 && (e instanceof LeftLarry)) {
 						turn = 0;
 						
 						Random rand = new Random ();
@@ -398,22 +401,45 @@ public class ConnectFourGame extends GameObject {
 						if (pos == 0)	e.playSound("JeffWeinerDialog1.wav");
 						if (pos == 1)	e.playSound("JeffWeinerDialog2.wav");
 					}
-					while (columToChange == -1) {
-						chosenMove = e.getMove(boardState);
-						columToChange = getFirstOpen(chosenMove);
-					}
-
-					boardState[chosenMove][columToChange] = 2;
-					toDrop.declare(170 + 10 + (82 * chosenMove), 0);
-					toDrop.setCurPosX(chosenMove);
-					toDrop.setCurPosY(columToChange);
-					toDrop.dropTo(69 + (78 * columToChange));
-					
-					if (!(e instanceof DarkCoolean)) {
-						toDrop = new Piece (0);
+					if (chosenMove != -1 && columToChange != -1) {
+						boardState[chosenMove][columToChange] = 2;
+						toDrop.declare(170 + 10 + (82 * chosenMove), 0);
+						toDrop.setCurPosX(chosenMove);
+						toDrop.setCurPosY(columToChange);
+						toDrop.dropTo(69 + (78 * columToChange));
+						if (!(e instanceof DarkCoolean)) {
+							toDrop = new Piece (0);
+						} else {
+							toDrop = new Piece (6);
+						}
+						toDrop.hide();
+						turn = 0;
 					} else {
-						toDrop = new Piece (6);
+						if (moveThread == null) {
+							checkingMove = true;
+							moveThread = new MoveThread ();
+							moveThread.start ();
+						}
+						if (!checkingMove) {
+							moveThread = null;
+							chosenMove = moveToUse;
+							columToChange = getFirstOpen (moveToUse);
+							//Note: code duplication
+							boardState[chosenMove][columToChange] = 2;
+							toDrop.declare(170 + 10 + (82 * chosenMove), 0);
+							toDrop.setCurPosX(chosenMove);
+							toDrop.setCurPosY(columToChange);
+							toDrop.dropTo(69 + (78 * columToChange));
+							if (!(e instanceof DarkCoolean)) {
+								toDrop = new Piece (0);
+							} else {
+								toDrop = new Piece (6);
+							}
+							toDrop.hide();
+							turn = 0;
+						}
 					}
+					System.out.println (chosenMove + ", " + columToChange);
 					
 					if (checkForWin (boardState) == 2) {
 						if (!(e instanceof MirroredMeryl)) {
@@ -429,11 +455,6 @@ public class ConnectFourGame extends GameObject {
 						}
 						return;
 					}
-					
-					toDrop.hide();
-					
-					
-					turn = 0;
 					
 					
 					if (e instanceof CheatingCharlie && checkForThree(boardState) != 0) {
@@ -1521,5 +1542,55 @@ public class ConnectFourGame extends GameObject {
 			}
 			timer = timer - 1;
 		}
+	}
+	
+	public class MoveThread extends Thread {
+
+		boolean done = false;
+		
+		@Override
+		public void run () {
+			System.out.println ("started");
+			long currTime = System.currentTimeMillis ();
+			int columToChange = -1;
+			int chosenMove = -1;
+			while (columToChange == -1) {
+				chosenMove = e.getMove(boardState);
+				columToChange = getFirstOpen(chosenMove);
+				if (System.currentTimeMillis () - currTime >= 1000) {
+					//Timeout after 1s to fix infinite loop
+					int colsOpen = 0;
+					for (int i = 0; i < 6; i++) {
+						if (getFirstOpen (i) != -1) {
+							colsOpen++;
+						}
+					}
+					if (colsOpen == 0) {
+						//TODO game ends in a draw
+						turn = -1;
+						YouLose you = new YouLose ();
+						e.onVictoryLine();
+						you.declare();
+					} else {
+						while (true) {
+							chosenMove = (int)(Math.random () * 6);
+							columToChange = getFirstOpen(chosenMove);
+							if (columToChange != -1) {
+								break;
+							}
+						}
+					}
+				}
+			}
+			moveToUse = chosenMove;
+			checkingMove = false;
+			done = true;
+			System.out.println ("ended");
+		}
+		
+		public boolean isDone () {
+			return done;
+		}
+		
 	}
 }

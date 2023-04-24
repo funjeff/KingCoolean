@@ -248,7 +248,7 @@ public class GameWindow {
 				for (int i = 0; i < currDrawCalls.size (); i++) {
 					
 					DrawCall working = currDrawCalls.get (i);
-					working.drawData (0).setTextures (new int[] {0});
+					working.drawData (1).setTextures (new int[] {0});
 					if (working.getCallingObject () != null && working.getCallingObject () instanceof IgnoresFade) {
 						glUniform1f(fadeTimerGlobalLoc, (float)0);
 					} else {

@@ -36,8 +36,8 @@ public class GameLoop implements Runnable {
 	public static void main (String[] args) {
 		wind = new GameWindow (960, 540);
 		GameLoop loop = new GameLoop ();
-		Thread renderThread = new Thread (loop);
-		renderThread.start ();
+		Thread gameThread = new Thread (loop);
+		gameThread.start ();
 		while (true) {
 			long startTime = System.currentTimeMillis ();
 			int frames = 0;
